@@ -192,4 +192,15 @@
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
+  <ItemGroup>
+    <None Include="..\shaders\default.frag">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\shaders\default.vert">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\shaders\fullscreen.vert">
+      <Filter>Resource Files</Filter>
+    </None>
+  </ItemGroup>
 </Project>

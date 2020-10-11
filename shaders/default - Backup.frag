@@ -2,7 +2,7 @@
 #extension GL_ARB_separate_shader_objects : enable
 
 #define STEPS 64
-#define STEP_SIZE 0.01
+#define STEP_SIZE 0.001
 #define MIN_DISTANCE 0.1
 
 layout(binding = 1) uniform sampler2D texSampler;
@@ -13,11 +13,11 @@ layout(location = 3) in vec4 mPos;
 
 layout(location = 0) out vec4 outColor;
 
-
+//Previous step size = 0.01
 //last owrking rad = 0.2
 float radius = 0.1;//2; //5
 vec3 centre = mPos.xyz;
-vec3 lightVector = vec3(0,1,0); //vec3(0,0,1);
+vec3 lightVector = vec3(0,0,1);
 vec3 cameraVector = vec3(0,0,1);
 
 bool sphereHit(vec3 p) {
@@ -77,6 +77,6 @@ void main()
     //outColor.w = baseColor.w;
     //New code below
     vec3 viewDirection = normalize(inPos-cameraVector);
-    outColor = raymarch(cameraVector,viewDirection);
+    outColor = raymarch(inPos,viewDirection);
 
 }

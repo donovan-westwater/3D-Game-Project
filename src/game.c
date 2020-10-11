@@ -26,7 +26,7 @@ int main(int argc,char *argv[])
 
     int done = 0;
     int a;
-    Uint8 validate = 1;
+    Uint8 validate = 0;
     const Uint8 * keys;
     Uint32 bufferFrame = 0;
     VkCommandBuffer commandBuffer;
@@ -35,6 +35,7 @@ int main(int argc,char *argv[])
     Model *model2;
     Matrix4 modelMat2;
     
+    //Current Validation layers are slowing down program! Need to fix this! (If run in Git bash this isnt a problem)
     for (a = 1; a < argc;a++)
     {
         if (strcmp(argv[a],"-disable_validate") == 0)
@@ -52,11 +53,11 @@ int main(int argc,char *argv[])
         vector4d(0.51,0.75,1,1),//background color
         0,                      //fullscreen
         validate                //validation
-    );
+    ); //This function has been edited slightly
     
     // main game loop
     slog("gf3d main loop begin");
-    model = gf3d_model_load("dino");
+    model = gf3d_model_load("dino"); 
     gfc_matrix_identity(modelMat);
     model2 = gf3d_model_load("dino");
     gfc_matrix_identity(modelMat2);
@@ -64,13 +65,39 @@ int main(int argc,char *argv[])
             modelMat2,
             vector3d(10,0,0)
         );
+    //NEW CODE BELOW 
+    
+    Model *model3 = gf3d_model_load("cube");
+    Matrix4 modelMat3;
+    gfc_matrix_identity(modelMat3);
+    gfc_matrix_make_translation(
+        modelMat3,
+        vector3d(0, 10, 0)
+    );
+ 
+        //Scales up the model
+    modelMat3[0][0] *= 2;
+    modelMat3[1][1] *= 2;
+    modelMat3[2][2] *= 2;
+    //Something is wrong with the fullscreen pipeline
+    
+    VkDevice device = gf3d_vgraphics_get_default_logical_device();
+    Pipeline *fullscreenpipe = gf3d_pipeline_fullscreen_create(device, "shaders/fullscreen.spv", "shaders/frag.spv", gf3d_vgraphics_get_view_extent(), 0);
+    gf3d_swapchain_setup_frame_buffers(fullscreenpipe);
+    VkCommandBuffer fullscreenCmd;
+    //bufferFrame = gf3d_vgraphics_render_begin();
+    //fullscreenCmd = gf3d_command_rendering_fullscreen_begin(bufferFrame, fullscreenpipe); //Already binds pipeline, no need to do it again.
+    
+    
+    //NEW CODE OVER
     while(!done)
     {
         SDL_PumpEvents();   // update SDL's internal event structures
         keys = SDL_GetKeyboardState(NULL); // get the keyboard state for this frame
         //update game things here
         
-        gf3d_vgraphics_rotate_camera(0.001);
+        gf3d_vgraphics_rotate_camera(0.01);
+        
         gfc_matrix_rotate(
             modelMat,
             modelMat,
@@ -81,19 +108,34 @@ int main(int argc,char *argv[])
             modelMat2,
             0.002,
             vector3d(0,0,1));
-
+        
         // configure render command for graphics command pool
         // for each mesh, get a command and configure it from the pool
         bufferFrame = gf3d_vgraphics_render_begin();
         gf3d_pipeline_reset_frame(gf3d_vgraphics_get_graphics_pipeline(),bufferFrame);
             commandBuffer = gf3d_command_rendering_begin(bufferFrame);
-
-                gf3d_model_draw(model,bufferFrame,commandBuffer,modelMat);
-                gf3d_model_draw(model2,bufferFrame,commandBuffer,modelMat2);
-                
+                //new draw code start
+                //gf3d_pipeline_reset_frame(fullscreenpipe, bufferFrame);
+            gf3d_model_draw(model2, bufferFrame, commandBuffer, modelMat2);
             gf3d_command_rendering_end(commandBuffer);
+
+            //Will replace the draw from the previous command. need to figure out how to combine the two
+            fullscreenCmd = gf3d_command_rendering_fullscreen_begin(bufferFrame, fullscreenpipe);
+
+                //vkCmdBindPipeline(fullscreenCmd, VK_PIPELINE_BIND_POINT_GRAPHICS, fullscreenpipe);
+                vkCmdDraw(fullscreenCmd, 3, 1, 0, 0);
+
+                gf3d_command_rendering_end(fullscreenCmd);
+                
+                //new draw code end
+                gf3d_model_draw(model,bufferFrame,commandBuffer,modelMat);
+                //gf3d_model_draw(model2,bufferFrame,commandBuffer,modelMat2);
+                //gf3d_model_draw(model3, bufferFrame, commandBuffer, modelMat3);
+                
+            //gf3d_command_rendering_end(commandBuffer);
             
         gf3d_vgraphics_render_end(bufferFrame);
+        
 
         if (keys[SDL_SCANCODE_ESCAPE])done = 1; // exit condition
     }    
