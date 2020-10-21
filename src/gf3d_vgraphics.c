@@ -68,6 +68,11 @@ typedef struct
 
 static vGraphics gf3d_vgraphics = {0};
 
+//Fullscreen uniformbuffers and buffer memory goes here
+static VkBuffer *funiformBuffers;
+static VkDeviceMemory *funiformBuffersMemory;
+static Uint32 funiformBufferCount;
+
 extern Mesh *testMesh;
 
 void gf3d_vgraphics_close();
@@ -661,6 +666,85 @@ void gf3d_vgraphics_rotate_camera(float degrees)
         degrees,
         vector3d(0,0,1));
 
+}
+void gf3d_fullscreen_create_uniform_buffer() {
+    int i;
+    Uint32 buffercount = gf3d_swapchain_get_chain_length();
+    VkDeviceSize bufferSize = sizeof(UniformBufferObject);
+
+    funiformBuffers = (VkBuffer*)gfc_allocate_array(sizeof(VkBuffer), buffercount);
+    funiformBuffersMemory = (VkDeviceMemory*)gfc_allocate_array(sizeof(VkDeviceMemory), buffercount);
+    funiformBufferCount = buffercount;
+
+    for (i = 0; i < buffercount; i++)
+    {
+        gf3d_vgraphics_create_buffer(bufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, &funiformBuffers[i], &funiformBuffersMemory[i]);
+    }
+}
+void gf3d_vgraphics_update_fullscreen_descriptor_set(VkDescriptorSet descriptorSet, Uint32 chainIndex) {
+    VkDescriptorImageInfo imageInfo = { 0 };
+    VkWriteDescriptorSet descriptorWrite[2] = { 0 };
+    VkDescriptorBufferInfo bufferInfo = { 0 };
+
+    if (descriptorSet == VK_NULL_HANDLE)
+    {
+        slog("null handle provided for descriptorSet");
+        return;
+    }
+
+    //imageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+    //imageInfo.imageView = model->texture->textureImageView;
+    //imageInfo.sampler = model->texture->textureSampler;
+
+    //gf3d_model_update_uniform_buffer(model, chainIndex, modelMat); //Meant for the model matrix, ignore this for fullscreen
+    void* data;
+    UniformBufferObject ubo;
+    ubo = gf3d_vgraphics_get_uniform_buffer_object();
+    //gfc_matrix_copy(ubo.model, modelMat); //Turning this off until entity system is set up
+    vkMapMemory(gf3d_vgraphics_get_default_logical_device(), funiformBuffersMemory[chainIndex], 0, sizeof(UniformBufferObject), 0, &data);
+
+    memcpy(data, &ubo, sizeof(UniformBufferObject));
+
+    vkUnmapMemory(gf3d_vgraphics_get_default_logical_device(), funiformBuffersMemory[chainIndex]);
+    bufferInfo.buffer = funiformBuffers[chainIndex];
+    bufferInfo.offset = 0;
+    bufferInfo.range = sizeof(UniformBufferObject);
+
+    descriptorWrite[0].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+    descriptorWrite[0].dstSet = descriptorSet;
+    descriptorWrite[0].dstBinding = 0;
+    descriptorWrite[0].dstArrayElement = 0;
+    descriptorWrite[0].descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+    descriptorWrite[0].descriptorCount = 1;
+    descriptorWrite[0].pBufferInfo = &bufferInfo;
+    /*
+    descriptorWrite[1].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+    descriptorWrite[1].dstSet = descriptorSet;
+    descriptorWrite[1].dstBinding = 1;
+    descriptorWrite[1].dstArrayElement = 0;
+    descriptorWrite[1].descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+    descriptorWrite[1].descriptorCount = 1;
+    descriptorWrite[1].pImageInfo = &imageInfo;
+    descriptorWrite[1].pTexelBufferView = NULL; // Optional
+    */
+    vkUpdateDescriptorSets(gf3d_vgraphics_get_default_logical_device(), 1, &descriptorWrite[0], 0, NULL);
+}
+
+void gf3d_vgraphics_draw_fullscreen(Uint32 bufferFrame, VkCommandBuffer commandBuffer, Pipeline* pipe) {
+    VkDescriptorSet* descriptorSet = NULL;
+
+    descriptorSet = gf3d_pipeline_get_descriptor_set(pipe, bufferFrame);
+    if (descriptorSet == NULL)
+    {
+        slog("failed to get a free descriptor Set for model rendering");
+        return;
+    }
+    //update descriptor set
+    gf3d_vgraphics_update_fullscreen_descriptor_set(*descriptorSet, bufferFrame);
+    
+    //bind descriptor set and then draw image [Binding has issues]
+    vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipe->pipelineLayout, 0, 1, descriptorSet, 0, NULL);
+    vkCmdDraw(commandBuffer, 3, 1, 0, 0);
 }
 
 Pipeline *gf3d_vgraphics_get_graphics_pipeline()

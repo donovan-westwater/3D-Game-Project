@@ -79,11 +79,12 @@ int main(int argc,char *argv[])
     modelMat3[0][0] *= 2;
     modelMat3[1][1] *= 2;
     modelMat3[2][2] *= 2;
-    //Something is wrong with the fullscreen pipeline
+    //Setup descripterSets for the pipleine so that we can use the UBO
     
     VkDevice device = gf3d_vgraphics_get_default_logical_device();
-    Pipeline *fullscreenpipe = gf3d_pipeline_fullscreen_create(device, "shaders/fullscreen.spv", "shaders/frag.spv", gf3d_vgraphics_get_view_extent(), 0);
+    Pipeline *fullscreenpipe = gf3d_pipeline_fullscreen_create(device, "shaders/fullscreen.spv", "shaders/RayMarch.spv", gf3d_vgraphics_get_view_extent(), 1024);
     gf3d_swapchain_setup_frame_buffers(fullscreenpipe);
+    gf3d_fullscreen_create_uniform_buffer();
     VkCommandBuffer fullscreenCmd;
     //bufferFrame = gf3d_vgraphics_render_begin();
     //fullscreenCmd = gf3d_command_rendering_fullscreen_begin(bufferFrame, fullscreenpipe); //Already binds pipeline, no need to do it again.
@@ -113,6 +114,7 @@ int main(int argc,char *argv[])
         // for each mesh, get a command and configure it from the pool
         bufferFrame = gf3d_vgraphics_render_begin();
         gf3d_pipeline_reset_frame(gf3d_vgraphics_get_graphics_pipeline(),bufferFrame);
+        gf3d_pipeline_reset_frame(fullscreenpipe, bufferFrame);
             commandBuffer = gf3d_command_rendering_begin(bufferFrame);
                 //new draw code start
                 //gf3d_pipeline_reset_frame(fullscreenpipe, bufferFrame);
@@ -123,12 +125,12 @@ int main(int argc,char *argv[])
             fullscreenCmd = gf3d_command_rendering_fullscreen_begin(bufferFrame, fullscreenpipe);
 
                 //vkCmdBindPipeline(fullscreenCmd, VK_PIPELINE_BIND_POINT_GRAPHICS, fullscreenpipe);
-                vkCmdDraw(fullscreenCmd, 3, 1, 0, 0);
-
+                //vkCmdDraw(fullscreenCmd, 3, 1, 0, 0);
+                gf3d_vgraphics_draw_fullscreen(bufferFrame, fullscreenCmd, fullscreenpipe);
                 gf3d_command_rendering_end(fullscreenCmd);
                 
                 //new draw code end
-                gf3d_model_draw(model,bufferFrame,commandBuffer,modelMat);
+                //gf3d_model_draw(model,bufferFrame,commandBuffer,modelMat);
                 //gf3d_model_draw(model2,bufferFrame,commandBuffer,modelMat2);
                 //gf3d_model_draw(model3, bufferFrame, commandBuffer, modelMat3);
                 

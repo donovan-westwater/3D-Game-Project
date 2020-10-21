@@ -44,6 +44,26 @@ uint32_t gf3d_vgraphics_find_memory_type(uint32_t typeFilter, VkMemoryPropertyFl
 
 void gf3d_vgraphics_rotate_camera(float degrees);
 
+/**
+ * @brief draws the fullscreen triangle that the raymarch shader is using
+ * @Param frame from the frame buffer
+ * @Param the command buffer for the pipeline
+ * @Parma the pointer for the fullscreen pipeline
+ */
+void gf3d_vgraphics_draw_fullscreen(Uint32 bufferFrame, VkCommandBuffer commandBuffer, Pipeline* pipe);
+
+/**
+ * @brief Updates the UBO (mainly of the camera) sent to the vertex shader for the fullscreen pipeline
+ * @Param the descriptorset that needs updating
+ * @Param swapchain of the system
+ * @Parma ubo of the entity to be rendered (will be removed for now) --> Matrix4 modelMat
+ */
+void gf3d_vgraphics_update_fullscreen_descriptor_set(VkDescriptorSet descriptorSet, Uint32 chainIndex);
+/**
+ * @brief allocates memory for the uniform buffers for the fullscreen pipeline
+ */
+void gf3d_fullscreen_create_uniform_buffer();
+
 VkBuffer gf3d_vgraphics_get_uniform_buffer_by_index(Uint32 index);
 UniformBufferObject gf3d_vgraphics_get_uniform_buffer_object();
 

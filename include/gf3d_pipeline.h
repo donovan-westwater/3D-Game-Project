@@ -49,6 +49,17 @@ void gf3d_pipeline_free(Pipeline *pipe);
 Pipeline *gf3d_pipeline_graphics_load(VkDevice device,char *vertFile,char *fragFile,VkExtent2D extent);
 
 /**
+ * @brief setup a pipeline for rendering a fullscreen triangle that will act as main pipeline
+ * @param device the logical device that the pipeline will be set up on
+ * @param vertFile the filename of the vertex shader to use (expects spir-v byte code)
+ * @param fragFile the filename of the fragment shader to use (expects spir-v byte code)
+ * @param extent the viewport dimensions for this pipeline
+ * @param descriptorCount the number of concurrent descriptSets to be suppert per command, ie: how many models you want to support for a draw call  This should be based on maximum number of supported entities or graphic assets
+ * @returns NULL on error (see logs) or a pointer to a pipeline
+ */
+Pipeline* gf3d_pipeline_fullscreen_create(VkDevice device, char* vertFile, char* fragFile, VkExtent2D extent, Uint32 descriptorCount);
+
+/**
  * @brief setup a pipeline for rendering a basic model
  * @param device the logical device that the pipeline will be set up on
  * @param vertFile the filename of the vertex shader to use (expects spir-v byte code)

@@ -202,5 +202,8 @@
     <None Include="..\shaders\fullscreen.vert">
       <Filter>Resource Files</Filter>
     </None>
+    <None Include="..\shaders\RayMarch.frag">
+      <Filter>Resource Files</Filter>
+    </None>
   </ItemGroup>
 </Project>

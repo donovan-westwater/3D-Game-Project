@@ -33,10 +33,12 @@ void main()
     //mCenter = ubo.proj * ubo.view * ubo.model * vec4(0,0,0, 1.0);
     //uv = vec2((gl_VertexIndex << 1) & 2, gl_VertexIndex & 2);
     //gl_Position = vec4(uv * 2.0f + -1.0f, 0.0f, 1.0f);
+    //gl_Position = vec4(positions[gl_VertexIndex], 0.0, 1.0);
     mCenter = vec4(0.0,0,0,1.0);
     fragNormal = inNormal;
-    fragTexCoord = inTexCoord;
-    gl_Position = vec4(positions[gl_VertexIndex], 0.0, 1.0);
+    //fragTexCoord = inTexCoord;
+    fragTexCoord = vec2((gl_VertexIndex << 1) & 2, gl_VertexIndex & 2);
+    gl_Position = vec4(fragTexCoord * 2.0f + -1.0f, 0.0f, 1.0f);
     outPos = gl_Position.xyz;
 }
 

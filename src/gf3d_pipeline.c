@@ -287,13 +287,76 @@ Pipeline* gf3d_pipeline_fullscreen_create(VkDevice device, char* vertFile, char*
     colorBlending.blendConstants[2] = 0.0f; // Optional
     colorBlending.blendConstants[3] = 0.0f; // Optional
 
+    //Comment these out to get rid of descriptor sets
     //gf3d_pipeline_create_basic_model_descriptor_pool(pipe);
-    //gf3d_pipeline_create_basic_model_descriptor_set_layout(pipe);
+    //f3d_pipeline_create_basic_model_descriptor_set_layout(pipe);
     //gf3d_pipeline_create_descriptor_sets(pipe);
 
+    //descriptor pool here
+    int i;
+    VkDescriptorPoolSize poolSize[2] = { 0 };
+    VkDescriptorPoolCreateInfo poolInfo = { 0 };
+
+    if (!pipe)
+    {
+        slog("no pipeline provided");
+        return;
+    }
+    slog("attempting to make %i descriptor pools of size %i", gf3d_pipeline.chainLength, pipe->descriptorSetCount);
+    poolSize[0].type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+    poolSize[0].descriptorCount = pipe->descriptorSetCount;
+    //poolSize[1].type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+    //poolSize[1].descriptorCount = pipe->descriptorSetCount;
+
+    poolInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
+    poolInfo.poolSizeCount = 1;
+    poolInfo.pPoolSizes = &poolSize[0];
+    poolInfo.maxSets = pipe->descriptorSetCount;
+    pipe->descriptorPool = (VkDescriptorPool*)gfc_allocate_array(sizeof(VkDescriptorPool), gf3d_pipeline.chainLength);
+
+    for (i = 0; i < gf3d_pipeline.chainLength; i++)
+    {
+        if (vkCreateDescriptorPool(pipe->device, &poolInfo, NULL, &pipe->descriptorPool[i]) != VK_SUCCESS)
+        {
+            slog("failed to create descriptor pool!");
+            return;
+        }
+    }
+    pipe->descriptorPoolCount = gf3d_pipeline.chainLength;
+
+
+
+    //layout here
+    VkDescriptorSetLayoutCreateInfo layoutInfo = { 0 };
+    VkDescriptorSetLayoutBinding uboLayoutBinding = { 0 };
+    VkDescriptorSetLayoutBinding samplerLayoutBinding = { 0 };
+
+    VkDescriptorSetLayoutBinding binding[2];
+
+    uboLayoutBinding.binding = 0;
+    uboLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+    uboLayoutBinding.descriptorCount = 1;
+    uboLayoutBinding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT; //VK_SHADER_STAGE_VERTEX_BIT
+    uboLayoutBinding.pImmutableSamplers = NULL; // Optional
+
+    memcpy(&binding[0], &uboLayoutBinding, sizeof(VkDescriptorSetLayoutBinding));
+
+    layoutInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
+    layoutInfo.bindingCount = 1;
+    layoutInfo.pBindings = &binding[0];
+
+    if (vkCreateDescriptorSetLayout(pipe->device, &layoutInfo, NULL, &pipe->descriptorSetLayout) != VK_SUCCESS)
+    {
+        slog("failed to create descriptor set layout!");
+    }
+
+    //set creation here
+    gf3d_pipeline_create_descriptor_sets(pipe);
+
+
     pipelineLayoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
-    pipelineLayoutInfo.setLayoutCount = 0; // Optional
-    pipelineLayoutInfo.pSetLayouts = NULL; // Optional
+    pipelineLayoutInfo.setLayoutCount = 1; // Optional
+    pipelineLayoutInfo.pSetLayouts = &pipe->descriptorSetLayout; // descriptorSet goes here
     pipelineLayoutInfo.pushConstantRangeCount = 0; // Optional
     pipelineLayoutInfo.pPushConstantRanges = NULL; // Optional
 

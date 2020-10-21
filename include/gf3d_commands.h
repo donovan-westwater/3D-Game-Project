@@ -45,6 +45,14 @@ VkCommandBuffer * gf3d_command_pool_get_used_buffers(Command *com);
  */
 VkCommandBuffer gf3d_command_rendering_begin(Uint32 index);
 
+/**
+ * @brief begin recording a command that will take rendering pass information.  Submit all draw commands between this and gf3d_command_rendering_end
+ * @param index the rendering frame to use
+ * @param pipeline to begin rendering with
+ * @return the command buffer used for this drawing pass.
+ */
+VkCommandBuffer gf3d_command_rendering_fullscreen_begin(Uint32 index, Pipeline* p);
+
 void gf3d_command_rendering_end(VkCommandBuffer commandBuffer);
 
 void gf3d_command_configure_render_pass_end(VkCommandBuffer commandBuffer);

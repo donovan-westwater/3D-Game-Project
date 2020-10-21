@@ -154,6 +154,7 @@
     <None Include="..\shaders\default.frag" />
     <None Include="..\shaders\default.vert" />
     <None Include="..\shaders\fullscreen.vert" />
+    <None Include="..\shaders\RayMarch.frag" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

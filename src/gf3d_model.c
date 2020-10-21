@@ -150,7 +150,7 @@ void gf3d_model_update_basic_model_descriptor_set(Model *model,VkDescriptorSet d
     imageInfo.imageView = model->texture->textureImageView;
     imageInfo.sampler = model->texture->textureSampler;
 
-    gf3d_model_update_uniform_buffer(model,chainIndex,modelMat);
+    gf3d_model_update_uniform_buffer(model,chainIndex,modelMat); //Meant for the model matrix, ignore this for fullscreen
     bufferInfo.buffer = model->uniformBuffers[chainIndex];
     bufferInfo.offset = 0;
     bufferInfo.range = sizeof(UniformBufferObject);        
