@@ -64,6 +64,11 @@ void gf3d_vgraphics_update_fullscreen_descriptor_set(VkDescriptorSet descriptorS
  */
 void gf3d_fullscreen_create_uniform_buffer();
 
+/*breif sets the camera position*/
+void gf3d_vgraphics_set_camera(Vector3D pos);
+
+void gf3d_vgraphics_set_resolution(Vector2D res);
+
 VkBuffer gf3d_vgraphics_get_uniform_buffer_by_index(Uint32 index);
 UniformBufferObject gf3d_vgraphics_get_uniform_buffer_object();
 

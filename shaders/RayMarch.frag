@@ -4,13 +4,14 @@
 #define STEPS 64
 #define STEP_SIZE 0.01
 #define MIN_DISTANCE 0.1
-
+//Was 0.1
 //This entire scene exists in "model space" without any transformations
 
 layout(binding = 0) uniform UniformBufferObject {
     mat4 model; //Useless
     mat4 view; //Camera
     mat4 proj; //Perspective of camera
+    vec2 resolution;
 } ubo;
 
 //layout(binding = 1) uniform sampler2D texSampler;
@@ -23,10 +24,11 @@ layout(location = 0) out vec4 outColor;
 
 
 //last owrking rad = 0.2
-float radius = 0.1;//2; //5
-vec3 centre = mPos.xyz;
+float radius = 0.5;//2; //5
+vec3 centre = mPos.xyz;//(ubo.view*mPos).xyz;
 vec3 lightVector = vec3(0,1,0); //vec3(0,0,1);
 vec3 cameraVector = vec3(0,0,1);
+vec3 vDirection = vec3(0,0,0);
 
 bool sphereHit(vec3 p) {
     return distance(p, centre) < radius;
@@ -43,7 +45,8 @@ float sphereDistance(vec3 p) {
 }
 
 vec4 simpleLambert(vec3 normal,float specPower) {
-    vec3 viewDirection = inPos-cameraVector;
+    //vec3 viewDirection = inPos-cameraVector;
+    vec3 viewDirection = vDirection;
     vec3 lightDir = lightVector;
 
     float NdotL = max(dot(normal, lightDir), 0);
@@ -85,8 +88,14 @@ void main()
     //outColor = baseColor + baseColor * cosTheta;
     //outColor.w = baseColor.w;
     //New code below
-    vec4 modSpace = ubo.view*vec4(inPos.x,inPos.y,-5,1);
-    vec4 viewDirection = normalize(modSpace);//normalize(inPos-cameraVector);
-    outColor = raymarch(ubo.view[3],viewDirection);//raymarch(cameraVector,viewDirection);
+    vec2 uv = (gl_FragCoord.xy - 0.5*ubo.resolution)/ubo.resolution.y;
+    vec3 col = vec3(0,10.0*uv.x,-10.0*uv.y);
+    outColor = vec4(col,1);
+
+    cameraVector = vec3(ubo.view[0][3],ubo.view[1][3],ubo.view[2][3]);
+    vec4 modSpace = vec4(uv.x,uv.y,4,0);
+    vec4 viewDirection = ubo.view*normalize(modSpace);//normalize(inPos-cameraVector);
+    vDirection = viewDirection.xyz;
+    //outColor = raymarch(vec4(cameraVector.xyz,1),viewDirection);//raymarch(cameraVector,viewDirection);
 
 }

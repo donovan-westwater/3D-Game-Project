@@ -66,7 +66,8 @@ int main(int argc,char *argv[])
             vector3d(10,0,0)
         );
     //NEW CODE BELOW 
-    
+    gf3d_camera_set_position(vector3d(0, 0, 1));
+    gf3d_vgraphics_set_camera(vector3d(0, 0, -1));
     Model *model3 = gf3d_model_load("cube");
     Matrix4 modelMat3;
     gfc_matrix_identity(modelMat3);
@@ -97,7 +98,7 @@ int main(int argc,char *argv[])
         keys = SDL_GetKeyboardState(NULL); // get the keyboard state for this frame
         //update game things here
         
-        gf3d_vgraphics_rotate_camera(0.01);
+       // gf3d_vgraphics_rotate_camera(0.01);
         
         gfc_matrix_rotate(
             modelMat,

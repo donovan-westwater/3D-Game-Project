@@ -10,6 +10,7 @@ typedef struct
     Matrix4 model;
     Matrix4 view;
     Matrix4 proj;
+    Vector2D resolution;
 }UniformBufferObject;
 
 /**

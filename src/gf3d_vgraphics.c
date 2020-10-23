@@ -125,7 +125,7 @@ void gf3d_vgraphics_init(
     );
     
     gf3d_vgraphics.ubo.proj[1][1] *= -1;
-
+    gf3d_vgraphics.ubo.resolution = vector2d(renderWidth, renderHeight);
     gf3d_vgraphics_setup(
         windowName,
         renderWidth,
@@ -666,6 +666,12 @@ void gf3d_vgraphics_rotate_camera(float degrees)
         degrees,
         vector3d(0,0,1));
 
+}
+
+void gf3d_vgraphics_set_camera(Vector3D pos) {
+    gf3d_vgraphics.ubo.view[0][3] = pos.x;
+    gf3d_vgraphics.ubo.view[1][3] = pos.y;
+    gf3d_vgraphics.ubo.view[2][3] = pos.z;
 }
 void gf3d_fullscreen_create_uniform_buffer() {
     int i;
