@@ -660,13 +660,22 @@ uint32_t gf3d_vgraphics_find_memory_type(uint32_t typeFilter, VkMemoryPropertyFl
     return 0;
 }
 
+void gf3d_vgraphics_move_camera(float dir,float speed) {
+    Vector4D translation = vector4d(0, 0, dir*1, 0);
+    gfc_matrix_multiply_vector4d(&translation, gf3d_vgraphics.ubo.view, translation);
+    vector4d_normalize(&translation);
+    Vector3D dirV = vector3d(gf3d_vgraphics.ubo.view[3][0] + speed*translation.x, gf3d_vgraphics.ubo.view[3][1] + speed * translation.y, gf3d_vgraphics.ubo.view[3][2] + speed * translation.z);
+    gf3d_vgraphics_set_camera(dirV);
+}
+
+
 void gf3d_vgraphics_rotate_camera(float degrees)
 {
     gfc_matrix_rotate(
         gf3d_vgraphics.ubo.view,
         gf3d_vgraphics.ubo.view,
         degrees,
-        vector3d(0,0,1));
+        vector3d(0,1,0));
 
 }
 

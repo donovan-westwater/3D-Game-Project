@@ -60,7 +60,7 @@ vec4 simpleLambert(vec3 normal,float specPower) {
 }
 vec4 renderSurface(vec3 p){
     vec3 n = estimateNormal(p);
-    return simpleLambert(n,10);
+    return simpleLambert(n,1);
 }
 vec4 raymarch(vec4 position, vec4 direction) {
     for (int i = 0; i < STEPS; i++) {
