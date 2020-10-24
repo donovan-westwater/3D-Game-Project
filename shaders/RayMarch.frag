@@ -1,7 +1,7 @@
 #version 450
 #extension GL_ARB_separate_shader_objects : enable
 
-#define STEPS 64
+#define STEPS 128
 #define STEP_SIZE 0.01
 #define MIN_DISTANCE 0.1
 //Was 0.1
@@ -67,7 +67,7 @@ vec4 raymarch(vec4 position, vec4 direction) {
         vec3 tmp = position.xyz;
         float distance = sphereDistance(tmp);//sphereDistance(position);
         if (distance < MIN_DISTANCE){
-            //vec4 retColor = (1-(i / float(STEPS))) * vec4(1,0,0,1);
+            //vec4 retColor = vec4(1,0,0,1);
             //retColor.w = 1;
             return renderSurface(tmp);//renderSurface(position);//retColor; //1-(i / float(STEPS))
         }
@@ -89,13 +89,13 @@ void main()
     //outColor.w = baseColor.w;
     //New code below
     vec2 uv = (gl_FragCoord.xy - 0.5*ubo.resolution)/ubo.resolution.y;
-    vec3 col = vec3(0,10.0*uv.x,-10.0*uv.y);
-    outColor = vec4(col,1);
-
-    cameraVector = vec3(ubo.view[0][3],ubo.view[1][3],ubo.view[2][3]);
-    vec4 modSpace = vec4(uv.x,uv.y,4,0);
+    //vec3 col = vec3(0,10.0*uv.x,-10.0*uv.y);
+    //outColor = vec4(col,1);
+    //UBO is still being worked on;
+    cameraVector = vec3(ubo.view[3][0],ubo.view[3][1],ubo.view[3][2]);
+    vec4 modSpace = vec4(uv.x,uv.y,1,0);
     vec4 viewDirection = ubo.view*normalize(modSpace);//normalize(inPos-cameraVector);
     vDirection = viewDirection.xyz;
-    //outColor = raymarch(vec4(cameraVector.xyz,1),viewDirection);//raymarch(cameraVector,viewDirection);
+    outColor = raymarch(vec4(cameraVector.xyz,1),viewDirection);//raymarch(cameraVector,viewDirection);
 
 }

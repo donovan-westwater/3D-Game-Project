@@ -110,12 +110,14 @@ void gf3d_vgraphics_init(
     gfc_matrix_identity(gf3d_vgraphics.ubo.model);
     gfc_matrix_identity(gf3d_vgraphics.ubo.view);
     gfc_matrix_identity(gf3d_vgraphics.ubo.proj);
+    /*
     gfc_matrix_view(
         gf3d_vgraphics.ubo.view,
-        vector3d(2,40,2),
+        vector3d(0,0,-1), //2,40,2
         vector3d(0,0,0),
-        vector3d(0,0,1)
+        vector3d(0,1,0)
     );
+    */
     gfc_matrix_perspective(
         gf3d_vgraphics.ubo.proj,
         45 * GFC_DEGTORAD,
@@ -669,9 +671,9 @@ void gf3d_vgraphics_rotate_camera(float degrees)
 }
 
 void gf3d_vgraphics_set_camera(Vector3D pos) {
-    gf3d_vgraphics.ubo.view[0][3] = pos.x;
-    gf3d_vgraphics.ubo.view[1][3] = pos.y;
-    gf3d_vgraphics.ubo.view[2][3] = pos.z;
+    gf3d_vgraphics.ubo.view[3][0] = pos.x;
+    gf3d_vgraphics.ubo.view[3][1] = pos.y;
+    gf3d_vgraphics.ubo.view[3][2] = pos.z;
 }
 void gf3d_fullscreen_create_uniform_buffer() {
     int i;

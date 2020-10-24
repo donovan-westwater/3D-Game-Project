@@ -98,7 +98,7 @@ int main(int argc,char *argv[])
         keys = SDL_GetKeyboardState(NULL); // get the keyboard state for this frame
         //update game things here
         
-       // gf3d_vgraphics_rotate_camera(0.01);
+        gf3d_vgraphics_rotate_camera(0.01);
         
         gfc_matrix_rotate(
             modelMat,
