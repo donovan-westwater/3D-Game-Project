@@ -236,3 +236,23 @@ void gfc_matrix_translate(
     gfc_matrix_multiply(temp,translate,out);
     gfc_matrix_copy(out,temp);
 }
+
+Vector3D gfc_euler_angles(Matrix4 src) {
+    float clampAngle = (3.1415 / 180.0) * 89.0;
+    //Matrix4 yRot;
+    //Matrix4 xRot;
+    //gfc_matrix_identity(&zRot);
+    //gfc_matrix_identity(&yRot);
+    //gfc_matrix_identity(&xRot);
+
+    //Euler angle (in radians) for rot around y axis
+    float yAngle = -asin(src[2][0]);
+    if (abs(src[2][0]) >= 1) yAngle = clampAngle;
+
+    //Euler angle (in radians) for rot around x axis
+    float xAngle = atan2f(src[2][1]/cos(yAngle),src[2][2]/cos(yAngle));
+    //Euler angle (in radians) for rot around z axis
+    float zAngle = atan2f(src[1][0] / cos(yAngle), src[0][0] / cos(yAngle));
+
+    return vector3d(xAngle, yAngle, zAngle);
+}

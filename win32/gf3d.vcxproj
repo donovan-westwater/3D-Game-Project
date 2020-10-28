@@ -109,6 +109,7 @@
     <ClInclude Include="..\gfc\simple_logger\include\simple_logger.h" />
     <ClInclude Include="..\include\gf3d_camera.h" />
     <ClInclude Include="..\include\gf3d_commands.h" />
+    <ClInclude Include="..\include\gf3d_entity.h" />
     <ClInclude Include="..\include\gf3d_extensions.h" />
     <ClInclude Include="..\include\gf3d_model.h" />
     <ClInclude Include="..\include\gf3d_pipeline.h" />
@@ -138,6 +139,7 @@
     <ClCompile Include="..\src\game.c" />
     <ClCompile Include="..\src\gf3d_camera.c" />
     <ClCompile Include="..\src\gf3d_commands.c" />
+    <ClCompile Include="..\src\gf3d_entity.c" />
     <ClCompile Include="..\src\gf3d_extensions.c" />
     <ClCompile Include="..\src\gf3d_mesh.c" />
     <ClCompile Include="..\src\gf3d_model.c" />

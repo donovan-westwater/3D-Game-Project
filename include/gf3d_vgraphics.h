@@ -46,6 +46,8 @@ void gf3d_vgraphics_move_camera(float dir,float speed);
 
 void gf3d_vgraphics_rotate_camera(float degrees);
 
+void gf3d_vgraphics_mouse_look();
+
 /**
  * @brief draws the fullscreen triangle that the raymarch shader is using
  * @Param frame from the frame buffer
@@ -72,7 +74,10 @@ void gf3d_vgraphics_set_camera(Vector3D pos);
 void gf3d_vgraphics_set_resolution(Vector2D res);
 
 VkBuffer gf3d_vgraphics_get_uniform_buffer_by_index(Uint32 index);
+
 UniformBufferObject gf3d_vgraphics_get_uniform_buffer_object();
+
+UniformBufferObject* gf3d_get_pointer_to_UBO();
 
 Pipeline *gf3d_vgraphics_get_graphics_pipeline();
 

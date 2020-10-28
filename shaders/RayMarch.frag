@@ -26,16 +26,28 @@ layout(location = 0) out vec4 outColor;
 //last owrking rad = 0.2
 float radius = 0.5;//2; //5
 vec3 centre = mPos.xyz;//(ubo.view*mPos).xyz;
-vec3 lightVector = vec3(0,1,0); //vec3(0,0,1);
+vec3 lightVector = vec3(0,-1,0); //vec3(0,0,1);
 vec3 cameraVector = vec3(0,0,1);
 vec3 vDirection = vec3(0,0,0);
+//***Transformations***
 
+
+
+
+
+
+
+//***SDFs for various primatives
 bool sphereHit(vec3 p) {
     return distance(p, centre) < radius;
 }
 float sphereDistance(vec3 p) {
     return distance(p, centre) - radius;
 }
+//***Scene SDF***
+
+
+//***Lighting***
  vec3 estimateNormal(vec3 p) {
     return normalize(vec3(
         sphereDistance(vec3(p.x + MIN_DISTANCE, p.y, p.z)) - sphereDistance(vec3(p.x - MIN_DISTANCE, p.y, p.z)),
@@ -44,7 +56,7 @@ float sphereDistance(vec3 p) {
     ));
 }
 
-vec4 simpleLambert(vec3 normal,float specPower) {
+vec4 simpleLambert(vec3 ogPoint, vec3 normal,float specPower) {
     //vec3 viewDirection = inPos-cameraVector;
     vec3 viewDirection = vDirection;
     vec3 lightDir = lightVector;
@@ -60,7 +72,7 @@ vec4 simpleLambert(vec3 normal,float specPower) {
 }
 vec4 renderSurface(vec3 p){
     vec3 n = estimateNormal(p);
-    return simpleLambert(n,1);
+    return simpleLambert(p,n,0.5);
 }
 vec4 raymarch(vec4 position, vec4 direction) {
     for (int i = 0; i < STEPS; i++) {

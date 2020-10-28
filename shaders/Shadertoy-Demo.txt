@@ -1,27 +1,112 @@
-#define STEPS 64
+#define STEPS 100
 #define STEP_SIZE 0.01
-#define MIN_DISTANCE 0.1
-#define MAX_DISTANCE 2.0
+#define MIN_DISTANCE 0.01
+#define MAX_DISTANCE 100.0
 vec3 rotA = vec3(radians(-45.0),0,0);
-const float angle1 = cos(radians(-15.0));
-const float angle2 = sin(radians(-15.0));
+const float angle1 = cos(radians(0.0));
+const float angle2 = sin(radians(0.0));
 mat3 view = mat3(vec3(1,0,0),
                  vec3(0,angle1,-angle2),
                 vec3(0,angle2,angle1));
 //view[0][0] = cos(rotA[0]);//vec4(cos(rotA[0]), -sin(rotA[0]) ,0,0);
 //view[1] = vec4(sin(rotA[0]), cos(rotA[0]) ,0,0);
 vec3 centre = vec3(0,1,6);
+vec3 light = vec3(2,5,4);
 float radius = 1.0; 
 
+void rotX(inout vec4 z, float s, float c) {
+	z.yz = vec2(c*z.y + s*z.z, c*z.z - s*z.y);
+}
+void rotZ(inout vec4 z, float s, float c) {
+	z.xy = vec2(c*z.x + s*z.y, c*z.y - s*z.x);
+}
+void rotX(inout vec4 z, float a) {
+	rotX(z, sin(a), cos(a));
+}
+void rotZ(inout vec4 z, float a) {
+	rotZ(z, sin(a), cos(a));
+}
+mat2 Rotate(float a)
+{
+  float s = sin(a),c = cos(a);
+  return mat2(c,-s,s,c);
+}
 float sphereDistance(vec3 p) {
-    return distance(p, centre) - radius;
+    return length(p) - radius;//distance(p,centre) - radius;
+}
+/**
+ * Signed distance function for a cube centered at the origin
+ * with dimensions specified by size.
+ */
+float boxSDF(vec3 p, vec3 size) {
+    //vec3 c = vec3(10,20,10);
+    //vec3 q = mod(p+0.5*c,c)-0.5*c;
+    //p = q;
+    
+    vec3 d = abs(p) - (size / 2.0);
+    
+    // Assuming p is inside the cube, how far is it from the surface?
+    // Result will be negative or zero.
+    float insideDistance = min(max(d.x, max(d.y, d.z)), 0.0);
+    
+    // Assuming p is outside the cube, how far is it from the surface?
+    // Result will be positive or zero.
+    float outsideDistance = length(max(d, 0.0));
+    
+    return insideDistance + outsideDistance;
+}
+mat4 rotateY(float theta) {
+    float c = cos(theta);
+    float s = sin(theta);
+
+    return mat4(
+        vec4(c, 0, s, 0),
+        vec4(0, 1, 0, 0),
+        vec4(-s, 0, c, 0),
+        vec4(0, 0, 0, 1)
+    );
 }
 float sceneDistance(vec3 p){
-	float floor = p.y;
-    float sDist = sphereDistance(p);
-    return min(floor,sDist);
+    vec4 z = vec4(p,1);
+    vec3 qp = p;
+    qp -= vec3(2,1,4);
+    vec4 l = vec4(qp,1);
+	rotZ(l,radians(iTime*2.));
+    qp = l.xyz;
+    float floor = z.y;
+    //Bind the space here to have models rotate 
+    //bind in distance function to have space rotate!
+    vec3 c = vec3(15,5,15);
+    vec3 q = mod(p+0.5*c,c)-0.5*c;
+    p = q;
+    p -= centre; //translate then rotate
+    //vec3 sp = (rotateY(radians(iTime*5.))*vec4(p,1)).xyz;
+    vec4 sp = vec4(p,1);
+    //rotX(sp,radians(iTime));
+    rotZ(sp,radians(iTime*4.));
+    //sp.xyz -= centre;
+    //sp.x += sin(radians(iTime*20.));
+    float sDist = boxSDF(sp.xyz,vec3(1,2,1));//sphereDistance(p);//
+    float sDist2 = boxSDF(qp.xyz,vec3(1,2,1));
+    return min(min(floor,sDist),sDist2);
 }
-
+vec3 getSphereNormal(vec3 p){
+ 	vec2 e = vec2(.01,0);
+ 	float d = sceneDistance(p);
+ 	vec3 n = vec3(d - sceneDistance(p - e.xyy),
+                  d - sceneDistance(p - e.yxy),
+                  d - sceneDistance(p - e.yyx));
+    return normalize(n);
+}
+float getLight(vec3 p){
+    vec4 z = vec4(p,1);
+    //rotX(z,radians(iTime*1.)); //Funky( use something else to rotate light (like viewmatrix!)
+    p = z.xyz;
+    vec3 n = getSphereNormal(p);
+    float col = dot(normalize(light - p),n);
+    return col;
+    
+}
 float raymarch(vec4 position, vec4 direction) {
     float d = 0.0;
     for (int i = 0; i < STEPS; i++) {
@@ -48,11 +133,19 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord )
     
     vec3 point = vec3(0,1,0);
   	//point.z -= iTime*0.1;
+    view[1][1] = cos(radians(4.*sin(-iTime*4.)));
+    view[2][2] = cos(radians(4.*sin(-iTime*4.)));
+    view[1][2] = -sin(radians(4.*sin(-iTime*4.)));
+    view[2][1] = sin(radians(4.*sin(-iTime*4.)));
     vec3 ray = view*normalize(vec3(uv.x,uv.y,1));
-	
+	light = light;
     // Output to screen
     float d = raymarch(vec4(point,1),vec4(ray,1));
-    d /= 6.;
-    fragColor = vec4(vec3(d),1);
+    
+    vec3 p = point + d*ray;
+   	float color = getLight(p);
+    //d /= 15.;
+    //color/= 2.;
+    fragColor = vec4(vec3(color),1);
         
 }

@@ -2,6 +2,7 @@
 #define __GFC_MATRIX_H__
 
 #include "gfc_vector.h"
+#include "gf3d_entity.h"
 
 typedef float Matrix4[4][4];
 
@@ -11,6 +12,7 @@ typedef struct
     Matrix4 view;
     Matrix4 proj;
     Vector2D resolution;
+    EntityRender renderList[50];
 }UniformBufferObject;
 
 /**
@@ -118,5 +120,7 @@ void gfc_matrix_rotate(
     float       degree,
     Vector3D    axis
 );
+/*Brief gets the euler angles of the given rotation matrix (the y value is clamped to 89)*/
+Vector3D gfc_euler_angles(Matrix4 src);
 
 #endif

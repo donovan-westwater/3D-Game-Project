@@ -23,7 +23,7 @@
 #include "gf3d_pipeline.h"
 #include "gf3d_commands.h"
 #include "gf3d_texture.h"
-
+#include "gf3d_entity.h"
 
 typedef struct
 {
@@ -110,6 +110,10 @@ void gf3d_vgraphics_init(
     gfc_matrix_identity(gf3d_vgraphics.ubo.model);
     gfc_matrix_identity(gf3d_vgraphics.ubo.view);
     gfc_matrix_identity(gf3d_vgraphics.ubo.proj);
+    for (int i = 0; i < 50; i++) //Replace with 50 with a len marco in entity.h
+    {
+        gf3d_vgraphics.ubo.renderList[i].id = i;
+    }
     /*
     gfc_matrix_view(
         gf3d_vgraphics.ubo.view,
@@ -678,6 +682,37 @@ void gf3d_vgraphics_rotate_camera(float degrees)
         vector3d(0,1,0));
 
 }
+/*WORK IN PROGRESS*/
+void gf3d_vgraphics_mouse_look() {
+    int mx = 0;
+    int my = 0;
+    float rad = 3.1415 / 180;
+   // Vector4D facing = vector4d(0, 0, 1,0);
+    Vector3D eulerAngles = gfc_euler_angles(gf3d_vgraphics.ubo.view);
+
+    //gfc_matrix_multiply_vector4d(&facing, gf3d_vgraphics.ubo.view, facing);
+   // vector4d_normalize(&facing);
+    SDL_GetMouseState(&mx, &my);
+    //printf("%d %d\n", mx, my);
+    mx = mx - gf3d_vgraphics.ubo.resolution.x / 2;
+    my = my - gf3d_vgraphics.ubo.resolution.y / 2;
+    //Vector2D angleDif = vector2d((float)mx - facing.x, (float)my - facing.y);
+    Vector2D angleDif = vector2d(mx,my);
+    vector2d_normalize(&angleDif);
+    eulerAngles.x += angleDif.x;
+    gfc_matrix_rotate(
+        gf3d_vgraphics.ubo.view,
+        gf3d_vgraphics.ubo.view,
+        eulerAngles.x*0.1*rad,
+        vector3d(0, 1, 0));
+    eulerAngles.y += angleDif.y;
+    gfc_matrix_rotate(
+        gf3d_vgraphics.ubo.view,
+        gf3d_vgraphics.ubo.view,
+        eulerAngles.y*0.1*rad,
+        vector3d(-1, 0, 0));
+}
+
 
 void gf3d_vgraphics_set_camera(Vector3D pos) {
     gf3d_vgraphics.ubo.view[3][0] = pos.x;
@@ -764,6 +799,16 @@ void gf3d_vgraphics_draw_fullscreen(Uint32 bufferFrame, VkCommandBuffer commandB
     vkCmdDraw(commandBuffer, 3, 1, 0, 0);
 }
 
+UniformBufferObject gf3d_vgraphics_get_uniform_buffer_object()
+{
+    return gf3d_vgraphics.ubo;
+}
+
+UniformBufferObject * gf3d_get_pointer_to_UBO()
+{
+    return &gf3d_vgraphics.ubo;
+}
+
 Pipeline *gf3d_vgraphics_get_graphics_pipeline()
 {
     return gf3d_vgraphics.pipe;
@@ -774,10 +819,12 @@ Command *gf3d_vgraphics_get_graphics_command_pool()
     return gf3d_vgraphics.graphicsCommandPool;
 }
 
+/*
 UniformBufferObject gf3d_vgraphics_get_uniform_buffer_object()
 {
     return gf3d_vgraphics.ubo;
 }
+*/
 
 VkImageView gf3d_vgraphics_create_image_view(VkImage image, VkFormat format)
 {

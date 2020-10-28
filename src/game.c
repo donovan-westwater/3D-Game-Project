@@ -82,6 +82,8 @@ int main(int argc,char *argv[])
     modelMat3[2][2] *= 2;
     //Setup descripterSets for the pipleine so that we can use the UBO
     
+    initEntList();
+    addEntity(vector4d(2, 2, 2, 1), vector4d(0, 90, 0, 1), vector4d(1, 1, 1, 1), vector4d(0, 1, 0, 1), 1);
     VkDevice device = gf3d_vgraphics_get_default_logical_device();
     Pipeline *fullscreenpipe = gf3d_pipeline_fullscreen_create(device, "shaders/fullscreen.spv", "shaders/RayMarch.spv", gf3d_vgraphics_get_view_extent(), 1024);
     gf3d_swapchain_setup_frame_buffers(fullscreenpipe);
@@ -99,6 +101,7 @@ int main(int argc,char *argv[])
         //update game things here
         
         //gf3d_vgraphics_rotate_camera(0.01);
+        //gf3d_vgraphics_mouse_look();
         if(keys[SDL_SCANCODE_D]) gf3d_vgraphics_rotate_camera(0.01);
         else if(keys[SDL_SCANCODE_A]) gf3d_vgraphics_rotate_camera(-0.01);
         if (keys[SDL_SCANCODE_S]) {
@@ -118,7 +121,7 @@ int main(int argc,char *argv[])
             modelMat2,
             0.002,
             vector3d(0,0,1));
-        
+        updateEntAll();
         // configure render command for graphics command pool
         // for each mesh, get a command and configure it from the pool
         bufferFrame = gf3d_vgraphics_render_begin();
