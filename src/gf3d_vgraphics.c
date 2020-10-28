@@ -112,7 +112,7 @@ void gf3d_vgraphics_init(
     gfc_matrix_identity(gf3d_vgraphics.ubo.proj);
     for (int i = 0; i < 50; i++) //Replace with 50 with a len marco in entity.h
     {
-        gf3d_vgraphics.ubo.renderList[i].id = i;
+        gf3d_vgraphics.ubo.renderList[i].id = -1; //Everything is empty
     }
     /*
     gfc_matrix_view(
