@@ -15,11 +15,13 @@ struct EntityRender_S { //Stores the infomation needed by the shader
 }EntityRender;
 
 layout(binding = 0) uniform UniformBufferObject {
+    
+    EntityRender_S renderList[50];
     mat4 model; //Useless
     mat4 view; //Camera
     mat4 proj; //Perspective of camera
     vec2 resolution;
-    EntityRender_S renderList[50];
+    
 } ubo;
 
 //layout(binding = 1) uniform sampler2D texSampler;
@@ -71,14 +73,18 @@ float sphereDistance(vec3 p) {
 float sceneSDF(vec3 p){
     vec4 pD = vec4(p,1);
     vec3 scale;
-    float d = 99999;
-    float prevD = 0;
+    float d = 99999.;
+    float prevD = d;
     for(int i = 0;i<50;i++){
         if(ubo.renderList[i].id < 0) continue;
+        pD = vec4(p,1);
         //Transforms
         pD.xyz -= ubo.renderList[i].position.xyz;
         rotZ(pD,radians(ubo.renderList[i].rotation.z));
         scale = ubo.renderList[i].scale.xyz;
+        //d = min(sphereSDF(pD.xyz),d);
+        d = min(sphereSDF(pD.xyz/scale)*min(scale.x,min(scale.y,scale.z)),d);
+        /*
         switch(i){
             case 0: //Sphere
                 d = min(sphereSDF(pD.xyz/scale)*min(scale.x,min(scale.y,scale.z)),d);
@@ -88,18 +94,19 @@ float sceneSDF(vec3 p){
             case 2: //Other
                 break;
         }
+        */
         if(abs(d - prevD) > 0.0001) currentEnt = i;
         prevD = d;
     }
-    d = min(d,sphereDistance(p));
+    //d = min(d,sphereDistance(p));
     return d;
 }
 //***Lighting***
  vec3 estimateNormal(vec3 p) {
     return normalize(vec3(
-        sphereDistance(vec3(p.x + MIN_DISTANCE, p.y, p.z)) - sphereDistance(vec3(p.x - MIN_DISTANCE, p.y, p.z)),
-        sphereDistance(vec3(p.x, p.y + MIN_DISTANCE, p.z)) - sphereDistance(vec3(p.x, p.y - MIN_DISTANCE, p.z)),
-        sphereDistance(vec3(p.x, p.y, p.z  + MIN_DISTANCE)) - sphereDistance(vec3(p.x, p.y, p.z - MIN_DISTANCE))
+        sceneSDF(vec3(p.x + MIN_DISTANCE, p.y, p.z)) - sphereDistance(vec3(p.x - MIN_DISTANCE, p.y, p.z)),
+        sceneSDF(vec3(p.x, p.y + MIN_DISTANCE, p.z)) - sphereDistance(vec3(p.x, p.y - MIN_DISTANCE, p.z)),
+        sceneSDF(vec3(p.x, p.y, p.z  + MIN_DISTANCE)) - sphereDistance(vec3(p.x, p.y, p.z - MIN_DISTANCE))
     ));
 }
 
@@ -109,17 +116,17 @@ vec4 simpleLambert(vec3 ogPoint, vec3 normal,float specPower) {
     vec3 lightDir = lightVector;
 
     float NdotL = max(dot(normal, lightDir), 0);
-    vec4 c = vec4(1,0,0,1);
+    vec4 c = vec4(1,1,1,1);
     // Specular
     vec3 h = (lightDir - viewDirection) / 2.;
     float s = pow(dot(normal, h), specPower);
-    c = c*(NdotL+s)*vec4(1,1,1,1);
+    c = (NdotL+s)*vec4(1,1,1,1);
     c.w = 1;
     return c;
 }
 vec4 renderSurface(vec3 p){
     vec3 n = estimateNormal(p);
-    return simpleLambert(p,n,0.5);
+    return simpleLambert(p,n,1);
 }
 vec4 raymarch(vec4 position, vec4 direction) {
     for (int i = 0; i < STEPS; i++) {
@@ -130,7 +137,7 @@ vec4 raymarch(vec4 position, vec4 direction) {
             if(currentEnt > -1) retColor = ubo.renderList[currentEnt].color;
             currentEnt = -1;
             //retColor.w = 1;
-            return retColor;//renderSurface(tmp);
+            return retColor*renderSurface(tmp);//renderSurface(tmp);
         }
         position += direction * distance;//STEP_SIZE;
     }
@@ -150,12 +157,18 @@ void main()
     //outColor.w = baseColor.w;
     //New code below
     vec2 uv = (gl_FragCoord.xy - 0.5*ubo.resolution)/ubo.resolution.y;
-    //vec3 col = vec3(0,10.0*uv.x,-10.0*uv.y);
+    vec3 col = vec3(0,10.0*uv.x,-10.0*uv.y);
     //outColor = vec4(col,1);
-    //UBO is still being worked on;
+    /*
+    outColor = vec4(1);
+    outColor.w = 1;
+    if(ubo.resolution.y == 0) outColor = vec4(0);
+    if(ubo.view[3][2] == 0) outColor.x = 0.5;
+    if(ubo.renderList[0].position.z == 0) outColor.y = 0.5;
+    */
     cameraVector = vec3(ubo.view[3][0],ubo.view[3][1],ubo.view[3][2]);
     vec4 modSpace = vec4(uv.x,uv.y,1,0);
-    vec4 viewDirection = ubo.view*normalize(modSpace);//normalize(inPos-cameraVector);
+    vec4 viewDirection =  ubo.view*normalize(modSpace);//normalize(inPos-cameraVector);
     vDirection = viewDirection.xyz;
     outColor = raymarch(vec4(cameraVector.xyz,1),viewDirection);//raymarch(cameraVector,viewDirection);
 

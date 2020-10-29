@@ -1,6 +1,7 @@
 #ifndef __GFC_MATRIX_H__
 #define __GFC_MATRIX_H__
 
+
 #include "gfc_vector.h"
 #include "gf3d_entity.h"
 
@@ -8,11 +9,12 @@ typedef float Matrix4[4][4];
 
 typedef struct
 {
+    EntityRender renderList[50];
     Matrix4 model;
     Matrix4 view;
     Matrix4 proj;
     Vector2D resolution;
-    EntityRender renderList[50];
+    
 }UniformBufferObject;
 
 /**

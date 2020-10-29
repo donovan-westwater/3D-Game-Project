@@ -132,6 +132,8 @@ void gf3d_vgraphics_init(
     
     gf3d_vgraphics.ubo.proj[1][1] *= -1;
     gf3d_vgraphics.ubo.resolution = vector2d(renderWidth, renderHeight);
+    printf("Alignment of Entity render is: %d\n", sizeof(EntityRender));
+    printf("Alignment of UBO is: %d\n", sizeof(UniformBufferObject));
     gf3d_vgraphics_setup(
         windowName,
         renderWidth,
