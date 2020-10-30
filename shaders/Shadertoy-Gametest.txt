@@ -1,0 +1,145 @@
+#define STEPS 128
+#define STEP_SIZE 0.01
+#define MIN_DISTANCE 0.1
+//Was 0.1
+//This entire scene exists in "model space" without any transformations
+struct EntityRender_S { //Stores the infomation needed by the shader
+    vec4 position;
+    vec4 rotation;
+    vec4 scale;
+    vec4 color;
+    int id;
+}EntityRender;
+
+EntityRender_S renderList[50];
+
+
+
+
+//last owrking rad = 0.2
+float radius = 0.5;//2; //5
+
+vec3 lightVector = vec3(0,-1,0); //vec3(0,0,1);
+vec3 cameraVector = vec3(0,0,1);
+vec3 vDirection = vec3(0,0,0);
+int currentEnt = -1;
+//***Transformations***
+//Copied from Marble Marcher!
+void rotX(inout vec4 z, float s, float c) {
+	z.yz = vec2(c*z.y + s*z.z, c*z.z - s*z.y);
+}
+void rotY(inout vec4 z, float s, float c) {
+	z.xz = vec2(c*z.x - s*z.z, c*z.z + s*z.x);
+}
+void rotZ(inout vec4 z, float s, float c) {
+	z.xy = vec2(c*z.x + s*z.y, c*z.y - s*z.x);
+}
+void rotX(inout vec4 z, float a) {
+	rotX(z, sin(a), cos(a));
+}
+void rotY(inout vec4 z, float a) {
+	rotY(z, sin(a), cos(a));
+}
+void rotZ(inout vec4 z, float a) {
+	rotZ(z, sin(a), cos(a));
+}
+
+
+//***SDFs for various primatives
+float sphereSDF(vec3 p) {
+    return length(p) - radius;
+}
+
+//***Scene SDF***
+float sceneSDF(vec3 p){
+    vec4 pD = vec4(p,1);
+    vec3 scale;
+    float d = 99999.;
+    float prevD = d;
+    for(int i = 0;i<50;i++){
+        if(renderList[i].id < 1) continue;
+        pD = vec4(p,1);
+        //Transforms
+        pD.xyz -= renderList[i].position.xyz;
+        rotZ(pD,radians(renderList[i].rotation.z));
+        scale = renderList[i].scale.xyz;
+        d = min(sphereSDF(pD.xyz/scale)*min(scale.x,min(scale.y,scale.z)),d);
+        /*
+        switch(i){
+            case 0: //Sphere
+                d = min(sphereSDF(pD.xyz/scale)*min(scale.x,min(scale.y,scale.z)),d);
+                break;
+            case 1: //Box
+                break;
+            case 2: //Other
+                break;
+        }
+        */
+        if(abs(d - prevD) > 0.0001) currentEnt = i;
+        prevD = d;
+    }
+    //d = min(d,sphereDistance(p));
+    return d;
+}
+//***Lighting***
+ vec3 estimateNormal(vec3 p, float dx) {
+    //float d = sceneSDF(p);
+    //vec2 e = vec2(0.01,0);
+    // vec3 n = d- vec3(sceneSDF(p-e.xyy),
+    //                  sceneSDF(p-e.yxy),
+    //                  sceneSDF(p-e.yyx));
+    // return normalize(n);
+     const vec2 k = vec2(1,-1);
+	 return normalize(k.xyy*sceneSDF(p + k.xyy*dx) +
+					 k.yyx*sceneSDF(p + k.yyx*dx) +
+					 k.yxy*sceneSDF(p + k.yxy*dx) +
+					 k.xxx*sceneSDF(p + k.xxx*dx));
+}
+float getLight(vec3 p){
+    float s = 1.;
+    vec3 n = estimateNormal(p,0.0001);
+    vec3 l = normalize(lightVector-p);
+    s = s*dot(n,l);
+    
+ 	return s;
+}
+
+vec4 raymarch(vec4 position, vec4 direction) {
+    for (int i = 0; i < STEPS; i++) {
+        vec3 tmp = position.xyz;
+        float distance = sceneSDF(tmp);//sphereDistance(tmp);
+        if(distance > 50.) break;
+        if (distance < MIN_DISTANCE){
+            vec4 retColor = vec4(1,0,0,1);
+            if(currentEnt > -1) retColor = renderList[currentEnt].color;
+            currentEnt = -1;
+            //retColor.w = 1;
+            return vec4(estimateNormal(tmp,0.01),1);//retColor*getLight(tmp);//renderSurface(tmp);
+        }
+        position += direction * distance;//STEP_SIZE;
+    }
+    return vec4(1,1,1,1); //was originally 1
+}
+ 
+ //Currently UBO doesnt work, leading to crashes in the main game
+void mainImage( out vec4 fragColor, in vec2 fragCoord )
+{
+   
+   renderList[0].position = vec4(0,0,1,1);
+   renderList[0].rotation = vec4(0,0,0,1);
+   renderList[0].scale = vec4(1,1,1,1);
+   renderList[0].color = vec4(0,1,0,1);
+   renderList[0].id = 1;
+
+    //New code below
+    vec2 uv = (fragCoord.xy - 0.5*iResolution.xy)/iResolution.y;
+    //vec3 col = vec3(0,10.0*uv.x,-10.0*uv.y);
+    //outColor = vec4(col,1);
+    //UBO is still being worked on;
+    cameraVector = vec3(0,0,-6.*sin(iTime));
+    vec4 modSpace = vec4(uv.x,uv.y,1,0);
+    vec4 viewDirection = normalize(modSpace);//normalize(inPos-cameraVector);
+    vDirection = viewDirection.xyz;
+    fragColor = raymarch(vec4(cameraVector.xyz,1),viewDirection);//raymarch(cameraVector,viewDirection);
+	//fragColor = estimateNormal(
+}

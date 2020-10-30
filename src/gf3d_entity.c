@@ -46,7 +46,7 @@ void updateEntAll() {
 }
 
 void update(Entity* self) {
-	vector4d_add(self->rSelf->position, self->rSelf->position, vector4d(0.0001, 0, 0, 0));
+	vector4d_add(self->rSelf->position, self->rSelf->position, vector4d(0.1, 0, 0, 0));
 	
 }
 

@@ -3,7 +3,7 @@
 
 #define STEPS 128
 #define STEP_SIZE 0.01
-#define MIN_DISTANCE 0.1
+#define MIN_DISTANCE 0.01
 //Was 0.1
 //This entire scene exists in "model space" without any transformations
 struct EntityRender_S { //Stores the infomation needed by the shader
@@ -103,10 +103,11 @@ float sceneSDF(vec3 p){
 }
 //***Lighting***
  vec3 estimateNormal(vec3 p) {
+    if(p.y <= -1.0) p.y = 0.;
     return normalize(vec3(
-        sceneSDF(vec3(p.x + MIN_DISTANCE, p.y, p.z)) - sphereDistance(vec3(p.x - MIN_DISTANCE, p.y, p.z)),
-        sceneSDF(vec3(p.x, p.y + MIN_DISTANCE, p.z)) - sphereDistance(vec3(p.x, p.y - MIN_DISTANCE, p.z)),
-        sceneSDF(vec3(p.x, p.y, p.z  + MIN_DISTANCE)) - sphereDistance(vec3(p.x, p.y, p.z - MIN_DISTANCE))
+        sceneSDF(vec3(p.x + MIN_DISTANCE, p.y, p.z)) - sceneSDF(vec3(p.x - MIN_DISTANCE, p.y, p.z)),
+        sceneSDF(vec3(p.x, p.y + MIN_DISTANCE, p.z)) - sceneSDF(vec3(p.x, p.y - MIN_DISTANCE, p.z)),
+        sceneSDF(vec3(p.x, p.y, p.z  + MIN_DISTANCE)) - sceneSDF(vec3(p.x, p.y, p.z - MIN_DISTANCE))
     ));
 }
 
@@ -129,9 +130,11 @@ vec4 renderSurface(vec3 p){
     return simpleLambert(p,n,1);
 }
 vec4 raymarch(vec4 position, vec4 direction) {
+    float total = 0;
     for (int i = 0; i < STEPS; i++) {
         vec3 tmp = position.xyz;
         float distance = sceneSDF(tmp);//sphereDistance(tmp);
+        total += distance;
         if (distance < MIN_DISTANCE){
             vec4 retColor = vec4(1,0,0,1);
             if(currentEnt > -1) retColor = ubo.renderList[currentEnt].color;
@@ -140,6 +143,11 @@ vec4 raymarch(vec4 position, vec4 direction) {
             return retColor*renderSurface(tmp);//renderSurface(tmp);
         }
         position += direction * distance;//STEP_SIZE;
+        if(total > 50.) break;
+    }
+    if(position.y < -1.){
+     	position.y = -1.;   
+        return vec4(1,1,1,1)*renderSurface(position.xyz); 
     }
     return vec4(1,1,1,1); //was originally 1
 }
