@@ -84,7 +84,7 @@ int main(int argc,char *argv[])
     
     initEntList();
     addEntity(vector4d(0, 0, 1, 1), vector4d(0, 0, 0, 1), vector4d(1, 1, 1, 1), vector4d(0, 1, 0, 1), 0);
-    addEntity(vector4d(1, 0, 1, 1), vector4d(0, 0, 0, 1), vector4d(1, 0.5, 1, 1), vector4d(0, 0, 1, 1), 0);
+    addEntity(vector4d(-1, 0, 1, 1), vector4d(90, 0, 90, 1), vector4d(1, 0.5, 1, 1), vector4d(0, 0, 1, 1), 0);
     VkDevice device = gf3d_vgraphics_get_default_logical_device();
     Pipeline *fullscreenpipe = gf3d_pipeline_fullscreen_create(device, "shaders/fullscreen.spv", "shaders/RayMarch.spv", gf3d_vgraphics_get_view_extent(), 1024);
     gf3d_swapchain_setup_frame_buffers(fullscreenpipe);

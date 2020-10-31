@@ -40,8 +40,8 @@ vec3 lightVector = vec3(0,-1,0); //vec3(0,0,1);
 vec3 cameraVector = vec3(0,0,1);
 vec3 vDirection = vec3(0,0,0);
 int currentEnt = -1;
-//***Transformations***
-//Copied from Marble Marcher!
+//***Transformations***//
+//Copied from marble marcher
 void rotX(inout vec4 z, float s, float c) {
 	z.yz = vec2(c*z.y + s*z.z, c*z.z - s*z.y);
 }
@@ -62,14 +62,14 @@ void rotZ(inout vec4 z, float a) {
 }
 
 
-//***SDFs for various primatives
+//***SDFs for various primatives**//
 float sphereSDF(vec3 p) {
     return length(p) - radius;
 }
 float sphereDistance(vec3 p) {
     return distance(p, centre) - radius;
 }
-//***Scene SDF***
+//***Scene SDF***//
 float sceneSDF(vec3 p){
     vec4 pD = vec4(p,1);
     vec3 scale;
@@ -81,6 +81,8 @@ float sceneSDF(vec3 p){
         //Transforms
         pD.xyz -= ubo.renderList[i].position.xyz;
         rotZ(pD,radians(ubo.renderList[i].rotation.z));
+        rotY(pD,radians(ubo.renderList[i].rotation.y));
+        rotX(pD,radians(ubo.renderList[i].rotation.x));
         scale = ubo.renderList[i].scale.xyz;
         //d = min(sphereSDF(pD.xyz),d);
         d = min(sphereSDF(pD.xyz/scale)*min(scale.x,min(scale.y,scale.z)),d);
@@ -101,7 +103,7 @@ float sceneSDF(vec3 p){
     //d = min(d,sphereDistance(p));
     return d;
 }
-//***Lighting***
+//***Lighting***//
  vec3 estimateNormal(vec3 p) {
     if(p.y <= -1.0) p.y = 0.;
     return normalize(vec3(

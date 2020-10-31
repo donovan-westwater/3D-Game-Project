@@ -18,7 +18,7 @@ void initEntList() {
 
 void addEntity(Vector4D pos, Vector4D rot, Vector4D scale, Vector4D color, int type) {
 	int i;
-	for (i = 0; i < 51; i++) {
+	for (i = 0; i < 50; i++) {
 		if (entList[i].inuse < 1) break;
 	}
 	if (i > 50) {
@@ -39,14 +39,19 @@ void addEntity(Vector4D pos, Vector4D rot, Vector4D scale, Vector4D color, int t
 }
 
 void updateEntAll() {
-	for (int i = 0; i < 51; i++) {
+	for (int i = 0; i < 50; i++) {
 		if (entList[i].inuse < 1) continue;
 		entList[i].update(&entList[i]);
 	}
 }
 
 void update(Entity* self) {
-	vector4d_add(self->rSelf->position, self->rSelf->position, vector4d(0.1, 0, 0, 0));
+	vector4d_add(self->rSelf->position, self->rSelf->position, vector4d(0.0001, 0, 0, 0));
+	Vector3D r = vector3d(self->rSelf->rotation.x, self->rSelf->rotation.y, self->rSelf->rotation.z);
+	vector3d_rotate_about_y(&r, 0.1);
+	self->rSelf->rotation.x = r.x;
+	self->rSelf->rotation.y = r.y;
+	self->rSelf->rotation.z = r.z;
 	
 }
 
