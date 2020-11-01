@@ -3,7 +3,7 @@
 
 
 static Entity entList[50] = { -1 };
-
+static float count = 0;
 //initilizes the list from the UBO and entity list
 void initEntList() {
 
@@ -32,7 +32,7 @@ void addEntity(Vector4D pos, Vector4D rot, Vector4D scale, Vector4D color, int t
 	entList[i].rSelf->color = color;
 	entList[i].rSelf->id = i;
 	entList[i].inuse = 1;
-	entList[i].type = type;
+	entList[i].rSelf->type = type;
 	
 
 	
@@ -46,7 +46,9 @@ void updateEntAll() {
 }
 
 void update(Entity* self) {
-	vector4d_add(self->rSelf->position, self->rSelf->position, vector4d(0.0001, 0, 0, 0));
+	count += 0.01;
+	if (count > 500) count = 0;
+	vector4d_add(self->rSelf->position, self->rSelf->position, vector4d(0, -0.0015 , 0, 0));
 	Vector3D r = vector3d(self->rSelf->rotation.x, self->rSelf->rotation.y, self->rSelf->rotation.z);
 	vector3d_rotate_about_y(&r, 0.1);
 	self->rSelf->rotation.x = r.x;

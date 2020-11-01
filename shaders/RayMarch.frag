@@ -12,6 +12,7 @@ struct EntityRender_S { //Stores the infomation needed by the shader
     vec4 scale;
     vec4 color;
     int id;
+    int type;
 }EntityRender;
 
 layout(binding = 0) uniform UniformBufferObject {
@@ -36,7 +37,7 @@ layout(location = 0) out vec4 outColor;
 //last owrking rad = 0.2
 float radius = 0.5;//2; //5
 vec3 centre = mPos.xyz;//(ubo.view*mPos).xyz;
-vec3 lightVector = vec3(0,-1,0); //vec3(0,0,1);
+vec3 lightVector = vec3(0,5,0); //vec3(0,0,1);
 vec3 cameraVector = vec3(0,0,1);
 vec3 vDirection = vec3(0,0,0);
 int currentEnt = -1;
@@ -66,6 +67,16 @@ void rotZ(inout vec4 z, float a) {
 float sphereSDF(vec3 p) {
     return length(p) - radius;
 }
+float boxSDF(vec3 p,vec3 b){
+    vec3 q = abs(p) - b;
+    return length(max(q,0.0)) + min(max(q.x,max(q.y,q.z)),0.0);
+}
+
+float planeSDF( vec3 p, vec3 n, float h )
+{
+  // n must be normalized
+  return dot(p,n) + h;
+}
 float sphereDistance(vec3 p) {
     return distance(p, centre) - radius;
 }
@@ -85,7 +96,8 @@ float sceneSDF(vec3 p){
         rotX(pD,radians(ubo.renderList[i].rotation.x));
         scale = ubo.renderList[i].scale.xyz;
         //d = min(sphereSDF(pD.xyz),d);
-        d = min(sphereSDF(pD.xyz/scale)*min(scale.x,min(scale.y,scale.z)),d);
+        if(ubo.renderList[i].type == 1) d = min(boxSDF(pD.xyz/scale,vec3(0.25,0.25,0.25))*min(scale.x,min(scale.y,scale.z)),d);
+        else d = min(sphereSDF(pD.xyz/scale)*min(scale.x,min(scale.y,scale.z)),d);
         /*
         switch(i){
             case 0: //Sphere
@@ -100,7 +112,9 @@ float sceneSDF(vec3 p){
         if(abs(d - prevD) > 0.0001) currentEnt = i;
         prevD = d;
     }
-    //d = min(d,sphereDistance(p));
+    d = min(d,planeSDF(p,vec3(0,1,0),0));
+    if(abs(d - prevD) > 0.0001) currentEnt = -1;
+  
     return d;
 }
 //***Lighting***//
@@ -138,20 +152,22 @@ vec4 raymarch(vec4 position, vec4 direction) {
         float distance = sceneSDF(tmp);//sphereDistance(tmp);
         total += distance;
         if (distance < MIN_DISTANCE){
-            vec4 retColor = vec4(1,0,0,1);
+            vec4 retColor = vec4(0.15,0.15,0.15,1);
             if(currentEnt > -1) retColor = ubo.renderList[currentEnt].color;
             currentEnt = -1;
-            //retColor.w = 1;
+            retColor.w = 1;
             return retColor*renderSurface(tmp);//renderSurface(tmp);
         }
         position += direction * distance;//STEP_SIZE;
         if(total > 50.) break;
     }
-    if(position.y < -1.){
+    /*
+    if(planeSDF(position.xyz,vec3(0,1,0),-1.) <= -1.0){//position.y < -1.){
      	position.y = -1.;   
         return vec4(1,1,1,1)*renderSurface(position.xyz); 
     }
-    return vec4(1,1,1,1); //was originally 1
+    */
+    return vec4(0,0,0,1); //was originally 1
 }
  
  //Currently UBO doesnt work, leading to crashes in the main game
@@ -177,7 +193,7 @@ void main()
     if(ubo.renderList[0].position.z == 0) outColor.y = 0.5;
     */
     cameraVector = vec3(ubo.view[3][0],ubo.view[3][1],ubo.view[3][2]);
-    vec4 modSpace = vec4(uv.x,uv.y,1,0);
+    vec4 modSpace = vec4(uv.x,-uv.y,1,0);
     vec4 viewDirection =  ubo.view*normalize(modSpace);//normalize(inPos-cameraVector);
     vDirection = viewDirection.xyz;
     outColor = raymarch(vec4(cameraVector.xyz,1),viewDirection);//raymarch(cameraVector,viewDirection);

@@ -67,7 +67,7 @@ int main(int argc,char *argv[])
         );
     //NEW CODE BELOW 
     gf3d_camera_set_position(vector3d(0, 0, 1));
-    gf3d_vgraphics_set_camera(vector3d(0, 0, -1));
+    gf3d_vgraphics_set_camera(vector3d(0, 1, -1));
     Model *model3 = gf3d_model_load("cube");
     Matrix4 modelMat3;
     gfc_matrix_identity(modelMat3);
@@ -83,8 +83,8 @@ int main(int argc,char *argv[])
     //Setup descripterSets for the pipleine so that we can use the UBO
     
     initEntList();
-    addEntity(vector4d(0, 0, 1, 1), vector4d(0, 0, 0, 1), vector4d(1, 1, 1, 1), vector4d(0, 1, 0, 1), 0);
-    addEntity(vector4d(-1, 0, 1, 1), vector4d(90, 0, 90, 1), vector4d(1, 0.5, 1, 1), vector4d(0, 0, 1, 1), 0);
+    addEntity(vector4d(0, 1, 1, 1), vector4d(0, 0, 0, 1), vector4d(1, 1, 1, 1), vector4d(0, 1, 0, 1), 1);
+    addEntity(vector4d(-1, 1, 1, 1), vector4d(90, 0, 90, 1), vector4d(1, 0.5, 1, 1), vector4d(0, 0, 1, 1), 0);
     VkDevice device = gf3d_vgraphics_get_default_logical_device();
     Pipeline *fullscreenpipe = gf3d_pipeline_fullscreen_create(device, "shaders/fullscreen.spv", "shaders/RayMarch.spv", gf3d_vgraphics_get_view_extent(), 1024);
     gf3d_swapchain_setup_frame_buffers(fullscreenpipe);

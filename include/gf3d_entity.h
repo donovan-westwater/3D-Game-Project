@@ -8,6 +8,7 @@ typedef struct EntityRender_S { //Stores the infomation needed by the shader
     Vector4D scale;
     Vector4D color;
     __declspec(align(16)) int id;
+    int type;
 }EntityRender;
 
 //no need for a draw funtion on this since its constantly being rendered at all times.
@@ -16,7 +17,7 @@ typedef struct EntityRender_S { //Stores the infomation needed by the shader
 {
      int id;
      int inuse;
-     int type; //sphere by default;
+     //int type; //sphere by default;
      EntityRender *rSelf; //Pass this to the uniform to draw changes!
      //Possible change entityRender into a pointer to its proper render in the list;
      //Functions (Implement later)
