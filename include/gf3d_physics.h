@@ -14,7 +14,11 @@ float boxSDF(Vector3D p, Vector3D b);
 //Trying to make a working oobb interection test syetm for the cubes
 int oabbTest(Entity *a, Entity *b);
 
-void collisionCheck(Entity a, Entity b);
+int isCollide(Entity* a, Entity* b);
+
+int isInGround(Entity* a, Entity* b);
+
+void collisionCheck(Entity *a, Entity *b);
 
 void groundCheck(Entity* a);
 

@@ -92,7 +92,7 @@ int sphereTest(Entity* a, Entity* b) {
 
 }
 //works only if both a and b are obb's
-int oabbTest(Entity* a, Entity* b) {
+int obbTest(Entity* a, Entity* b) {
 	Vector3D ba = vector3d(0.25 * a->rSelf->scale.x, 0.25 * a->rSelf->scale.y, 0.25 * a->rSelf->scale.z);
 	Vector3D bb = vector3d(0.25 * b->rSelf->scale.x, 0.25 * b->rSelf->scale.y, 0.25 * b->rSelf->scale.z);;
 	Vector3D aMat[3];
@@ -254,12 +254,124 @@ int sphereOBBtest(Entity* a, Entity* b) {
 	if (point.z < -0.25 * scale.z) d += (point.z - 0.25 * scale.z);
 	else if (point.z > 0.25 * scale.z) d += (point.z + 0.25 * scale.z);
 	
-	if (d <= r * r) return 0;
-	else return 1;
+	if (d <= r * r) return 1;
+	else return 0;
 }
-//Should check for collision and then adjust for said collision
-void collisionCheck(Entity a, Entity b) {
-	float d;
+int isCollide(Entity* a, Entity* b) {
+	int sphereFlag = 1;
+	int aFlag = 0;
+	int bFlag = 0;
+	if (a->rSelf->type == 0 && b->rSelf->type == 0) {
+		if (a->rSelf->scale.x == a->rSelf->scale.z && a->rSelf->scale.x == a->rSelf->scale.y && a->rSelf->scale.z == a->rSelf->scale.y) {
+			aFlag = 1;
+		}
+		if (b->rSelf->scale.x == b->rSelf->scale.z && b->rSelf->scale.x == b->rSelf->scale.y && b->rSelf->scale.z == b->rSelf->scale.y) {
+			bFlag = 1;
+		}
+		if (aFlag && bFlag) {
+			return sphereTest(a, b);
+		}
+	}
+	else if (aFlag || bFlag)
+	{
+		return sphereOBBtest(a, b);
+	}
+	else {
+		return obbTest(a, b);
+	}
+}
+
+int isInGround(Entity* a, Entity* b) {
+	Vector3D n = vector3d(0, 1, 0);
+	Vector3D c = vector3d(a->rSelf->position.x, a->rSelf->position.y, a->rSelf->position.z);
+	Vector3D e = vector3d(0.25 * a->rSelf->scale.x, 0.25 * a->rSelf->scale.y, 0.25 * a->rSelf->scale.z);
+	if (a->rSelf->type == 0 && a->rSelf->scale.x == a->rSelf->scale.z && a->rSelf->scale.x == a->rSelf->scale.y && a->rSelf->scale.z == a->rSelf->scale.y) {
+		if (a->rSelf->position.y < a->rSelf->scale.x * 0.5) return 1;
+	}
+	else {
+		if (a->rSelf->type == 0) {
+			e = vector3d(0.5 * a->rSelf->scale.x, 0.5 * a->rSelf->scale.y, 0.5 * a->rSelf->scale.z);
+		}
+		//Vector3D pv = vector3d(-a->rSelf->position.x, -a->rSelf->position.y, -a->rSelf->position.z);
+		rotX(&n, a->rSelf->rotation.x);
+		rotY(&n, a->rSelf->rotation.y);
+		rotZ(&n, a->rSelf->rotation.z);
+		vector3d_normalize(&n);
+		//rotX(&pv, a->rSelf->rotation.x);
+		//rotY(&pv, a->rSelf->rotation.y);
+		//rotZ(&pv, a->rSelf->rotation.z);
+
+		float r = e.x * fabsf(n.x) + e.y * fabsf(n.y) + e.z * fabsf(n.z);
+		//float pd = vector3d_magnitude(pv);
+		float s = c.y;
+
+		if (fabsf(s) <= r) {
+			return 1;
+		}
+		return 0;
+	}
+}
+
+//Should check for collision and then adjust for said collision [may not use]
+void collisionCheck(Entity *a, Entity *b) {
+	int sphereFlag = 1;
+	int aFlag = 1;
+	int bFlag = 1;
+	if (a->rSelf->type == 0 && b->rSelf->type == 0) {
+		if (a->rSelf->scale.x == a->rSelf->scale.z && a->rSelf->scale.x == a->rSelf->scale.y && a->rSelf->scale.z == a->rSelf->scale.y) {
+			aFlag = 0;
+		}
+		if (b->rSelf->scale.x == b->rSelf->scale.z && b->rSelf->scale.x == b->rSelf->scale.y && b->rSelf->scale.z == b->rSelf->scale.y) {
+			bFlag = 0;
+		}
+		if (aFlag && bFlag) {
+			if (sphereTest(a, b)) {
+				return;
+			}
+		}
+	}
+}
+
+//Checks if the entity has collied with the ground (y = 0) and adjusts entity out of collision
+//Remake, for spheres test to see if the radius is less than p.y
+//For 
+void groundCheck(Entity *a) {
+	Vector3D n = vector3d(0, 1, 0);
+	Vector3D c = vector3d(a->rSelf->position.x, a->rSelf->position.y, a->rSelf->position.z);
+	Vector3D e = vector3d(0.25 * a->rSelf->scale.x, 0.25 * a->rSelf->scale.y, 0.25 * a->rSelf->scale.z);
+	if (a->rSelf->type == 0 && a->rSelf->scale.x == a->rSelf->scale.z && a->rSelf->scale.x == a->rSelf->scale.y && a->rSelf->scale.z == a->rSelf->scale.y) {
+		if (a->rSelf->position.y < a->rSelf->scale.x * 0.5) a->rSelf->position.y += (a->rSelf->scale.x * 0.5 - a->rSelf->position.y);
+		return;
+	}
+	else {
+		if (a->rSelf->type == 0) {
+			e = vector3d(0.5 * a->rSelf->scale.x, 0.5 * a->rSelf->scale.y, 0.5 * a->rSelf->scale.z);
+		}
+		//Vector3D pv = vector3d(-a->rSelf->position.x, -a->rSelf->position.y, -a->rSelf->position.z);
+		rotX(&n, a->rSelf->rotation.x);
+		rotY(&n, a->rSelf->rotation.y);
+		rotZ(&n, a->rSelf->rotation.z);
+		vector3d_normalize(&n);
+		//rotX(&pv, a->rSelf->rotation.x);
+		//rotY(&pv, a->rSelf->rotation.y);
+		//rotZ(&pv, a->rSelf->rotation.z);
+
+		float r = e.x * fabsf(n.x) + e.y * fabsf(n.y) + e.z * fabsf(n.z);
+		//float pd = vector3d_magnitude(pv);
+		float s = c.y;
+
+		if (fabsf(s) <= r) {
+			a->rSelf->position.y += fabsf((r - fabsf(s)));
+		}
+		return;
+	}
+}
+//Physics Functions (Torque and Force functions)
+
+
+
+/*
+float d;
 	Vector3D scale;
 	Vector3D surfP;
 	//Transform position of a into space of b
@@ -303,96 +415,4 @@ void collisionCheck(Entity a, Entity b) {
 		vector3d_add(a.rSelf->position, a.rSelf->position, adj);
 	}
 
-}
-//Checks if the entity has collied with the ground (y = 0) and adjusts entity out of collision
-//Remake, for spheres test to see if the radius is less than p.y
-//For 
-void groundCheck(Entity *a) {
-	Vector3D n = vector3d(0, 1, 0);
-	Vector3D c = vector3d(a->rSelf->position.x, a->rSelf->position.y, a->rSelf->position.z);
-	Vector3D e = vector3d(0.25 * a->rSelf->scale.x, 0.25 * a->rSelf->scale.y, 0.25 * a->rSelf->scale.z);
-	if (a->rSelf->type == 0 && a->rSelf->scale.x == a->rSelf->scale.z && a->rSelf->scale.x == a->rSelf->scale.y && a->rSelf->scale.z == a->rSelf->scale.y) {
-		if (a->rSelf->position.y < a->rSelf->scale.x * 0.5) a->rSelf->position.y += (a->rSelf->scale.x * 0.5 - a->rSelf->position.y);
-		return;
-	}
-	else {
-		if (a->rSelf->type == 0) {
-			e = vector3d(0.5 * a->rSelf->scale.x, 0.5 * a->rSelf->scale.y, 0.5 * a->rSelf->scale.z);
-		}
-		//Vector3D pv = vector3d(-a->rSelf->position.x, -a->rSelf->position.y, -a->rSelf->position.z);
-		rotX(&n, a->rSelf->rotation.x);
-		rotY(&n, a->rSelf->rotation.y);
-		rotZ(&n, a->rSelf->rotation.z);
-		vector3d_normalize(&n);
-		//rotX(&pv, a->rSelf->rotation.x);
-		//rotY(&pv, a->rSelf->rotation.y);
-		//rotZ(&pv, a->rSelf->rotation.z);
-
-		float r = e.x * fabsf(n.x) + e.y * fabsf(n.y) + e.z * fabsf(n.z);
-		//float pd = vector3d_magnitude(pv);
-		float s = c.y;
-
-		if (fabsf(s) <= r) {
-			a->rSelf->position.y += fabsf((r - fabsf(s)));
-		}
-		return;
-	}
-}
-//Physics Functions (Torque and Force functions)
-
-
-
-
-/*float d;
-	//direction of ground in model space
-	d = a->rSelf->position.y;
-	if (a->rSelf->type == 0) {
-		Vector3D scale;
-		Vector3D sphere = vector3d(a->rSelf->position.x, a->rSelf->position.y, a->rSelf->position.z);
-		Vector3D cPoint = vector3d(sphere.x, 0, sphere.z);
-		vector3d_add(cPoint, cPoint, -sphere);
-		rotZ(&cPoint, radians(a->rSelf->rotation.z));
-		rotY(&cPoint, radians(a->rSelf->rotation.y));
-		rotX(&cPoint, radians(a->rSelf->rotation.x));
-		scale = vector3d(a->rSelf->scale.x, a->rSelf->scale.y, a->rSelf->scale.z);
-		d = generalSDF(a->rSelf->type, vector3d(cPoint.x / scale.x, cPoint.y / scale.y, cPoint.z / scale.z)) * min(scale.x, min(scale.y, scale.z));
-		if (d <= 0) {
-			a->rSelf->position.y -= d;
-			return;
-		}
-	}
-	Vector3D gPoint = vector3d(0, -1.0*(a->rSelf->scale.y/2), 0);
-	rotZ(&gPoint, radians(a->rSelf->rotation.z));
-	rotY(&gPoint, radians(a->rSelf->rotation.y));
-	rotX(&gPoint, radians(a->rSelf->rotation.x));
-	if (gPoint.y > 0.0 && d > 0.0) gPoint = vector3d(-gPoint.x, -gPoint.y, -gPoint.z);
-	vector3d_add(gPoint, gPoint, a->rSelf->position);
-	float prevD;
-	if(d < 0){
-		prevD = d;
-		d = generalSDF(a->rSelf->type, vector3d(gPoint.x, 0, gPoint.z));
-		while (d > prevD ) {
-			if (gPoint.x < a->rSelf->position.x) gPoint.x += (a->rSelf->position.x - gPoint.x) / 2;
-			else if (gPoint.x > a->rSelf->position.x) gPoint.x -= (a->rSelf->position.x - gPoint.x) / 2;
-			prevD = d;
-			d = generalSDF(a->rSelf->type, vector3d(gPoint.x, 0, gPoint.z));
-		}
-		a->rSelf->position.y -= d;
-		a->rSelf->position.y = -a->rSelf->position.y;
-		//a->velocity = vector3d(0, 0, 0);
-	}
-	else if (d >= 0) {
-		prevD = d;
-		d = generalSDF(a->rSelf->type, vector3d(gPoint.x, 0, gPoint.z));
-		while (d < prevD) {
-			if (gPoint.x < a->rSelf->position.x) gPoint.x += (a->rSelf->position.x - gPoint.x) / 2;
-			else if (gPoint.x > a->rSelf->position.x) gPoint.x -= (a->rSelf->position.x - gPoint.x) / 2;
-			prevD = d;
-			d = generalSDF(a->rSelf->type, vector3d(gPoint.x, 0, gPoint.z));
-		}
-	}
-	//life the lowest point is under the plane
-	if (d <= 0) {
-		a->rSelf->position.y -= d;
-		//a->velocity = vector3d(0, 0, 0);
-	}*/
+*/
