@@ -261,18 +261,18 @@ int isCollide(Entity* a, Entity* b) {
 	int sphereFlag = 1;
 	int aFlag = 0;
 	int bFlag = 0;
-	if (a->rSelf->type == 0 && b->rSelf->type == 0) {
-		if (a->rSelf->scale.x == a->rSelf->scale.z && a->rSelf->scale.x == a->rSelf->scale.y && a->rSelf->scale.z == a->rSelf->scale.y) {
+	if (a->rSelf->type == 0 || b->rSelf->type == 0) {
+		if (fabsf(a->rSelf->scale.x - a->rSelf->scale.z) < 0.01  && fabsf(a->rSelf->scale.x - a->rSelf->scale.y) < 0.01 && fabsf(a->rSelf->scale.z - a->rSelf->scale.y) < 0.01) {
 			aFlag = 1;
 		}
-		if (b->rSelf->scale.x == b->rSelf->scale.z && b->rSelf->scale.x == b->rSelf->scale.y && b->rSelf->scale.z == b->rSelf->scale.y) {
+		if (fabsf(b->rSelf->scale.x - b->rSelf->scale.z) < 0.01 && fabsf(b->rSelf->scale.x - b->rSelf->scale.y) < 0.01 && fabsf(b->rSelf->scale.z - b->rSelf->scale.y) < 0.01) {
 			bFlag = 1;
 		}
 		if (aFlag && bFlag) {
 			return sphereTest(a, b);
 		}
 	}
-	else if (aFlag || bFlag)
+	if (aFlag || bFlag)
 	{
 		return sphereOBBtest(a, b);
 	}
