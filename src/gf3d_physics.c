@@ -312,7 +312,7 @@ void groundCheck(Entity *a) {
 	Vector3D c = vector3d(a->rSelf->position.x, a->rSelf->position.y, a->rSelf->position.z);
 	Vector3D e = vector3d(0.25 * a->rSelf->scale.x, 0.25 * a->rSelf->scale.y, 0.25 * a->rSelf->scale.z);
 	if (a->rSelf->type == 0 && a->rSelf->scale.x == a->rSelf->scale.z && a->rSelf->scale.x == a->rSelf->scale.y && a->rSelf->scale.z == a->rSelf->scale.y) {
-		if (a->rSelf->position.y < a->rSelf->scale.x * 0.5) a->rSelf->position.y += (a->rSelf->position.y - a->rSelf->scale.x * 0.5);
+		if (a->rSelf->position.y < a->rSelf->scale.x * 0.5) a->rSelf->position.y += (a->rSelf->scale.x * 0.5 - a->rSelf->position.y);
 		return;
 	}
 	else {
