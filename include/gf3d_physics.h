@@ -11,5 +11,10 @@ float sphereSDF(Vector3D p);
 /*Param: 3d vector to act as the bounds of the box*/
 float boxSDF(Vector3D p, Vector3D b);
 
+//Trying to make a working oobb interection test syetm for the cubes
+int oabbTest(Entity *a, Entity *b);
+
 void collisionCheck(Entity a, Entity b);
+
+void groundCheck(Entity* a);
 

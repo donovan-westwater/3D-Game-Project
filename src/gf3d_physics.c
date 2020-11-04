@@ -1,5 +1,5 @@
 #include "gf3d_physics.h"
-
+#include "gfc_matrix.h"
 #define ZERO3D vector3d(0.0,0.0,0.0)
 #define EST 0.001
 /*HELPER FUNCTIONS*/
@@ -43,7 +43,7 @@ void rotYb(Vector3D* o, float s, float c) {
 void rotZb(Vector3D* o, float s, float c) {
 	Vector2D rotZ = vector2d(c * o->x + s * o->y, c * o->y - s * o->x);
 	o->x = rotZ.x;
-	o->z = rotZ.y;
+	o->y = rotZ.y;
 }
 void rotX(Vector3D* o, float a) {
 	rotXb(o, sin(a), cos(a));
@@ -61,25 +61,201 @@ float sphereSDF(Vector3D p) {
 
 float boxSDF(Vector3D p, Vector3D b) {
 	Vector3D a = vector3d(abs(p.x), abs(p.y), abs(p.z));
-	Vector3D q;
+	Vector3D q = vector3d(0, 0, 0);
 	vector2d_add(q, a, -b);
-	return length(VectorMax(q,ZERO3D)) + min(max(q.x, max(q.y, q.z)), 0.0);
+	return length(VectorMax(q, ZERO3D)) + min(max(q.x, max(q.y, q.z)), 0.0);
 }
 //Points should be transformed before they are passed into general
 float generalSDF(int type, Vector3D p) {
 	switch (type)
 	{
 	case 0:
-		
+
 		return sphereSDF(p);
 		break;
 	case 1:
-		return boxSDF(p,vector3d(0.25,0.25,0.25)); //this should match the values found in the rayMarch shader
+		return boxSDF(p, vector3d(0.25, 0.25, 0.25)); //this should match the values found in the rayMarch shader
 		break;
 	default:
 		return sphereSDF(p);
 		break;
 	}
+}
+//a and b must be sphers
+int sphereTest(Entity* a, Entity* b) {
+	Vector3D dir = vector3d(b->rSelf->position.x - a->rSelf->position.x, b->rSelf->position.y - a->rSelf->position.y, b->rSelf->position.z - a->rSelf->position.z);
+	float d = dir.x*dir.x+dir.y*dir.y+dir.z*dir.z;
+	float radSum = (a->rSelf->scale.x * 0.5 + b->rSelf->scale.x * 0.5);
+	if (radSum * radSum < d) return 0;
+	else return 1;
+
+
+}
+//works only if both a and b are obb's
+int oabbTest(Entity* a, Entity* b) {
+	Vector3D ba = vector3d(0.25 * a->rSelf->scale.x, 0.25 * a->rSelf->scale.y, 0.25 * a->rSelf->scale.z);
+	Vector3D bb = vector3d(0.25 * b->rSelf->scale.x, 0.25 * b->rSelf->scale.y, 0.25 * b->rSelf->scale.z);;
+	Vector3D aMat[3];
+	Vector3D bMat[3];
+	//creating local axis for a and b
+	aMat[0] = vector3d(1, 0, 0);
+	bMat[0] = vector3d(1, 0, 0);
+
+	aMat[1] = vector3d(0, 1, 0);
+	bMat[1] = vector3d(0, 1, 0);
+
+	aMat[2] = vector3d(0, 0, 1);
+	bMat[2] = vector3d(0, 0, 1);
+
+	//rotating them into position
+	for (int i = 0; i < 3; i++) {
+		rotX(&aMat[i], -a->rSelf->rotation.x);
+		rotY(&aMat[i], -a->rSelf->rotation.y);
+		rotZ(&aMat[i], -a->rSelf->rotation.z);
+
+		rotX(&bMat[i], -b->rSelf->rotation.x);
+		rotY(&bMat[i], -b->rSelf->rotation.y);
+		rotZ(&bMat[i], -b->rSelf->rotation.z);
+
+	}
+	float ra, rb;
+	Vector3D matR[3];
+	Vector3D absR[3];
+	for (int i = 0; i < 3; i++) {
+		matR[i].x = vector3d_dot_product(aMat[i], bMat[0]);
+		matR[i].y = vector3d_dot_product(aMat[i], bMat[1]);
+		matR[i].z = vector3d_dot_product(aMat[i], bMat[2]);
+	}
+	Vector3D t = vector3d(a->rSelf->position.x - b->rSelf->position.x, a->rSelf->position.y - b->rSelf->position.y, a->rSelf->position.z - b->rSelf->position.z);
+	t = vector3d(vector3d_dot_product(t, aMat[0]), vector3d_dot_product(t, aMat[1]), vector3d_dot_product(t, aMat[2]));
+	for (int i = 0; i < 3; i++) {
+		absR[i].x = fabsf(matR[i].x) + 0.01;
+		absR[i].y = fabsf(matR[i].y) + 0.01;
+		absR[i].z = fabsf(matR[i].z) + 0.01;
+	}
+	//test L = A0
+	for (int i = 0; i < 3; i++) {
+		rb = bb.x * absR[i].x + bb.y * absR[i].y + bb.z * absR[i].z;
+		switch (i)
+		{
+		case 0:
+			ra = ba.x;
+			if (fabsf(t.x) > ra + rb) return 0;
+			break;
+		case 1:
+			ra = ba.y;
+			if (fabsf(t.y) > ra + rb) return 0;
+			break;
+		case 2:
+			ra = ba.z;
+			if (fabsf(t.z) > ra + rb) return 0;
+			break;
+
+		}
+	}
+	//test L = B0
+	ra = ba.x * absR[0].x + ba.y * absR[1].x + ba.z * absR[2].x;
+	rb = bb.x;
+	if (fabsf(t.x * matR[0].x + t.y * matR[1].x + t.z * matR[2].x) > ra + rb){
+		return 0;
+	}
+
+	ra = ba.x * absR[0].y + ba.y * absR[1].y + ba.z * absR[2].y;
+	rb = bb.y;
+	if (fabsf(t.x * matR[0].y + t.y * matR[1].y + t.z * matR[2].y) > ra + rb) {
+		return 0;
+	}
+
+	ra = ba.x * absR[0].z + ba.y * absR[1].z + ba.z * absR[2].z;
+	rb = bb.z;
+	if (fabsf(t.x * matR[0].z + t.y * matR[1].z + t.z * matR[2].z) > ra + rb) {
+		return 0;
+	}
+	//Test axis L = A0 x B0
+	ra = ba.y * absR[2].x + ba.z * absR[1].x;
+	rb = bb.y * absR[0].z + bb.z * absR[0].y;
+	if (fabsf(t.z * matR[1].x - t.y * matR[2].x) > ra + rb) return 0;
+
+	//Test axis L = A0 x B1
+	ra = ba.y * absR[2].y + ba.z * absR[1].y;
+	rb = bb.x * absR[0].z + bb.z * absR[0].x;
+	if (fabsf(t.z * matR[1].y - t.y * matR[2].y) > ra + rb) return 0;
+	
+	//Test axis L = A0 x B2
+	ra = ba.y * absR[2].z + ba.z * absR[1].z;
+	rb = bb.x * absR[0].x + bb.y * absR[0].x;
+	if (fabsf(t.z * matR[1].z - t.y * matR[2].z) > ra + rb) return 0;
+
+	//Test axis L = A1 x B0
+	ra = ba.x * absR[2].x + ba.z * absR[0].x;
+	rb = bb.y * absR[1].z + bb.z * absR[1].y;
+	if (fabsf(t.x * matR[2].x - t.z * matR[0].z) > ra + rb) return 0;
+
+	//Test axis L = A1 x B1
+	ra = ba.x * absR[2].y + ba.z * absR[0].y;
+	rb = bb.x * absR[1].z + bb.z * absR[1].x;
+	if (fabsf(t.x * matR[2].y - t.z * matR[0].y) > ra + rb) return 0;
+
+	//Test axis L = A1 x B2
+	ra = ba.x * absR[2].z + ba.z * absR[0].y;
+	rb = bb.x * absR[1].y + bb.y * absR[1].x;
+	if (fabsf(t.x * matR[2].z - t.z * matR[0].z) > ra + rb) return 0;
+
+	//Test axis L = A2 x B0
+	ra = ba.x * absR[1].x + ba.y * absR[0].x;
+	rb = bb.y * absR[2].z + bb.z * absR[2].y;
+	if (fabsf(t.y * matR[0].x - t.x * matR[1].x) > ra + rb) return 0;
+
+	//Test axis L = A2 x B1
+	ra = ba.x * absR[1].y + ba.y * absR[0].y;
+	rb = bb.x * absR[2].z + bb.z * absR[2].x;
+	if (fabsf(t.y * matR[0].y - t.x * matR[1].y) > ra + rb) return 0;
+	
+	//Test axis L = A2 x B2
+	ra = ba.x * absR[1].z + ba.y * absR[0].z;
+	rb = bb.x * absR[2].z + bb.y * absR[2].x;
+	if (fabsf(t.y * matR[0].z - t.x * matR[1].z) > ra + rb) return 0;
+
+	return 1;
+}	
+//one of them is a sphere, one of them is a OBB
+int sphereOBBtest(Entity* a, Entity* b) {
+	Vector3D point;
+	Vector3D scale;
+	float r = 0;
+	if (a->rSelf->type == 0 && a->rSelf->scale.x == a->rSelf->scale.z && a->rSelf->scale.x == a->rSelf->scale.y && a->rSelf->scale.z == a->rSelf->scale.y) {
+		point = vector3d(a->rSelf->position.x, a->rSelf->position.y, a->rSelf->position.z);
+		vector3d_add(point, point, -b->rSelf->position);
+		rotZ(&point, radians(b->rSelf->rotation.z));
+		rotY(&point, radians(b->rSelf->rotation.y));
+		rotX(&point, radians(b->rSelf->rotation.x));
+		scale = vector3d(b->rSelf->scale.x, b->rSelf->scale.y, b->rSelf->scale.z);
+		r = 0.5*a->rSelf->scale.x;
+	}
+	else if(b->rSelf->type == 0 && b->rSelf->scale.x == b->rSelf->scale.z && b->rSelf->scale.x == b->rSelf->scale.y && b->rSelf->scale.z == b->rSelf->scale.y) {
+		point = vector3d(b->rSelf->position.x, b->rSelf->position.y, b->rSelf->position.z);
+		vector3d_add(point, point, -a->rSelf->position);
+		rotZ(&point, radians(a->rSelf->rotation.z));
+		rotY(&point, radians(a->rSelf->rotation.y));
+		rotX(&point, radians(a->rSelf->rotation.x));
+		scale = vector3d(a->rSelf->scale.x, a->rSelf->scale.y, a->rSelf->scale.z);
+		r = 0.5*b->rSelf->scale.x;
+	}
+	else {
+		return -1;
+	}
+	float d = 0;
+	if (point.x < -0.25 * scale.x) d += (point.x - 0.25 * scale.x);
+	else if(point.x > 0.25 * scale.x) d += (point.x + 0.25 * scale.x);
+	
+	if (point.y < -0.25 * scale.y) d += (point.y - 0.25 * scale.y);
+	else if (point.y > 0.25 * scale.y) d += (point.y + 0.25 * scale.y);
+
+	if (point.z < -0.25 * scale.z) d += (point.z - 0.25 * scale.z);
+	else if (point.z > 0.25 * scale.z) d += (point.z + 0.25 * scale.z);
+	
+	if (d <= r * r) return 0;
+	else return 1;
 }
 //Should check for collision and then adjust for said collision
 void collisionCheck(Entity a, Entity b) {
@@ -128,4 +304,95 @@ void collisionCheck(Entity a, Entity b) {
 	}
 
 }
+//Checks if the entity has collied with the ground (y = 0) and adjusts entity out of collision
+//Remake, for spheres test to see if the radius is less than p.y
+//For 
+void groundCheck(Entity *a) {
+	Vector3D n = vector3d(0, 1, 0);
+	Vector3D c = vector3d(a->rSelf->position.x, a->rSelf->position.y, a->rSelf->position.z);
+	Vector3D e = vector3d(0.25 * a->rSelf->scale.x, 0.25 * a->rSelf->scale.y, 0.25 * a->rSelf->scale.z);
+	if (a->rSelf->type == 0 && a->rSelf->scale.x == a->rSelf->scale.z && a->rSelf->scale.x == a->rSelf->scale.y && a->rSelf->scale.z == a->rSelf->scale.y) {
+		if (a->rSelf->position.y < a->rSelf->scale.x * 0.5) a->rSelf->position.y += (a->rSelf->position.y - a->rSelf->scale.x * 0.5);
+		return;
+	}
+	else {
+		if (a->rSelf->type == 0) {
+			e = vector3d(0.5 * a->rSelf->scale.x, 0.5 * a->rSelf->scale.y, 0.5 * a->rSelf->scale.z);
+		}
+		//Vector3D pv = vector3d(-a->rSelf->position.x, -a->rSelf->position.y, -a->rSelf->position.z);
+		rotX(&n, a->rSelf->rotation.x);
+		rotY(&n, a->rSelf->rotation.y);
+		rotZ(&n, a->rSelf->rotation.z);
+		vector3d_normalize(&n);
+		//rotX(&pv, a->rSelf->rotation.x);
+		//rotY(&pv, a->rSelf->rotation.y);
+		//rotZ(&pv, a->rSelf->rotation.z);
+
+		float r = e.x * fabsf(n.x) + e.y * fabsf(n.y) + e.z * fabsf(n.z);
+		//float pd = vector3d_magnitude(pv);
+		float s = c.y;
+
+		if (fabsf(s) <= r) {
+			a->rSelf->position.y += fabsf((r - fabsf(s)));
+		}
+		return;
+	}
+}
 //Physics Functions (Torque and Force functions)
+
+
+
+
+/*float d;
+	//direction of ground in model space
+	d = a->rSelf->position.y;
+	if (a->rSelf->type == 0) {
+		Vector3D scale;
+		Vector3D sphere = vector3d(a->rSelf->position.x, a->rSelf->position.y, a->rSelf->position.z);
+		Vector3D cPoint = vector3d(sphere.x, 0, sphere.z);
+		vector3d_add(cPoint, cPoint, -sphere);
+		rotZ(&cPoint, radians(a->rSelf->rotation.z));
+		rotY(&cPoint, radians(a->rSelf->rotation.y));
+		rotX(&cPoint, radians(a->rSelf->rotation.x));
+		scale = vector3d(a->rSelf->scale.x, a->rSelf->scale.y, a->rSelf->scale.z);
+		d = generalSDF(a->rSelf->type, vector3d(cPoint.x / scale.x, cPoint.y / scale.y, cPoint.z / scale.z)) * min(scale.x, min(scale.y, scale.z));
+		if (d <= 0) {
+			a->rSelf->position.y -= d;
+			return;
+		}
+	}
+	Vector3D gPoint = vector3d(0, -1.0*(a->rSelf->scale.y/2), 0);
+	rotZ(&gPoint, radians(a->rSelf->rotation.z));
+	rotY(&gPoint, radians(a->rSelf->rotation.y));
+	rotX(&gPoint, radians(a->rSelf->rotation.x));
+	if (gPoint.y > 0.0 && d > 0.0) gPoint = vector3d(-gPoint.x, -gPoint.y, -gPoint.z);
+	vector3d_add(gPoint, gPoint, a->rSelf->position);
+	float prevD;
+	if(d < 0){
+		prevD = d;
+		d = generalSDF(a->rSelf->type, vector3d(gPoint.x, 0, gPoint.z));
+		while (d > prevD ) {
+			if (gPoint.x < a->rSelf->position.x) gPoint.x += (a->rSelf->position.x - gPoint.x) / 2;
+			else if (gPoint.x > a->rSelf->position.x) gPoint.x -= (a->rSelf->position.x - gPoint.x) / 2;
+			prevD = d;
+			d = generalSDF(a->rSelf->type, vector3d(gPoint.x, 0, gPoint.z));
+		}
+		a->rSelf->position.y -= d;
+		a->rSelf->position.y = -a->rSelf->position.y;
+		//a->velocity = vector3d(0, 0, 0);
+	}
+	else if (d >= 0) {
+		prevD = d;
+		d = generalSDF(a->rSelf->type, vector3d(gPoint.x, 0, gPoint.z));
+		while (d < prevD) {
+			if (gPoint.x < a->rSelf->position.x) gPoint.x += (a->rSelf->position.x - gPoint.x) / 2;
+			else if (gPoint.x > a->rSelf->position.x) gPoint.x -= (a->rSelf->position.x - gPoint.x) / 2;
+			prevD = d;
+			d = generalSDF(a->rSelf->type, vector3d(gPoint.x, 0, gPoint.z));
+		}
+	}
+	//life the lowest point is under the plane
+	if (d <= 0) {
+		a->rSelf->position.y -= d;
+		//a->velocity = vector3d(0, 0, 0);
+	}*/

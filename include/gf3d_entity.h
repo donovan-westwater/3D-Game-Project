@@ -19,6 +19,7 @@ typedef struct EntityRender_S { //Stores the infomation needed by the shader
      int inuse;
      //int type; //sphere by default;
      EntityRender *rSelf; //Pass this to the uniform to draw changes!
+     Vector3D velocity;
      //Possible change entityRender into a pointer to its proper render in the list;
      //Functions (Implement later)
      void(*update)(struct Entity_S* self);
@@ -29,7 +30,7 @@ typedef struct EntityRender_S { //Stores the infomation needed by the shader
 
  void initEntList();
 
- void addEntity(Vector4D pos, Vector4D rot, Vector4D scale, Vector4D color, int type);
+ void addEntity(Vector4D pos, Vector4D rot, Vector4D scale, Vector4D color, Vector3D velo,int type);
 
  void destroy(Entity* self);
  

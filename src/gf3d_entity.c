@@ -1,6 +1,6 @@
 #include "gf3d_vgraphics.h"
 #include "gf3d_entity.h"
-
+#include "gf3d_physics.h"
 
 static Entity entList[50] = { -1 };
 static float count = 0;
@@ -16,7 +16,7 @@ void initEntList() {
 
 }
 
-void addEntity(Vector4D pos, Vector4D rot, Vector4D scale, Vector4D color, int type) {
+void addEntity(Vector4D pos, Vector4D rot, Vector4D scale, Vector4D color, Vector3D velo, int type) {
 	int i;
 	for (i = 0; i < 50; i++) {
 		if (entList[i].inuse < 1) break;
@@ -32,6 +32,7 @@ void addEntity(Vector4D pos, Vector4D rot, Vector4D scale, Vector4D color, int t
 	entList[i].rSelf->color = color;
 	entList[i].rSelf->id = i;
 	entList[i].inuse = 1;
+	entList[i].velocity = velo;
 	entList[i].rSelf->type = type;
 	
 
@@ -46,6 +47,7 @@ void updateEntAll() {
 }
 
 void update(Entity* self) {
+	/*
 	count += 0.01;
 	if (count > 500) count = 0;
 	vector4d_add(self->rSelf->position, self->rSelf->position, vector4d(0, -0.0015 , 0, 0));
@@ -54,7 +56,11 @@ void update(Entity* self) {
 	self->rSelf->rotation.x = r.x;
 	self->rSelf->rotation.y = r.y;
 	self->rSelf->rotation.z = r.z;
+	*/
+	vector4d_add(self->rSelf->position, self->rSelf->position,vector4d(self->velocity.x, self->velocity.y, self->velocity.z,0));
+	groundCheck(self);
 	
+	//check floor collision using col check on point at height of plane (i.e y = 0)
 }
 
 
