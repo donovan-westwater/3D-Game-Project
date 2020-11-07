@@ -110,7 +110,7 @@ void gf3d_vgraphics_init(
     gfc_matrix_identity(gf3d_vgraphics.ubo.model);
     gfc_matrix_identity(gf3d_vgraphics.ubo.view);
     gfc_matrix_identity(gf3d_vgraphics.ubo.proj);
-    for (int i = 0; i < 50; i++) //Replace with 50 with a len marco in entity.h
+    for (int i = 0; i < entSize; i++) //Replace with 50 with a len marco in entity.h
     {
         gf3d_vgraphics.ubo.renderList[i].id = -1; //Everything is empty
     }

@@ -81,6 +81,7 @@ float generalSDF(int type, Vector3D p) {
 		break;
 	}
 }
+/*Intersection tests and Collision dection*/
 //a and b must be sphers
 int sphereTest(Entity* a, Entity* b) {
 	Vector3D dir = vector3d(b->rSelf->position.x - a->rSelf->position.x, b->rSelf->position.y - a->rSelf->position.y, b->rSelf->position.z - a->rSelf->position.z);
@@ -366,53 +367,121 @@ void groundCheck(Entity *a) {
 		return;
 	}
 }
-//Physics Functions (Torque and Force functions)
-
-
-
-/*
-float d;
-	Vector3D scale;
-	Vector3D surfP;
-	//Transform position of a into space of b
-	Vector3D bSpace = vector3d(a.rSelf->position.x, a.rSelf->position.y, a.rSelf->position.z);
-	//Use b entity rSelf parameters
-	vector3d_add(bSpace, bSpace, -b.rSelf->position);
-	rotZ(&bSpace, radians(b.rSelf->rotation.z));
-	rotY(&bSpace, radians(b.rSelf->rotation.y));
-	rotX(&bSpace, radians(b.rSelf->rotation.x));
-	scale = vector3d(b.rSelf->scale.x, b.rSelf->scale.y, b.rSelf->scale.z);
-	d = generalSDF(b.rSelf->type, vector3d(bSpace.x/scale.x, bSpace.y / scale.y, bSpace.z / scale.z))*min(scale.x, min(scale.y, scale.z));
-	//Get the surface point on B
-	Vector3D norm = vector3d(b.rSelf->position.x - a.rSelf->position.x, b.rSelf->position.y - a.rSelf->position.y, b.rSelf->position.z - a.rSelf->position.z);
-	vector3d_normalize(&norm);
-	surfP.x = a.rSelf->position.x + (norm.x) * d;
-	surfP.y = a.rSelf->position.y + (norm.y) * d;
-	surfP.z = a.rSelf->position.z + (norm.z) * d;
-	//Transfrom surface point into space of A
-	Vector3D aSpace = surfP;
-	vector3d_add(aSpace, aSpace, -a.rSelf->position);
-	rotZ(&aSpace, radians(a.rSelf->rotation.z));
-	rotY(&aSpace, radians(a.rSelf->rotation.y));
-	rotX(&aSpace, radians(a.rSelf->rotation.x));
-	scale = vector3d(a.rSelf->scale.x, a.rSelf->scale.y, a.rSelf->scale.z);
-	d = generalSDF(a.rSelf->type, vector3d(aSpace.x / scale.x, aSpace.y / scale.y, aSpace.z / scale.z)) * min(scale.x, min(scale.y, scale.z));
-	//Check if distance is negative. if true, the collsion is true
-	if (d <= 0) {
-		//Create an adjustment vector to push out by using the distance function to get distance push for each axis
-		Vector3D adj; //direction of adjustment relative to entity A
-		//aSpace in the model space of A so we are testing the distance from the origin, and will return the relative direction
-		Vector3D dir = vector3d(aSpace.x, 0, 0);
-		vector3d_normalize(&dir);
-		adj.x = -(1.0 + EST) * abs(generalSDF(a.rSelf->type, vector3d(aSpace.x, 0, 0))) * dir.x;
-		dir = vector3d(0,aSpace.y, 0);
-		vector3d_normalize(&dir);
-		adj.y = -(1.0 + EST) * abs(generalSDF(a.rSelf->type, vector3d(0, aSpace.y, 0))) * dir.y;
-		dir = vector3d(0, 0, aSpace.z);
-		vector3d_normalize(&dir);
-		adj.z = -(1.0+EST)*abs(generalSDF(a.rSelf->type, vector3d(0, 0, aSpace.z))) * dir.z;
-		//adjusting the center of A with the relative adjustment vector
-		vector3d_add(a.rSelf->position, a.rSelf->position, adj);
+//Physics Functions (Management)
+Rigidbody* addRigidbody(Rigidbody body) {
+	if (phyEngine.rigidSize + 1 > rigidTotal) {
+		printf("THERE IS NO MORE ROOM IN THE RIGIDBODY LIST");
+		return NULL;
 	}
+	int count = phyEngine.rigidSize;
+	phyEngine.rigidList[count] = body;
+	phyEngine.rigidSize++;
+	return &phyEngine.rigidList[count];
+}
 
-*/
+Obstacle* addObstacle(Obstacle obs) {
+	if (phyEngine.obsSize + 1 > obsTotal) {
+		printf("THERE IS NO MORE ROOM IN THE OBSTACLE LIST");
+		return NULL;
+	}
+	int count = phyEngine.rigidSize;
+	phyEngine.obsList[count] = obs;
+	phyEngine.obsSize++;
+	return &phyEngine.obsList[count];
+}
+void clearRigidbodys() {
+	for (int i = 0; i < rigidTotal; i++) {
+		phyEngine.rigidList[i].mass = 0;
+	}
+	phyEngine.rigidSize = 0;
+}
+
+void clearObstacles() {
+	for (int i = 0; i < obsTotal; i++) {
+		phyEngine.obsList[i].eSelf = NULL;
+	}
+	phyEngine.rigidSize = 0;
+}
+PhysicsSystem* get_phyEngine() {
+	return &phyEngine;
+}
+//Physics Functions (Torque and Force functions)
+void physicsUpdate(float deltatime) {
+	for (int i = 0; i < rigidTotal; i++) {
+		phyEngine.rigidList[i].applyForces(&phyEngine.rigidList[i]);
+	}
+	for (int i = 0; i < rigidTotal; i++) {
+		phyEngine.rigidList[i].update(&phyEngine.rigidList[i],deltatime);
+	}
+	for (int i = 0; i < rigidTotal; i++) {
+		phyEngine.rigidList[i].solveObstacles(&phyEngine.rigidList[i],phyEngine.obsList);
+	}
+}
+
+void body_ApplyForces(Rigidbody *self) {
+	if (self->eSelf == NULL || self->eSelf->inuse == 0) return;
+	self->forces = self->gravity;
+	
+}
+Vector3D body_get_pos(Rigidbody* self) {
+	float x = self->eSelf->rSelf->position.x;
+	float y = self->eSelf->rSelf->position.y;
+	float z = self->eSelf->rSelf->position.z;
+	return vector3d(x, y, z);
+}
+//Should be called at a fixed fps!
+void body_update(Rigidbody* self, float deltatime) {
+	
+	Vector3D velocity;
+	v3_scaler_mult(velocity, self->oldPosition, -1);
+	vector3d_add(velocity, velocity, body_get_pos(self));
+	self->oldPosition = body_get_pos(self);
+	float deltaSquare = deltatime * deltatime;
+
+	float vx = velocity.x * self->friction + self->forces.x * deltaSquare;
+	float vy = velocity.y * self->friction + self->forces.y * deltaSquare;
+	float vz = velocity.z * self->friction + self->forces.z * deltaSquare;
+	Vector3D out = vector3d(vx,vy,vz);
+	vector3d_add(self->eSelf->rSelf->position, self->eSelf->rSelf->position, out);
+}
+
+void body_solveObstacles(Rigidbody* self, Obstacle* obsList) {
+	int size = phyEngine.obsSize;
+	for (int i = 0; i < size; i++) {
+		Vector3D pos = vector3d(self->eSelf->rSelf->position.x, self->eSelf->rSelf->position.y, self->eSelf->rSelf->position.z);
+		if (linetest(obsList[i].eSelf, self->oldPosition, pos)) {
+			Vector3D velocity;
+			v3_scaler_mult(velocity, self->oldPosition, -1);
+			vector3d_add(velocity, velocity, body_get_pos(self));
+			Vector3D dir = velocity;
+			vector3d_normalize(&dir);
+			Ray ray;
+			ray.origin = self->oldPosition;
+			ray.direction = dir;
+			RaycastResult result;
+			if (raycastGeneral(obsList[i].eSelf, &ray, &result)) {
+				self->eSelf->rSelf->position.x = result.point.x + result.normal.x * 0.003;
+				self->eSelf->rSelf->position.y = result.point.y + result.normal.y * 0.003;
+				self->eSelf->rSelf->position.z = result.point.z + result.normal.z * 0.003;
+				
+				Vector3D vn, vt;
+				vn.x = result.normal.x * vector3d_dot_product(result.normal, velocity);
+				vn.y = result.normal.y * vector3d_dot_product(result.normal, velocity);
+				vn.z = result.normal.z * vector3d_dot_product(result.normal, velocity);
+				
+				vt.x = velocity.x - vn.x;
+				vt.y = velocity.y - vn.y;
+				vt.z = velocity.z - vn.z;
+
+				//self->oldPosition = pos;
+
+				self->oldPosition.x = pos.x + (vt.x - vn.x * self->bounce);
+				self->oldPosition.y = pos.y + (vt.y - vn.y * self->bounce);
+				self->oldPosition.z = pos.z + (vt.z - vn.z * self->bounce);
+				
+				break;
+			}
+		}
+	}
+}
+

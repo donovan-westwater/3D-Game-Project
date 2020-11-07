@@ -3,12 +3,13 @@
 #include "gf3d_physics.h"
 
 #define StepNum 5
-static Entity entList[50] = { -1 };
+
+static Entity entList[entSize] = { -1 };
 static float count = 0;
 //initilizes the list from the UBO and entity list
 void initEntList() {
 
-	for (int i = 0; i < 50; i++) {
+	for (int i = 0; i < entSize; i++) {
 		entList[i].id = i;
 		entList[i].update = update;
 	}
@@ -17,12 +18,12 @@ void initEntList() {
 
 }
 
-void addEntity(Vector4D pos, Vector4D rot, Vector4D scale, Vector4D color, Vector3D velo, int type) {
+void addEntity(Vector4D pos, Vector4D rot, Vector4D scale, Vector4D color, Vector3D velo, int type,int isObs) {
 	int i;
-	for (i = 0; i < 50; i++) {
+	for (i = 0; i < entSize; i++) {
 		if (entList[i].inuse < 1) break;
 	}
-	if (i > 50) {
+	if (i > entSize) {
 		printf("OUT OF SPACE! NO ENTITY COULD BE CREATED");
 	}
 	UniformBufferObject* ubo = gf3d_get_pointer_to_UBO();
@@ -32,7 +33,24 @@ void addEntity(Vector4D pos, Vector4D rot, Vector4D scale, Vector4D color, Vecto
 	entList[i].rSelf->scale = scale;
 	entList[i].rSelf->color = color;
 	entList[i].rSelf->id = i;
-	entList[i].inuse = 1;
+	if (isObs) {
+		entList[i].isObs = isObs;
+		Obstacle o = { 0 };
+		o.eSelf = &entList[i];
+		entList[i].pSelf = addObstacle(o);
+	}
+	else {
+		entList[i].isObs = isObs;
+		Rigidbody o = { 0 };
+		o.eSelf = &entList[i];
+		o.friction = 0.95;
+		o.gravity = vector3d(0, -9.8, 0);
+		o.mass = 1;
+		o.bounce = 0.7f;
+		entList[i].pSelf = addRigidbody(o);
+	}
+	
+    entList[i].inuse = 1;
 	entList[i].velocity = velo;
 	entList[i].rSelf->type = type;
 	
@@ -41,7 +59,7 @@ void addEntity(Vector4D pos, Vector4D rot, Vector4D scale, Vector4D color, Vecto
 }
 
 void updateEntAll() {
-	for (int i = 0; i < 50; i++) {
+	for (int i = 0; i < entSize; i++) {
 		if (entList[i].inuse < 1) continue;
 		entList[i].update(&entList[i]);
 	}
@@ -69,7 +87,7 @@ void update(Entity* self) {
 		test.rSelf = &rTest;
 		test.rSelf->position = ahead;
 		int out = 0;
-		for (int i = 0; i < 50; i++) {
+		for (int i = 0; i < entSize; i++) {
 			if (entList[i].inuse < 1) continue;
 			if (test.rSelf->id == i) continue;
 			if (isCollide(&test, &entList[i])) {

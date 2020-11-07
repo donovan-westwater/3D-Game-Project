@@ -9,7 +9,7 @@ typedef float Matrix4[4][4];
 
 typedef struct
 {
-    EntityRender renderList[50];
+    EntityRender renderList[entSize];
     Matrix4 model;
     Matrix4 view;
     Matrix4 proj;
