@@ -10,6 +10,8 @@
 #include "gf3d_model.h"
 #include "gf3d_camera.h"
 #include "gf3d_texture.h"
+#include "gf3d_physics.h"
+#include <time.h> 
 
 #define FPS 30
 #define MPF 1/FPS * 100
@@ -84,8 +86,13 @@ int main(int argc,char *argv[])
     //Setup descripterSets for the pipleine so that we can use the UBO
     
     initEntList();
-    addEntity(vector4d(0, 1, 1, 1), vector4d(0, 0, 0, 1), vector4d(1, 1, 1, 1), vector4d(0, 1, 0, 1),vector3d(-10, 0 , 0), 0,0);
-    addEntity(vector4d(-1, 1, 1, 1), vector4d(45, 0, 90, 1), vector4d(1, 1, 1, 1), vector4d(0, 0, 1, 1), vector3d(10, 0, 0), 0,0);
+    phyEngine_init();
+    //addEntity(vector4d(0, 1, -5, 1), vector4d(0, 0, 0, 1), vector4d(1, 1, 1, 1), vector4d(0, 1, 0, 1),vector3d(-1, 0 , 0), 0,0);
+    addEntity(vector4d(-1, 2, 1, 1), vector4d(45, 0, 0, 1), vector4d(1, 1, 1, 1), vector4d(0, 0, 1, 1), vector3d(0, 0, 0), 1,0);
+    addEntity(vector4d(-1, 1, 1, 1), vector4d(0, 0, 0, 1), vector4d(1, 1, 1, 1), vector4d(0, 0, 0.5, 1), vector3d(0, 0, 0), 1, 0);
+    Entity *ground = addEntity(vector4d(0, -0.25, 0, 1), vector4d(0, 0, 0, 1), vector4d(50, 1, 50, 1), vector4d(0, 0, 0.5, 1), vector3d(0, 0, 0), 1,0);
+    ground->pSelf->mass = 0;
+    
     VkDevice device = gf3d_vgraphics_get_default_logical_device();
     Pipeline *fullscreenpipe = gf3d_pipeline_fullscreen_create(device, "shaders/fullscreen.spv", "shaders/RayMarch.spv", gf3d_vgraphics_get_view_extent(), 1024);
     gf3d_swapchain_setup_frame_buffers(fullscreenpipe);
@@ -94,11 +101,14 @@ int main(int argc,char *argv[])
     //bufferFrame = gf3d_vgraphics_render_begin();
     //fullscreenCmd = gf3d_command_rendering_fullscreen_begin(bufferFrame, fullscreenpipe); //Already binds pipeline, no need to do it again.
     
-    
+    double last = time(NULL);
+    float fps = 0;
+    float totalF = 0;
+    float totalTime = 0;
     //NEW CODE OVER
     while(!done)
     {
-   
+        totalF++;
         SDL_PumpEvents();   // update SDL's internal event structures
         keys = SDL_GetKeyboardState(NULL); // get the keyboard state for this frame
         //update game things here
@@ -125,9 +135,16 @@ int main(int argc,char *argv[])
             0.002,
             vector3d(0,0,1));
 
+        double current = time(NULL);
+        double delta = current - last;
+        totalTime += delta;
+        fps = totalF / totalTime;
+        if ((int)totalTime % 2000) printf("CURRENT FPS: %f\n", fps);
         //Level update section
-
+        //EntityThink
+        physicsUpdate(0.005);//PhyUpdate 
         updateEntAll();
+        last = current;
 
         //Level Draw
         // configure render command for graphics command pool

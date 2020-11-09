@@ -4,7 +4,7 @@
 
 
 void resetRayResult(RaycastResult* outResult) {
-	if (outResult != 0) {
+	if (outResult != NULL) {
 		outResult->t = -1;
 		outResult->hit = false;
 		outResult->normal = vector3d(0, 0, 1);
@@ -36,7 +36,7 @@ int raycastSphere(Entity* a, Ray* ray, RaycastResult* outResult) {
 	if (rSq - (eSq - (aDot * aDot)) < 0.0) return false;
 	else if (eSq < rSq) return t = aDot + f;
 
-	if (outResult != 0) {
+	if (outResult != NULL) {
 		outResult->t = t;
 		outResult->hit = true; 
 		Vector3D rt = vector3d(ray->direction.x * t, ray->direction.y * t, ray->direction.z * t);
@@ -127,7 +127,7 @@ int raycastBox(Entity* a, Ray* ray, RaycastResult* outResult){
 	float result = tmin;
 	if (tmin < 0) result = tmax;
 
-	if (outResult != 0) {
+	if (outResult != NULL) {
 		outResult->t = result;
 		outResult->hit = true;
 		Vector3D rt = vector3d(ray->direction.x * result, ray->direction.y * result, ray->direction.z * result);
@@ -160,7 +160,7 @@ int raycastPlane(Vector3D n, float d, Ray* ray, RaycastResult* outResult) {
 	}
 	float t = (d - pn) / nd;
 	if (t >= 0.0f) {
-		if (outResult != 0) {
+		if (outResult != NULL) {
 			outResult->t = t;
 			outResult->hit = true;
 			Vector3D rt = vector3d(ray->direction.x * t, ray->direction.y * t, ray->direction.z * t);
@@ -216,18 +216,26 @@ int linetest(Entity* a, Vector3D posA, Vector3D posB) {
 	int bol = false;
 	Ray ray;
 	ray.origin = posA;
-	Vector3D s = vector3d(-posB.x, -posB.y, -posB.z);
+	Vector3D s = vector3d(-posA.x, -posA.y, -posA.z);
 	vector3d_add(ray.direction, posB, s);
+	vector3d_normalize(&ray.direction);
+	RaycastResult result;
 	switch (type) {
 	case 0:
-		bol = raycastSphere(a,&ray,NULL);
+		bol = raycastSphere(a,&ray,&result);
 		break;
 	case 1:
-		bol = raycastBox(a, &ray, NULL);
+		bol = raycastBox(a, &ray, &result);
 		break;
 	default:
-		bol = raycastSphere(a, &ray, NULL);
+		bol = raycastSphere(a, &ray, &result);
 		break;
+	}
+	if (bol) {
+		float t = result.t;
+		Vector3D line;
+		vector3d_add(line, posB, posA);
+		return t >= 0 && t <= vector3d_magnitude(line);
 	}
 	return bol;
 }

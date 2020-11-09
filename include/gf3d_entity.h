@@ -15,7 +15,7 @@ typedef struct EntityRender_S { //Stores the infomation needed by the shader
 struct Entity_S;
 
 typedef struct Obstacle_S {
-    EntityRender* eSelf;
+    struct Entity_S* eSelf;
 }Obstacle;
 
 //Put inside entity as a pointer!
@@ -28,13 +28,23 @@ typedef struct Rigidbody_S {
     //Particle values
     float mass; 
     float bounce;
+    float cor; //coeffiencet of resitution
     Vector3D oldPosition;
     Vector3D forces;
+    //Angular forces
+    Vector3D orient;
+    Vector3D angVel;
+    Vector3D torques; //Sum of torgques
+
+
     //Use eSelf->rSelf->pos for current pos
     //use eSelf->velocity for velocity (move over into rigid later)
     void(*update)(struct Rigidbody_S* self, float time);
     void(*applyForces)(struct Rigidbody_S* self);
-    void(*solveObstacles)(struct Rigidbody_S* self,Obstacle* obList);
+    void(*solveObstacles)(struct Rigidbody_S* self,Obstacle *obsList);
+    float(*invMass)(struct Rigidbody_S* self);
+    void(*addLinearImpluse)(struct Rigidbody_S* self, Vector3D impluse);
+    void(*addRotationalImpluse)(struct Rigidbody_S* self, Vector3D point, Vector3D impluse);
 }Rigidbody;
 
 //no need for a draw funtion on this since its constantly being rendered at all times.
@@ -46,7 +56,9 @@ typedef struct Rigidbody_S {
      //int type; //sphere by default;
      EntityRender *rSelf; //Pass this to the uniform to draw changes!
      Rigidbody* pSelf;
+     Obstacle* obsSelf;
      int isObs;
+     int noCollide;
      Vector3D velocity;
      //Possible change entityRender into a pointer to its proper render in the list;
      //Functions (Implement later)
@@ -58,13 +70,22 @@ typedef struct Rigidbody_S {
 
  void initEntList();
 
- void addEntity(Vector4D pos, Vector4D rot, Vector4D scale, Vector4D color, Vector3D velo,int type,int isObs);
+ Entity* addEntity(Vector4D pos, Vector4D rot, Vector4D scale, Vector4D color, Vector3D velo,int type,int isObs);
 
  void destroy(Entity* self);
  
+ void entity_touch(Entity* self, Entity* other);
+
  void updateEntAll();
 
  void update(Entity *self);
 
+ void rigidbody_update(Rigidbody* self, float time);
+
+ void rigidbody_applyforces(Rigidbody* self);
+
+ float invMass(Rigidbody* self);
+
+ void addLinearImpluse(Rigidbody* self,Vector3D impluse);
 
 #endif
