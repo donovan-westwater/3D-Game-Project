@@ -1237,13 +1237,13 @@ void physicsUpdate(float deltatime) {
 		Vector3D correction = phyEngine.results[in].normal;
 		v3_scaler_mult(correction, correction, scalar*phyEngine.linearProjectionPercent);
 		
-		phyEngine.colliders1[in].eSelf->rSelf->position.x += -correction.x * phyEngine.colliders1[in].invMass(&phyEngine.colliders1[in]);
-		phyEngine.colliders1[in].eSelf->rSelf->position.x += -correction.y * phyEngine.colliders1[in].invMass(&phyEngine.colliders1[in]);
-		phyEngine.colliders1[in].eSelf->rSelf->position.x += -correction.z * phyEngine.colliders1[in].invMass(&phyEngine.colliders1[in]);
+		phyEngine.colliders1[in].eSelf->rSelf->position.x += -correction.x * invMass(&phyEngine.colliders1[in]);
+		phyEngine.colliders1[in].eSelf->rSelf->position.y += -correction.y * invMass(&phyEngine.colliders1[in]);
+		phyEngine.colliders1[in].eSelf->rSelf->position.z += -correction.z * invMass(&phyEngine.colliders1[in]);
 		
-		phyEngine.colliders2[in].eSelf->rSelf->position.x += -correction.x * phyEngine.colliders2[in].invMass(&phyEngine.colliders2[in]);
-		phyEngine.colliders2[in].eSelf->rSelf->position.x += -correction.y * phyEngine.colliders2[in].invMass(&phyEngine.colliders2[in]);
-		phyEngine.colliders2[in].eSelf->rSelf->position.x += -correction.z * phyEngine.colliders2[in].invMass(&phyEngine.colliders2[in]);
+		phyEngine.colliders2[in].eSelf->rSelf->position.x += -correction.x * invMass(&phyEngine.colliders2[in]);
+		phyEngine.colliders2[in].eSelf->rSelf->position.y += -correction.y * invMass(&phyEngine.colliders2[in]);
+		phyEngine.colliders2[in].eSelf->rSelf->position.z += -correction.z * invMass(&phyEngine.colliders2[in]);
 		in++;
 		count++;
 	}

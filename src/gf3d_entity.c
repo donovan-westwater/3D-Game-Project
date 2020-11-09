@@ -45,8 +45,8 @@ Entity* addEntity(Vector4D pos, Vector4D rot, Vector4D scale, Vector4D color, Ve
 		entList[i].isObs = isObs;
 		Rigidbody o = { 0 };
 		o.eSelf = &entList[i];
-		o.friction = 0.95;
-		o.gravity = vector3d(0, -5, 0);
+		o.friction = 0.35; //.95
+		o.gravity = vector3d(0, -1, 0);
 		o.mass = 1;
 		o.cor = 0.6f;
 		o.bounce = 0.7f;
@@ -157,10 +157,11 @@ void rigidbody_update(Rigidbody* self, float time) {
 		angAcc.x = out4.x;
 		angAcc.y = out4.y;
 		angAcc.z = out4.z;
+		float rad2deg = 180 / 3.1415;
 		vector3d_add(self->angVel, self->angVel,time*angAcc);
 		v3_scaler_mult(self->angVel, self->angVel, time);
 		Vector3D orient = vector3d(self->eSelf->rSelf->rotation.x, self->eSelf->rSelf->rotation.y, self->eSelf->rSelf->rotation.z);
-		vector3d_add(orient, orient, time * self->angVel);
+		vector3d_add(orient, orient, time * rad2deg*self->angVel);
 		self->eSelf->rSelf->rotation.x = orient.x;
 		self->eSelf->rSelf->rotation.y = orient.y;
 		self->eSelf->rSelf->rotation.z = orient.z;
