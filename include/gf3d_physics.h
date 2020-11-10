@@ -1,3 +1,6 @@
+#ifndef __GF3D_PHYSICS_H__
+#define __GF3D_PHYSICS_H__
+
 #include "gfc_vector.h"
 #include "gf3d_entity.h"
 #include"gf3d_raycast.h"
@@ -108,7 +111,7 @@ void rotX(Vector3D* o, float a);
 void rotY(Vector3D* o, float a);
 void rotZ(Vector3D* o, float a);
 
-
+float radians(float d);
 
 
 //returns all the vertices of the box
@@ -144,3 +147,4 @@ void collisionCheck(Entity *a, Entity *b);
 
 void groundCheck(Entity* a);
 
+#endif

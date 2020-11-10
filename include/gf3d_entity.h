@@ -88,4 +88,10 @@ typedef struct Rigidbody_S {
 
  void addLinearImpluse(Rigidbody* self,Vector3D impluse);
 
+ Entity* addCollctible(Vector3D pos);
+
+ void addWalls();
+
+ void coll_update(Entity* self);
+
 #endif

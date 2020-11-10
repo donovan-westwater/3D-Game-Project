@@ -114,6 +114,7 @@
     <ClInclude Include="..\include\gf3d_model.h" />
     <ClInclude Include="..\include\gf3d_physics.h" />
     <ClInclude Include="..\include\gf3d_pipeline.h" />
+    <ClInclude Include="..\include\gf3d_player.h" />
     <ClInclude Include="..\include\gf3d_raycast.h" />
     <ClInclude Include="..\include\gf3d_shaders.h" />
     <ClInclude Include="..\include\gf3d_swapchain.h" />
@@ -148,6 +149,7 @@
     <ClCompile Include="..\src\gf3d_obj_load.c" />
     <ClCompile Include="..\src\gf3d_physics.c" />
     <ClCompile Include="..\src\gf3d_pipeline.c" />
+    <ClCompile Include="..\src\gf3d_player.c" />
     <ClCompile Include="..\src\gf3d_raycast.c" />
     <ClCompile Include="..\src\gf3d_shaders.c" />
     <ClCompile Include="..\src\gf3d_swapchain.c" />

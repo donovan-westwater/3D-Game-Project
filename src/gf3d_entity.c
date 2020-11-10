@@ -1,6 +1,7 @@
 #include "gf3d_vgraphics.h"
 #include "gf3d_entity.h"
 #include "gf3d_physics.h"
+#include "gf3d_player.h"
 
 #define StepNum 5
 
@@ -179,8 +180,14 @@ void rigidbody_update(Rigidbody* self, float time) {
 
 //Collectibles
 //Collectible add function goes here
+Entity* addCollctible(Vector3D pos) {
+	Entity* c = addEntity(vector4d(pos.x, pos.y, pos.z, 1), vector4d(0, 0, 0, 1), vector4d(0.25, 0.25, 0.25, 1), vector4d(0.25, 0, 0.25, 1), vector3d(0, 0, 0), 0, 0);
+	c->pSelf->mass = 0;
+	c->update = coll_update;
 
+}
 void coll_update(Entity* self) {
+	PlayerManger* p = get_PlayerManager();
 	Vector3D pos = vector3d(self->rSelf->position.x, self->rSelf->position.y, self->rSelf->position.z);
 	UniformBufferObject ubo = gf3d_vgraphics_get_uniform_buffer_object();
 	Vector3D player = vector3d(ubo.view[3][0],ubo.view[3][1],ubo.view[3][2]);
@@ -188,10 +195,30 @@ void coll_update(Entity* self) {
 	vector3d_add(line, player, -pos);
 	if (vector3d_magnitude(line) < 0.5 * self->rSelf->scale.x) {
 		self->inuse = 0;
-		self->rSelf->position = vector4d(-99999, -999999, -99999, 0);
+		self->rSelf->id = -1;
+		//self->rSelf->position = vector4d(-99999, -999999, -99999, 0);
+		p->count = 1;
 		//Some player counter ticks up here
 	}
 
+}
+
+void addWalls() {
+	Entity* wall = addEntity(vector4d(12.5, 5/2, 0, 1), vector4d(0, 0, 0, 1), vector4d(1, 10, 50, 1), vector4d(0, 0.5, 0.5, 1), vector3d(0, 0, 0), 1, 0);
+	wall->pSelf->mass = 0;
+	wall->pSelf->friction = 0;
+
+	wall = addEntity(vector4d(-12.5, 5/2, 0, 1), vector4d(0, 0, 0, 1), vector4d(1, 10, 50, 1), vector4d(0, 0.5, 0.5, 1), vector3d(0, 0, 0), 1, 0);
+	wall->pSelf->mass = 0;
+	wall->pSelf->friction = 0;
+
+	wall = addEntity(vector4d(0, 5/2, 12.5, 1), vector4d(0, 0, 0, 1), vector4d(50, 10, 1, 1), vector4d(0, 0.5, 0.5, 1), vector3d(0, 0, 0), 1, 0);
+	wall->pSelf->mass = 0;
+	wall->pSelf->friction = 0;
+
+	wall = addEntity(vector4d(0, 5/2, -12.5, 1), vector4d(0, 0, 0, 1), vector4d(50, 10, 1, 1), vector4d(0, 0.5, 0.5, 1), vector3d(0, 0, 0), 1, 0);
+	wall->pSelf->mass = 0;
+	wall->pSelf->friction = 0;
 }
 
 

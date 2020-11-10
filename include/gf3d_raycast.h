@@ -1,3 +1,6 @@
+#ifndef __GF3D_RAYCAST_H__
+#define __GF3D_RAYCAST_H__
+
 #include "gf3d_entity.h"
 typedef struct Ray_s {
 	Vector3D origin;
@@ -26,3 +29,4 @@ int raycastPlane(Vector3D n,float d, Ray* ray, RaycastResult* outResult);
 int raycastGeneral(Entity* a, Ray* ray, RaycastResult* outResult);
 
 int linetest(Entity* a, Vector3D posA, Vector3D posB);
+#endif

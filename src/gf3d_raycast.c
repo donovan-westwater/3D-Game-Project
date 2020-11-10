@@ -1,5 +1,5 @@
 #include "gf3d_raycast.h"
-
+#include "gf3d_physics.h"
 
 
 
@@ -69,9 +69,9 @@ int raycastBox(Entity* a, Ray* ray, RaycastResult* outResult){
 
 	//rotating them into position
 	for (int i = 0; i < 3; i++) {
-		rotX(&aMat[i], -a->rSelf->rotation.x);
-		rotY(&aMat[i], -a->rSelf->rotation.y);
-		rotZ(&aMat[i], -a->rSelf->rotation.z);
+		rotX(&aMat[i], radians(-a->rSelf->rotation.x));
+		rotY(&aMat[i], radians(-a->rSelf->rotation.y));
+		rotZ(&aMat[i], radians(-a->rSelf->rotation.z));
 	}
 	Vector3D p;
 	Vector3D oPos = vector3d(a->rSelf->position.x, a->rSelf->position.y, a->rSelf->position.z);

@@ -11,6 +11,7 @@
 #include "gf3d_camera.h"
 #include "gf3d_texture.h"
 #include "gf3d_physics.h"
+#include "gf3d_player.h"
 #include <time.h> 
 
 #define FPS 30
@@ -87,12 +88,15 @@ int main(int argc,char *argv[])
     
     initEntList();
     phyEngine_init();
+    playerManInit();
     //addEntity(vector4d(0, 1, -5, 1), vector4d(0, 0, 0, 1), vector4d(1, 1, 1, 1), vector4d(0, 1, 0, 1),vector3d(-1, 0 , 0), 0,0);
-    addEntity(vector4d(-1, 2, 1, 1), vector4d(35, 0, 0, 1), vector4d(1, 1, 1, 1), vector4d(0, 0, 1, 1), vector3d(0, 0, 0), 1,0);
-    addEntity(vector4d(-1, 1, 1, 1), vector4d(0, 0, 0, 1), vector4d(1, 1, 1, 1), vector4d(0, 0, 0.5, 1), vector3d(0, 0, 0), 1, 0);
+    addEntity(vector4d(-1, 2, 1, 1), vector4d(35, 0, 0, 1), vector4d(1, 1, 1, 1), vector4d(0, 1, 0, 1), vector3d(0, 0, 0), 1,0);
+    addEntity(vector4d(-1, 1, 1, 1), vector4d(0, 0, 0, 1), vector4d(1, 1, 1, 1), vector4d(0, 1, 0, 1), vector3d(0, 0, 0), 1, 0);
     Entity *ground = addEntity(vector4d(0, -0.25, 0, 1), vector4d(0, 0, 0, 1), vector4d(50, 1, 50, 1), vector4d(0, 0, 0.5, 1), vector3d(0, 0, 0), 1,0);
     ground->pSelf->mass = 0;
     ground->pSelf->friction = 0;
+    addWalls();
+    addCollctible(vector3d(2, 1, 2));
     
     VkDevice device = gf3d_vgraphics_get_default_logical_device();
     Pipeline *fullscreenpipe = gf3d_pipeline_fullscreen_create(device, "shaders/fullscreen.spv", "shaders/RayMarch.spv", gf3d_vgraphics_get_view_extent(), 1024);
@@ -116,13 +120,15 @@ int main(int argc,char *argv[])
         
         //gf3d_vgraphics_rotate_camera(0.01);
         //gf3d_vgraphics_mouse_look();
-        if(keys[SDL_SCANCODE_D]) gf3d_vgraphics_rotate_camera(0.01);
-        else if(keys[SDL_SCANCODE_A]) gf3d_vgraphics_rotate_camera(-0.01);
+        float speed = 1;
+        if (keys[SDL_SCANCODE_LSHIFT]) speed = 5;
+        if(keys[SDL_SCANCODE_D]) gf3d_vgraphics_rotate_camera(0.01*speed);
+        else if(keys[SDL_SCANCODE_A]) gf3d_vgraphics_rotate_camera(-0.01*speed);
         if (keys[SDL_SCANCODE_S]) {
-            gf3d_vgraphics_move_camera(-1,0.01);
+            gf3d_vgraphics_move_camera(-1,0.01*speed);
         }
         else if (keys[SDL_SCANCODE_W]) {
-            gf3d_vgraphics_move_camera(1,0.01);
+            gf3d_vgraphics_move_camera(1,0.01*speed);
         }
         
         gfc_matrix_rotate(
@@ -140,10 +146,13 @@ int main(int argc,char *argv[])
         double delta = current - last;
         totalTime += delta;
         fps = totalF / totalTime;
-        if ((int)totalTime % 2000) printf("CURRENT FPS: %f\n", fps);
+        if ((int)totalTime % 200000000) printf("CURRENT FPS: %f\n", fps);
         //Level update section
         //EntityThink
-        physicsUpdate(0.05);//PhyUpdate 
+        //pre player sync
+        //physicsUpdate(0.05);//PhyUpdate 
+        playerUpdate();
+        //post player sync
         updateEntAll();
         last = current;
 

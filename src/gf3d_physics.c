@@ -53,9 +53,9 @@ Vector2D getInterval(Entity* a, Vector3D axis) {
 
 	//rotating them into position
 	for (int i = 0; i < 3; i++) {
-		rotX(&aMat[i], -a->rSelf->rotation.x);
-		rotY(&aMat[i], -a->rSelf->rotation.y);
-		rotZ(&aMat[i], -a->rSelf->rotation.z);
+		rotX(&aMat[i], radians(-a->rSelf->rotation.x));
+		rotY(&aMat[i], radians(-a->rSelf->rotation.y));
+		rotZ(&aMat[i], radians(-a->rSelf->rotation.z));
 	}
 	//Populating vertices [This is going to be very long!]
 	boxV[0].x = c.x + aMat[0].x * e.x + aMat[1].x * e.y + aMat[2].x * e.z;
@@ -149,9 +149,9 @@ Vector3D* getVertices(Entity* a) {
 
 	//rotating them into position
 	for (int i = 0; i < 3; i++) {
-		rotX(&aMat[i], -a->rSelf->rotation.x);
-		rotY(&aMat[i], -a->rSelf->rotation.y);
-		rotZ(&aMat[i], -a->rSelf->rotation.z);
+		rotX(&aMat[i], radians(-a->rSelf->rotation.x));
+		rotY(&aMat[i], radians(-a->rSelf->rotation.y));
+		rotZ(&aMat[i], radians(-a->rSelf->rotation.z));
 	}
 	//Populating vertices [This is going to be very long!]
 	vertices[0].x = c.x + aMat[0].x * e.x + aMat[1].x * e.y + aMat[2].x * e.z;
@@ -223,9 +223,9 @@ Plane* getPlanes(Entity* a) {
 
 	//rotating them into position
 	for (int i = 0; i < 3; i++) {
-		rotX(&aMat[i], -a->rSelf->rotation.x);
-		rotY(&aMat[i], -a->rSelf->rotation.y);
-		rotZ(&aMat[i], -a->rSelf->rotation.z);
+		rotX(&aMat[i], radians(-a->rSelf->rotation.x));
+		rotY(&aMat[i], radians(-a->rSelf->rotation.y));
+		rotZ(&aMat[i], radians(-a->rSelf->rotation.z));
 	}
 
 	planes[0].normal = aMat[0];
@@ -396,13 +396,13 @@ int obbTest(Entity* a, Entity* b) {
 
 	//rotating them into position
 	for (int i = 0; i < 3; i++) {
-		rotX(&aMat[i], -a->rSelf->rotation.x);
-		rotY(&aMat[i], -a->rSelf->rotation.y);
-		rotZ(&aMat[i], -a->rSelf->rotation.z);
+		rotX(&aMat[i], radians(-a->rSelf->rotation.x));
+		rotY(&aMat[i], radians(-a->rSelf->rotation.y));
+		rotZ(&aMat[i], radians(-a->rSelf->rotation.z));
 
-		rotX(&bMat[i], -b->rSelf->rotation.x);
-		rotY(&bMat[i], -b->rSelf->rotation.y);
-		rotZ(&bMat[i], -b->rSelf->rotation.z);
+		rotX(&bMat[i], radians(-b->rSelf->rotation.x));
+		rotY(&bMat[i], radians(-b->rSelf->rotation.y));
+		rotZ(&bMat[i], radians(-b->rSelf->rotation.z));
 
 	}
 	float ra, rb;
@@ -580,9 +580,9 @@ int isInGround(Entity* a, Entity* b) {
 			e = vector3d(0.5 * a->rSelf->scale.x, 0.5 * a->rSelf->scale.y, 0.5 * a->rSelf->scale.z);
 		}
 		//Vector3D pv = vector3d(-a->rSelf->position.x, -a->rSelf->position.y, -a->rSelf->position.z);
-		rotX(&n, a->rSelf->rotation.x);
-		rotY(&n, a->rSelf->rotation.y);
-		rotZ(&n, a->rSelf->rotation.z);
+		rotX(&n, radians(a->rSelf->rotation.x));
+		rotY(&n, radians(a->rSelf->rotation.y));
+		rotZ(&n, radians(a->rSelf->rotation.z));
 		vector3d_normalize(&n);
 		//rotX(&pv, a->rSelf->rotation.x);
 		//rotY(&pv, a->rSelf->rotation.y);
@@ -635,9 +635,9 @@ void groundCheck(Entity *a) {
 			e = vector3d(0.5 * a->rSelf->scale.x, 0.5 * a->rSelf->scale.y, 0.5 * a->rSelf->scale.z);
 		}
 		//Vector3D pv = vector3d(-a->rSelf->position.x, -a->rSelf->position.y, -a->rSelf->position.z);
-		rotX(&n, -a->rSelf->rotation.x);
-		rotY(&n, -a->rSelf->rotation.y);
-		rotZ(&n, -a->rSelf->rotation.z);
+		rotX(&n, radians(-a->rSelf->rotation.x));
+		rotY(&n, radians(-a->rSelf->rotation.y));
+		rotZ(&n, radians(-a->rSelf->rotation.z));
 		vector3d_normalize(&n);
 		//rotX(&pv, a->rSelf->rotation.x);
 		//rotY(&pv, a->rSelf->rotation.y);
@@ -844,13 +844,13 @@ CollisionManifold findCollisionBoxes(Entity* a, Entity* b) {
 
 	//rotating them into position
 	for (int i = 0; i < 3; i++) {
-		rotX(&aMat[i], -a->rSelf->rotation.x);
-		rotY(&aMat[i], -a->rSelf->rotation.y);
-		rotZ(&aMat[i], -a->rSelf->rotation.z);
+		rotX(&aMat[i], radians(-a->rSelf->rotation.x));
+		rotY(&aMat[i], radians(-a->rSelf->rotation.y));
+		rotZ(&aMat[i], radians(-a->rSelf->rotation.z));
 
-		rotX(&bMat[i], -b->rSelf->rotation.x);
-		rotY(&bMat[i], -b->rSelf->rotation.y);
-		rotZ(&bMat[i], -b->rSelf->rotation.z);
+		rotX(&bMat[i], radians(-b->rSelf->rotation.x));
+		rotY(&bMat[i], radians(-b->rSelf->rotation.y));
+		rotZ(&bMat[i], radians(-b->rSelf->rotation.z));
 
 	}
 	Vector3D test[15] = {
@@ -1078,7 +1078,7 @@ void applyImpluse(Entity* a, Entity* b, CollisionManifold* m, int c) {
 	//Friction
 	Vector3D t;
 	vector3d_add(t, relVelo, -vector3d_dot_product(relNorm, relVelo) * relNorm);
-	if (vector3d_magnitude(t) - 0 < 0.001) {
+	if (vector3d_magnitude(t) - 0 < 0.0000000001) {
 		return;
 	}
 	vector3d_normalize(&t);
@@ -1116,7 +1116,7 @@ void applyImpluse(Entity* a, Entity* b, CollisionManifold* m, int c) {
 	if (m->contactSize > 0 && jt != 0) {
 		jt /= (float)m->contactSize;
 	}
-	if (jt - 0.0 < 0.001) {
+	if (fabsf(jt) - 0.0 < 0.0000000001) {
 		return;
 	}
 	float friction = sqrtf(a->pSelf->friction * b->pSelf->friction);
@@ -1128,8 +1128,8 @@ void applyImpluse(Entity* a, Entity* b, CollisionManifold* m, int c) {
 	}
 	Vector3D tangentImpluse;
 	tangentImpluse.x = t.x * jt;
-	tangentImpluse.x = t.y * jt;
-	tangentImpluse.x = t.z * jt;
+	tangentImpluse.y = t.y * jt;
+	tangentImpluse.z = t.z * jt;
 
 	vector3d_add(a->velocity, a->velocity, -invMass1 * tangentImpluse);
 	vector3d_add(b->velocity, b->velocity, invMass2 * tangentImpluse);
@@ -1224,14 +1224,17 @@ void physicsUpdate(float deltatime) {
 	size = phyEngine.pairSize;
 	int count = 0;
 	int in = 0;
-	while (count < size){
+	while (count < size ){
 		if (phyEngine.colliders1[in].eSelf == NULL && phyEngine.colliders2[in].eSelf == NULL) {
 			in++;
 			continue;
 		}
 		float totalMass = invMass(&phyEngine.colliders1[in]) + invMass(&phyEngine.colliders2[in]);
-		if (totalMass == 0) continue;
-		
+		if (totalMass == 0) {
+			in++;
+			count++;
+			continue;
+		}
 		float depth = fmaxf(phyEngine.results[in].depth - phyEngine.penetrationSlack, 0);
 		float scalar = depth / totalMass;
 		Vector3D correction = phyEngine.results[in].normal;
