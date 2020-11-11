@@ -58,8 +58,8 @@ int raycastBox(Entity* a, Ray* ray, RaycastResult* outResult){
 	Vector3D aMat[3];
 	float bounds[3];
 	bounds[0] = 0.25 * a->rSelf->scale.x;
-	bounds[0] = 0.25 * a->rSelf->scale.y;
-	bounds[0] = 0.25 * a->rSelf->scale.z;
+	bounds[1] = 0.25 * a->rSelf->scale.y;
+	bounds[2] = 0.25 * a->rSelf->scale.z;
 	//creating local axis for a and b
 	aMat[0] = vector3d(1, 0, 0); //X
 	
@@ -75,7 +75,7 @@ int raycastBox(Entity* a, Ray* ray, RaycastResult* outResult){
 	}
 	Vector3D p;
 	Vector3D oPos = vector3d(a->rSelf->position.x, a->rSelf->position.y, a->rSelf->position.z);
-	vector3d_add(p, oPos, ray->origin);
+	vector3d_add(p, oPos, -ray->origin);
 	vector3d_normalize(&ray->direction);
 	Vector3D f;
 	Vector3D e;
@@ -83,9 +83,9 @@ int raycastBox(Entity* a, Ray* ray, RaycastResult* outResult){
 	f.y = vector3d_dot_product(aMat[1], ray->direction);
 	f.z = vector3d_dot_product(aMat[2], ray->direction);
 
-	e.x = vector3d_magnitude(aMat[0], p);
-	e.y = vector3d_magnitude(aMat[1], p);
-	e.z = vector3d_magnitude(aMat[2], p);
+	e.x = vector3d_dot_product(aMat[0], p);
+	e.y = vector3d_dot_product(aMat[1], p);
+	e.z = vector3d_dot_product(aMat[2], p);
 
 	float t[6] = { 0,0,0,0,0,0 };
 	//X - axis
@@ -138,7 +138,7 @@ int raycastBox(Entity* a, Ray* ray, RaycastResult* outResult){
 			aMat[2],vector3d(-1.0 * aMat[2].x,-1.0 * aMat[2].y ,-1.0 * aMat[2].z)
 		};
 		for (int i = 0; i < 6; i++) {
-			if (result - t[i] < 0.0001) {
+			if (result - t[i] < 0.00000001) {
 				outResult->normal = norms[i];
 				vector3d_normalize(&outResult->normal);
 			}

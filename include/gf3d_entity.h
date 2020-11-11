@@ -59,6 +59,7 @@ typedef struct Rigidbody_S {
      Obstacle* obsSelf;
      int isObs;
      int noCollide;
+     float timer;
      Vector3D velocity;
      //Possible change entityRender into a pointer to its proper render in the list;
      //Functions (Implement later)
@@ -89,6 +90,12 @@ typedef struct Rigidbody_S {
  void addLinearImpluse(Rigidbody* self,Vector3D impluse);
 
  Entity* addCollctible(Vector3D pos);
+
+ Entity* getEntList();
+
+ Entity* addEmpty(Vector3D pos);
+
+ void empty_update(Entity* self);
 
  void addWalls();
 

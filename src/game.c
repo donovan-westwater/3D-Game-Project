@@ -90,13 +90,13 @@ int main(int argc,char *argv[])
     phyEngine_init();
     playerManInit();
     //addEntity(vector4d(0, 1, -5, 1), vector4d(0, 0, 0, 1), vector4d(1, 1, 1, 1), vector4d(0, 1, 0, 1),vector3d(-1, 0 , 0), 0,0);
-    addEntity(vector4d(-1, 2, 1, 1), vector4d(35, 0, 0, 1), vector4d(1, 1, 1, 1), vector4d(0, 1, 0, 1), vector3d(0, 0, 0), 1,0);
+    addEntity(vector4d(-1, 2, 1, 1), vector4d(35, 0, 0, 1), vector4d(1, 1, 1, 1), vector4d(0, 1, 0, 1), vector3d(0, -0.1, 0), 1,0);
     addEntity(vector4d(-1, 1, 1, 1), vector4d(0, 0, 0, 1), vector4d(1, 1, 1, 1), vector4d(0, 1, 0, 1), vector3d(0, 0, 0), 1, 0);
     Entity *ground = addEntity(vector4d(0, -0.25, 0, 1), vector4d(0, 0, 0, 1), vector4d(50, 1, 50, 1), vector4d(0, 0, 0.5, 1), vector3d(0, 0, 0), 1,0);
     ground->pSelf->mass = 0;
     ground->pSelf->friction = 0;
     addWalls();
-    addCollctible(vector3d(2, 1, 2));
+     //move to player init
     
     VkDevice device = gf3d_vgraphics_get_default_logical_device();
     Pipeline *fullscreenpipe = gf3d_pipeline_fullscreen_create(device, "shaders/fullscreen.spv", "shaders/RayMarch.spv", gf3d_vgraphics_get_view_extent(), 1024);
@@ -129,6 +129,16 @@ int main(int argc,char *argv[])
         }
         else if (keys[SDL_SCANCODE_W]) {
             gf3d_vgraphics_move_camera(1,0.01*speed);
+        }
+        if (keys[SDL_SCANCODE_SPACE]) {
+            RaycastResult result;
+            get_RaycastAhead(&result);
+            if (result.hit) {
+                Vector3D in;
+                vector3d_add(in, result.point, -2.5 * result.normal);
+               addEmpty(in);
+               
+            }
         }
         
         gfc_matrix_rotate(

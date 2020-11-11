@@ -95,24 +95,31 @@ float sceneSDF(vec3 p){
         rotY(pD,radians(ubo.renderList[i].rotation.y));
         rotX(pD,radians(ubo.renderList[i].rotation.x));
         scale = ubo.renderList[i].scale.xyz;
-        //d = min(sphereSDF(pD.xyz),d);
         if(ubo.renderList[i].type == 1) d = min(boxSDF(pD.xyz/scale,vec3(0.25,0.25,0.25))*min(scale.x,min(scale.y,scale.z)),d);
-        else d = min(sphereSDF(pD.xyz/scale)*min(scale.x,min(scale.y,scale.z)),d);
-        /*
-        switch(i){
-            case 0: //Sphere
-                d = min(sphereSDF(pD.xyz/scale)*min(scale.x,min(scale.y,scale.z)),d);
-                break;
-            case 1: //Box
-                break;
-            case 2: //Other
-                break;
-        }
-        */
+        if(ubo.renderList[i].type == 0) d = min(sphereSDF(pD.xyz/scale)*min(scale.x,min(scale.y,scale.z)),d);
+       
         if(abs(d - prevD) > 0.0001) currentEnt = i;
         prevD = d;
     }
     d = min(d,planeSDF(p,vec3(0,1,0),0));
+    //Substractions
+    for(int i = 0;i<50;i++){
+        if(ubo.renderList[i].id < 0) continue;
+        pD = vec4(p,1);
+        //Transforms
+        pD.xyz -= ubo.renderList[i].position.xyz;
+        rotZ(pD,radians(ubo.renderList[i].rotation.z));
+        rotY(pD,radians(ubo.renderList[i].rotation.y));
+        rotX(pD,radians(ubo.renderList[i].rotation.x));
+        scale = ubo.renderList[i].scale.xyz;
+        if(ubo.renderList[i].type == 2) d = max(-boxSDF(pD.xyz/scale,vec3(0.25,0.25,0.25))*min(scale.x,min(scale.y,scale.z)),d);
+        if(ubo.renderList[i].type == 3) d = max(-sphereSDF(pD.xyz/scale)*min(scale.x,min(scale.y,scale.z)),d);
+       
+        if(abs(d - prevD) > 0.0001) currentEnt = i;
+        prevD = d;
+    }
+
+    
     if(abs(d - prevD) > 0.0001) currentEnt = -1;
   
     return d;

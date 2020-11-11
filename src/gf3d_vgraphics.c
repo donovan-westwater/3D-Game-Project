@@ -24,6 +24,7 @@
 #include "gf3d_commands.h"
 #include "gf3d_texture.h"
 #include "gf3d_entity.h"
+#include "gf3d_player.h"
 
 typedef struct
 {
@@ -667,6 +668,11 @@ uint32_t gf3d_vgraphics_find_memory_type(uint32_t typeFilter, VkMemoryPropertyFl
 }
 
 void gf3d_vgraphics_move_camera(float dir,float speed) {
+    RaycastResult check;
+    resetRayResult(&check);
+    if (get_RaycastAhead(&check)) {
+        if (check.t <= 0.01) return;
+    }
     Vector4D translation = vector4d(0, 0, dir*1, 0);
     gfc_matrix_multiply_vector4d(&translation, gf3d_vgraphics.ubo.view, translation);
     vector4d_normalize(&translation);

@@ -346,7 +346,7 @@ float sphereSDF(Vector3D p) {
 }
 
 float boxSDF(Vector3D p, Vector3D b) {
-	Vector3D a = vector3d(abs(p.x), abs(p.y), abs(p.z));
+	Vector3D a = vector3d(fabsf(p.x), fabsf(p.y), fabsf(p.z));
 	Vector3D q = vector3d(0, 0, 0);
 	vector3d_add(q, a, -b);
 	return length(VectorMax(q, ZERO3D)) + min(max(q.x, max(q.y, q.z)), 0.0);
@@ -545,6 +545,7 @@ int sphereOBBtest(Entity* a, Entity* b) {
 	else return 0;
 }
 int isCollide(Entity* a, Entity* b) {
+	if (a->id == b->id) return 0;
 	int sphereFlag = 1;
 	int aFlag = 0;
 	int bFlag = 0;

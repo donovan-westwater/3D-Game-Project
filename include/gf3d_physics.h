@@ -103,6 +103,8 @@ float sphereSDF(Vector3D p);
 /*Param: 3d vector to act as the bounds of the box*/
 float boxSDF(Vector3D p, Vector3D b);
 
+float generalSDF(int type, Vector3D p);
+
 //**Geometry helper functions**//
 void rotXb(Vector3D* o, float s, float c);
 void rotYb(Vector3D* o, float s, float c);

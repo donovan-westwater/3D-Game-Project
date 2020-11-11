@@ -20,6 +20,11 @@ void initEntList() {
 
 }
 
+Entity* getEntList() {
+	return &entList;
+
+}
+
 Entity* addEntity(Vector4D pos, Vector4D rot, Vector4D scale, Vector4D color, Vector3D velo, int type,int isObs) {
 	int i;
 	for (i = 0; i < entSize; i++) {
@@ -65,7 +70,7 @@ Entity* addEntity(Vector4D pos, Vector4D rot, Vector4D scale, Vector4D color, Ve
 		entList[i].pSelf = addRigidbody(o);
 		//Fucntion pointers here!
 	}
-	
+	entList[i].timer = 0;
     entList[i].inuse = 1;
 	entList[i].velocity = velo;
 	entList[i].rSelf->type = type;
@@ -87,6 +92,47 @@ void updateEntAll() {
 
 void update(Entity* self) {
 	if (self->rSelf->position.y < -1) printf("Went throught floor!\n");
+	
+	RaycastResult result;
+	resetRayResult(&result);
+	RaycastResult test;
+	Ray ahead;
+	Vector3D forward = self->velocity;
+	Vector3D next;
+	vector3d_add(next, vector3d(self->rSelf->position.x, self->rSelf->position.y, self->rSelf->position.z), self->velocity);
+	//vector3d_normalize(&forward);
+	ahead.direction = vector3d(forward.x, forward.y, forward.z);
+	ahead.origin = vector3d(self->rSelf->position.x, self->rSelf->position.y, self->rSelf->position.z);
+	float min = 99999;
+	for (int i = 0; i < entSize; i++) {
+		if (entList[i].inuse == 0) continue;
+		if (self->id == entList[i].id) continue;
+		if (raycastGeneral(&entList[i], &ahead, &test)) {
+			if (test.hit && test.t < min) {
+				result = test;
+				min = test.t;
+			}
+		}
+
+	}
+	Vector3D pTest;
+	vector3d_add(pTest, result.point, -vector3d(self->rSelf->position.x, self->rSelf->position.y, self->rSelf->position.z));
+	rotZ(&pTest, radians(self->rSelf->rotation.z));
+	rotY(&pTest, radians(self->rSelf->rotation.y));
+	rotX(&pTest, radians(self->rSelf->rotation.x));
+	Vector3D scale = vector3d(self->rSelf->scale.x, self->rSelf->scale.y, self->rSelf->scale.z);
+	pTest.x /= scale.x;
+	pTest.y /= scale.y;
+	pTest.z /= scale.z;
+	if (generalSDF(self->rSelf->type, pTest) * min(scale.x, min(scale.y, scale.z)) <= 0.1) return;
+	//if (min <= 0.35) return;
+	vector4d_add(self->rSelf->position, self->rSelf->position, vector4d(self->velocity.x, self->velocity.y, self->velocity.z, 0));
+	groundCheck(self);
+	
+	
+	
+	
+	
 	/*
 	count += 0.01;
 	if (count > 500) count = 0;
@@ -96,7 +142,8 @@ void update(Entity* self) {
 	self->rSelf->rotation.x = r.x;
 	self->rSelf->rotation.y = r.y;
 	self->rSelf->rotation.z = r.z;
-	
+	*/
+	/*
 	float numOfSteps = 0;
 	for (float i = 1; i <= StepNum; i++) {
 		Vector4D p0 = vector4d(self->rSelf->position.x, self->rSelf->position.y, self->rSelf->position.z,1);
@@ -186,6 +233,40 @@ Entity* addCollctible(Vector3D pos) {
 	c->update = coll_update;
 
 }
+Entity* addEmpty(Vector3D pos) {
+	int i;
+	for (i = 0; i < entSize; i++) {
+		if (entList[i].inuse < 1) break;
+	}
+	if (i > entSize) {
+		printf("OUT OF SPACE! NO ENTITY COULD BE CREATED");
+	}
+	UniformBufferObject* ubo = gf3d_get_pointer_to_UBO();
+	entList[i].rSelf = &ubo->renderList[i];
+	entList[i].rSelf->position = vector4d(pos.x, pos.y, pos.z,1);
+	entList[i].rSelf->rotation = vector4d(0,0,0,1);
+	entList[i].rSelf->scale = vector4d(2, 2, 2, 1);
+	entList[i].rSelf->color = vector4d(1,1,1,1);
+	entList[i].rSelf->id = i;
+	entList[i].timer = 0;
+	entList[i].inuse = 1;
+	entList[i].update = empty_update;
+	entList[i].velocity = vector3d(0,0,0);
+	entList[i].rSelf->type = 3;
+	entList[i].noCollide = true;
+	count += 1;
+	return &entList[i];
+}
+
+void empty_update(Entity* self) {
+	self->timer += 0.001;
+	//self->rSelf->position.z += 0.1;
+	if (self->timer >= 1) {
+		self->inuse = 0;
+		self->rSelf->id = -1;
+	}
+}
+
 void coll_update(Entity* self) {
 	PlayerManger* p = get_PlayerManager();
 	Vector3D pos = vector3d(self->rSelf->position.x, self->rSelf->position.y, self->rSelf->position.z);
@@ -193,11 +274,12 @@ void coll_update(Entity* self) {
 	Vector3D player = vector3d(ubo.view[3][0],ubo.view[3][1],ubo.view[3][2]);
 	Vector3D line;
 	vector3d_add(line, player, -pos);
-	if (vector3d_magnitude(line) < 0.5 * self->rSelf->scale.x) {
+	if (vector3d_magnitude(line) < 0.5 * self->rSelf->scale.x+0.1) {
 		self->inuse = 0;
 		self->rSelf->id = -1;
 		//self->rSelf->position = vector4d(-99999, -999999, -99999, 0);
-		p->count = 1;
+		printf("I solved a puzzle!\n");
+		p->count += 1;
 		//Some player counter ticks up here
 	}
 
