@@ -1,3 +1,5 @@
+#include <SDL.h> 
+
 #include "gf3d_vgraphics.h"
 #include "gf3d_entity.h"
 #include "gf3d_physics.h"
@@ -6,6 +8,7 @@
 #define StepNum 5
 
 static Entity entList[entSize] = { -1 };
+static Entity* hole = NULL;
 static float count = 0;
 //initilizes the list from the UBO and entity list
 void initEntList() {
@@ -234,6 +237,12 @@ Entity* addCollctible(Vector3D pos) {
 
 }
 Entity* addEmpty(Vector3D pos) {
+	if (hole != NULL) {
+		hole->id = -1;
+		hole->rSelf->id = -1;
+		hole->inuse = 0;
+		hole = NULL;
+	}
 	int i;
 	for (i = 0; i < entSize; i++) {
 		if (entList[i].inuse < 1) break;
@@ -254,7 +263,7 @@ Entity* addEmpty(Vector3D pos) {
 	entList[i].velocity = vector3d(0,0,0);
 	entList[i].rSelf->type = 3;
 	entList[i].noCollide = true;
-	count += 1;
+	hole = &entList[i];
 	return &entList[i];
 }
 
@@ -264,7 +273,31 @@ void empty_update(Entity* self) {
 	if (self->timer >= 1) {
 		self->inuse = 0;
 		self->rSelf->id = -1;
+		return;
 	}
+	UniformBufferObject ubo = gf3d_vgraphics_get_uniform_buffer_object();
+	Uint8* key;
+	key = SDL_GetKeyboardState(NULL);
+	Vector4D dir = vector4d(0, 0, 0, 1);
+	if (key[SDL_SCANCODE_LEFT]) {
+		dir = vector4d(-1, 0, 0, 0);
+	}
+	else if (key[SDL_SCANCODE_RIGHT]) {
+		dir = vector4d(1, 0, 0, 0);
+	}
+	if (key[SDL_SCANCODE_UP]) {
+		dir = vector4d(0, 0, 1, 0);
+	}
+	else if (key[SDL_SCANCODE_DOWN]) {
+		dir = vector4d(0, 0, -1, 0);
+	}
+	else if (key[SDL_SCANCODE_E]) {
+		if (self->rSelf->type == 2) self->rSelf->type = 3;
+		else self->rSelf->type = 2;
+	}
+	if (dir.w == 1) return;
+	gfc_matrix_multiply_vector4d(&dir, ubo.view, dir);
+	vector4d_add(self->rSelf->position, self->rSelf->position, dir);
 }
 
 void coll_update(Entity* self) {
@@ -280,9 +313,11 @@ void coll_update(Entity* self) {
 		//self->rSelf->position = vector4d(-99999, -999999, -99999, 0);
 		printf("I solved a puzzle!\n");
 		p->count += 1;
+		return;
 		//Some player counter ticks up here
 	}
 
+	
 }
 
 void addWalls() {
