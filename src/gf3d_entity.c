@@ -238,10 +238,14 @@ Entity* addCollctible(Vector3D pos) {
 }
 Entity* addEmpty(Vector3D pos) {
 	if (hole != NULL) {
-		hole->id = -1;
-		hole->rSelf->id = -1;
-		hole->inuse = 0;
-		hole = NULL;
+		hole->rSelf->position.x = pos.x;
+		hole->rSelf->position.y = pos.y;
+		hole->rSelf->position.z = pos.z;
+		return hole;
+		//hole->id = -1;
+		//hole->rSelf->id = -1;
+		//hole->inuse = 0;
+		//hole = NULL;
 	}
 	int i;
 	for (i = 0; i < entSize; i++) {
@@ -300,7 +304,7 @@ void empty_update(Entity* self) {
 		else self->rSelf->scale = vector4d(1, 1, 1, 1);
 	}
 	if (dir.w == 1) return;
-	gfc_matrix_multiply_vector4d(&dir, ubo.view, dir);
+	//gfc_matrix_multiply_vector4d(&dir, ubo.view, dir);
 	vector4d_add(self->rSelf->position, self->rSelf->position, dir);
 }
 
@@ -338,6 +342,15 @@ void addWalls() {
 	wall->pSelf->friction = 0;
 
 	wall = addEntity(vector4d(0, 5/2, -12.5, 1), vector4d(0, 0, 0, 1), vector4d(50, 10, 1, 1), vector4d(0, 0.5, 0.5, 1), vector3d(0, 0, 0), 1, 0);
+	wall->pSelf->mass = 0;
+	wall->pSelf->friction = 0;
+
+	wall = addEntity(vector4d(2, 5 / 2, 6, 1), vector4d(0, 0, 0, 1), vector4d(1, 10, 15, 1), vector4d(0, 0.5, 0.5, 1), vector3d(0, 0, 0), 1, 0);
+	wall->pSelf->mass = 0;
+	wall->pSelf->friction = 0;
+
+
+	wall = addEntity(vector4d(0, 5 / 2, 6, 1), vector4d(0, 0, 0, 1), vector4d(50, 10, 1, 1), vector4d(0, 0.5, 0.5, 1), vector3d(0, 0, 0), 1, 0);
 	wall->pSelf->mass = 0;
 	wall->pSelf->friction = 0;
 }

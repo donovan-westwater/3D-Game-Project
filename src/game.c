@@ -156,7 +156,7 @@ int main(int argc,char *argv[])
         double delta = current - last;
         totalTime += delta;
         fps = totalF / totalTime;
-        if ((int)totalTime % 200000000) printf("CURRENT FPS: %f\n", fps);
+        //if ((int)totalTime % 200000000) printf("CURRENT FPS: %f\n", fps);
         //Level update section
         //EntityThink
         //pre player sync

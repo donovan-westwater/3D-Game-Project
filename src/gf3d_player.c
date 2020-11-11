@@ -5,9 +5,9 @@
 static PlayerManger playerM = { 0 };
 void playerManInit() {
 	playerM.count = 0;
-	playerM.puzzle1 = addCollctible(vector3d(2, 1, 2));
-	playerM.puzzle2 = addCollctible(vector3d(-2, 1, 2));
-	playerM.puzzle3 = addCollctible(vector3d(2, 1, -2));
+	playerM.puzzle1 = addCollctible(vector3d(0, 1, 8));
+	playerM.puzzle2 = addCollctible(vector3d(2, 1, 2));
+	playerM.puzzle3 = addCollctible(vector3d(4, 1, 8));
 	//Initialize collectibes here
 }
 
@@ -23,6 +23,7 @@ int get_RaycastAhead(RaycastResult* outResult) {
 	RaycastResult result;
 	resetRayResult(&result);
 	RaycastResult test;
+	resetRayResult(&test);
 	Ray ahead;
 	Vector4D forward = vector4d(0, 0, 1, 0);
 	gfc_matrix_multiply_vector4d(&forward, ubo->view, forward);
