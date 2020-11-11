@@ -292,8 +292,12 @@ void empty_update(Entity* self) {
 		dir = vector4d(0, 0, -1, 0);
 	}
 	else if (key[SDL_SCANCODE_E]) {
-		if (self->rSelf->type == 2) self->rSelf->type = 3;
+		if (self->rSelf->type != 3) self->rSelf->type = 3;
 		else self->rSelf->type = 2;
+	}
+	else if (key[SDL_SCANCODE_Q]) {
+		if (self->rSelf->scale.x == 1) self->rSelf->scale = vector4d(2, 2, 2, 1);
+		else self->rSelf->scale = vector4d(1, 1, 1, 1);
 	}
 	if (dir.w == 1) return;
 	gfc_matrix_multiply_vector4d(&dir, ubo.view, dir);

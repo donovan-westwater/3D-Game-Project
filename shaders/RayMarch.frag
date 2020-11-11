@@ -106,6 +106,11 @@ float sceneSDF(vec3 p){
     for(int i = 0;i<50;i++){
         if(ubo.renderList[i].id < 0) continue;
         pD = vec4(p,1);
+        if(ubo.renderList[i].type == 4){
+            vec3 c = vec3(5);
+            vec3 q = mod(pD.xyz+0.5*c,c)-0.5*c;
+            pD.xyz = q;
+        }
         //Transforms
         pD.xyz -= ubo.renderList[i].position.xyz;
         rotZ(pD,radians(ubo.renderList[i].rotation.z));
@@ -114,7 +119,7 @@ float sceneSDF(vec3 p){
         scale = ubo.renderList[i].scale.xyz;
         if(ubo.renderList[i].type == 2) d = max(-boxSDF(pD.xyz/scale,vec3(0.25,0.25,0.25))*min(scale.x,min(scale.y,scale.z)),d);
         if(ubo.renderList[i].type == 3) d = max(-sphereSDF(pD.xyz/scale)*min(scale.x,min(scale.y,scale.z)),d);
-       
+        if(ubo.renderList[i].type == 4) d = max(-sphereSDF(pD.xyz/scale)*min(scale.x,min(scale.y,scale.z)),d);
         if(abs(d - prevD) > 0.0001) currentEnt = i;
         prevD = d;
     }
