@@ -1,7 +1,7 @@
 #version 450
 #extension GL_ARB_separate_shader_objects : enable
 
-#define STEPS 128
+#define STEPS 64
 #define STEP_SIZE 0.01
 #define MIN_DISTANCE 0.01
 //Was 0.1
