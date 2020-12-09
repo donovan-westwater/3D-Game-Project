@@ -22,7 +22,8 @@ layout(binding = 0) uniform UniformBufferObject {
     mat4 view; //Camera
     mat4 proj; //Perspective of camera
     vec2 resolution;
-    
+    int totalObj;
+
 } ubo;
 
 //layout(binding = 1) uniform sampler2D texSampler;
@@ -41,6 +42,7 @@ vec3 lightVector = vec3(0,5,0); //vec3(0,0,1);
 vec3 cameraVector = vec3(0,0,1);
 vec3 vDirection = vec3(0,0,0);
 int currentEnt = -1;
+int currAdd = -1;
 //***Transformations***//
 //Copied from marble marcher
 void rotX(inout vec4 z, float s, float c) {
@@ -86,8 +88,10 @@ float sceneSDF(vec3 p){
     vec3 scale;
     float d = 99999.;
     float prevD = d;
+    int curTotal = 0;
     for(int i = 0;i<50;i++){
         if(ubo.renderList[i].id < 0) continue;
+        if(curTotal > ubo.totalObj) break;
         pD = vec4(p,1);
         //Transforms
         pD.xyz -= ubo.renderList[i].position.xyz;
@@ -98,13 +102,19 @@ float sceneSDF(vec3 p){
         if(ubo.renderList[i].type == 1) d = min(boxSDF(pD.xyz/scale,vec3(0.25,0.25,0.25))*min(scale.x,min(scale.y,scale.z)),d);
         if(ubo.renderList[i].type == 0) d = min(sphereSDF(pD.xyz/scale)*min(scale.x,min(scale.y,scale.z)),d);
        
-        if(abs(d - prevD) > 0.0001) currentEnt = i;
+        if(abs(d - prevD) > 0.0001){
+            currentEnt = i;
+            currAdd = i;
+        }
         prevD = d;
+        curTotal += 1;
     }
     d = min(d,planeSDF(p,vec3(0,1,0),0));
+    curTotal = 0;
     //Substractions
     for(int i = 0;i<50;i++){
         if(ubo.renderList[i].id < 0) continue;
+        if(curTotal > ubo.totalObj) break;
         pD = vec4(p,1);
         if(ubo.renderList[i].type == 4){
             vec3 c = vec3(5);
@@ -122,20 +132,72 @@ float sceneSDF(vec3 p){
         if(ubo.renderList[i].type == 4) d = max(-sphereSDF(pD.xyz/scale)*min(scale.x,min(scale.y,scale.z)),d);
         if(abs(d - prevD) > 0.0001) currentEnt = i;
         prevD = d;
+
+        curTotal += 1;
     }
 
     
-    if(abs(d - prevD) > 0.0001) currentEnt = -1;
+    //if(abs(d - prevD) > 0.0001) currentEnt = -1;
   
     return d;
 }
 //***Lighting***//
+float lSceneSDF(vec3 p){
+    //If type is not sub, then act normal, but if sub, build entire scene before sub
+    vec4 pD = vec4(p,1);
+    vec3 scale;
+    float d = 99999.;
+   
+    //float prevD = d;
+    //Build up scene
+	int i = currentEnt;
+  	if(ubo.renderList[i].type > 1){
+       	int j = currAdd;
+        
+        pD = vec4(p,1);
+        //Transforms
+        pD.xyz -= ubo.renderList[j].position.xyz;
+        rotZ(pD,radians(ubo.renderList[j].rotation.z));
+        rotY(pD,radians(ubo.renderList[j].rotation.y));
+        rotX(pD,radians(ubo.renderList[j].rotation.x));
+        scale = ubo.renderList[j].scale.xyz;
+        if(ubo.renderList[j].type == 1) d = min(boxSDF(pD.xyz/scale,vec3(0.25,0.25,0.25))*min(scale.x,min(scale.y,scale.z)),d);
+        if(ubo.renderList[j].type == 0) d = min(sphereSDF(pD.xyz/scale)*min(scale.x,min(scale.y,scale.z)),d);
+       
+		d = min(d,planeSDF(p,vec3(0,1,0),0));
+        
+        //Transforms
+        pD.xyz -= ubo.renderList[i].position.xyz;
+        rotZ(pD,radians(ubo.renderList[i].rotation.z));
+        rotY(pD,radians(ubo.renderList[i].rotation.y));
+        rotX(pD,radians(ubo.renderList[i].rotation.x));
+        scale = ubo.renderList[i].scale.xyz;
+        if(ubo.renderList[i].type == 2) d = max(-boxSDF(pD.xyz/scale,vec3(0.25,0.25,0.25))*min(scale.x,min(scale.y,scale.z)),d);
+        if(ubo.renderList[i].type == 3) d = max(-sphereSDF(pD.xyz/scale)*min(scale.x,min(scale.y,scale.z)),d);
+        if(ubo.renderList[i].type == 4) d = max(-sphereSDF(pD.xyz/scale)*min(scale.x,min(scale.y,scale.z)),d);
+        
+
+    }else{
+        pD = vec4(p,1);
+        //Transforms
+        pD.xyz -= ubo.renderList[i].position.xyz;
+        rotZ(pD,radians(ubo.renderList[i].rotation.z));
+        rotY(pD,radians(ubo.renderList[i].rotation.y));
+        rotX(pD,radians(ubo.renderList[i].rotation.x));
+        scale = ubo.renderList[i].scale.xyz;
+        if(ubo.renderList[i].type == 1) d = min(boxSDF(pD.xyz/scale,vec3(0.25,0.25,0.25))*min(scale.x,min(scale.y,scale.z)),d);
+        if(ubo.renderList[i].type == 0) d = min(sphereSDF(pD.xyz/scale)*min(scale.x,min(scale.y,scale.z)),d);
+       
+       d = min(d,planeSDF(p,vec3(0,1,0),0));
+    }
+    return d;
+}
  vec3 estimateNormal(vec3 p) {
     if(p.y <= -1.0) p.y = 0.;
     return normalize(vec3(
-        sceneSDF(vec3(p.x + MIN_DISTANCE, p.y, p.z)) - sceneSDF(vec3(p.x - MIN_DISTANCE, p.y, p.z)),
-        sceneSDF(vec3(p.x, p.y + MIN_DISTANCE, p.z)) - sceneSDF(vec3(p.x, p.y - MIN_DISTANCE, p.z)),
-        sceneSDF(vec3(p.x, p.y, p.z  + MIN_DISTANCE)) - sceneSDF(vec3(p.x, p.y, p.z - MIN_DISTANCE))
+        lSceneSDF(vec3(p.x + MIN_DISTANCE, p.y, p.z)) - lSceneSDF(vec3(p.x - MIN_DISTANCE, p.y, p.z)),
+        lSceneSDF(vec3(p.x, p.y + MIN_DISTANCE, p.z)) - lSceneSDF(vec3(p.x, p.y - MIN_DISTANCE, p.z)),
+        lSceneSDF(vec3(p.x, p.y, p.z  + MIN_DISTANCE)) - lSceneSDF(vec3(p.x, p.y, p.z - MIN_DISTANCE))
     ));
 }
 
@@ -166,12 +228,14 @@ vec4 raymarch(vec4 position, vec4 direction) {
         if (distance < MIN_DISTANCE){
             vec4 retColor = vec4(0.15,0.15,0.15,1);
             if(currentEnt > -1) retColor = ubo.renderList[currentEnt].color;
-            currentEnt = -1;
+            
             retColor.w = 1;
             return retColor*renderSurface(tmp);//renderSurface(tmp);
         }
         position += direction * distance;//STEP_SIZE;
-        if(total > 50.) break;
+        currentEnt = -1;
+        currAdd = -1;
+        if(total > 30.) break; //was 50.
     }
     /*
     if(planeSDF(position.xyz,vec3(0,1,0),-1.) <= -1.0){//position.y < -1.){

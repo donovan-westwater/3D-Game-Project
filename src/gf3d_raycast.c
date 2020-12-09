@@ -97,18 +97,18 @@ int raycastBox(Entity* a, Ray* ray, RaycastResult* outResult){
 	t[1] = (e.x - bounds[0]) / f.x;
 	//Y - axis
 	if (fabsf(f.y - 0.0) < 0.0001) {
-		if (-e.y - bounds[0] > 0 || -e.y + bounds[0] < 0) return -1;
+		if (-e.y - bounds[1] > 0 || -e.y + bounds[1] < 0) return -1;
 		f.y = 0.00001;
 	}
 	t[2] = (e.y + bounds[1]) / f.y;
 	t[3] = (e.y - bounds[1]) / f.y;
 	//Z - axis
 	if (fabsf(f.z - 0.0) < 0.0001) {
-		if (-e.z - bounds[0] > 0 || -e.z + bounds[0] < 0) return -1;
+		if (-e.z - bounds[2] > 0 || -e.z + bounds[2] < 0) return -1;
 		f.z = 0.00001;
 	}
-	t[4] = (e.z + bounds[1]) / f.z;
-	t[5] = (e.z - bounds[1]) / f.z;
+	t[4] = (e.z + bounds[2]) / f.z;
+	t[5] = (e.z - bounds[2]) / f.z;
 
 	float tmin = fmaxf(
 		fmaxf(

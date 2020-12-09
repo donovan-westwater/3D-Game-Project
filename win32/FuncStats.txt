@@ -1,10 +1,10 @@
      eType,  uiId,     Hits,  TotalTime,                                   GUID, Name
-       KMD,  5000,       24,      46166, {802EC45A-1E99-4B83-9920-87C98277BA9D}, DdiQueryAdapterInfo
-       KMD,  5001,       15,       3381, {802EC45A-1E99-4B83-9920-87C98277BA9D}, DdiCreateDevice
-       KMD,  5002,     1463,     185667, {802EC45A-1E99-4B83-9920-87C98277BA9D}, DdiCreateAllocation
-       KMD,  5003,     1615,      23006, {802EC45A-1E99-4B83-9920-87C98277BA9D}, DdiDescribeAllocation
-       KMD,  5004,       37,       1013, {802EC45A-1E99-4B83-9920-87C98277BA9D}, DdiGetStandardAllocationDriverData
-       KMD,  5005,     1094,      57814, {802EC45A-1E99-4B83-9920-87C98277BA9D}, DdiDestroyAllocation
+       KMD,  5000,       16,      16060, {802EC45A-1E99-4B83-9920-87C98277BA9D}, DdiQueryAdapterInfo
+       KMD,  5001,       11,       2291, {802EC45A-1E99-4B83-9920-87C98277BA9D}, DdiCreateDevice
+       KMD,  5002,     2044,     188655, {802EC45A-1E99-4B83-9920-87C98277BA9D}, DdiCreateAllocation
+       KMD,  5003,     2943,      45028, {802EC45A-1E99-4B83-9920-87C98277BA9D}, DdiDescribeAllocation
+       KMD,  5004,       53,       1536, {802EC45A-1E99-4B83-9920-87C98277BA9D}, DdiGetStandardAllocationDriverData
+       KMD,  5005,      792,      33716, {802EC45A-1E99-4B83-9920-87C98277BA9D}, DdiDestroyAllocation
        KMD,  5006,        0,          0, {802EC45A-1E99-4B83-9920-87C98277BA9D}, DdiAcquireSwizzlingRange
        KMD,  5007,        0,          0, {802EC45A-1E99-4B83-9920-87C98277BA9D}, DdiReleaseSwizzlingRange
        KMD,  5008,        0,          0, {802EC45A-1E99-4B83-9920-87C98277BA9D}, DdiPatch
@@ -12,25 +12,25 @@
        KMD,  5010,        0,          0, {802EC45A-1E99-4B83-9920-87C98277BA9D}, DdiSetVidPnSourceAddress
        KMD,  5011,        0,          0, {802EC45A-1E99-4B83-9920-87C98277BA9D}, DdiSetVidPnSourceVisibility
        KMD,  5012,        0,          0, {802EC45A-1E99-4B83-9920-87C98277BA9D}, DdiUpdateActiveVidPnPresentPath
-       KMD,  5013,       15,        891, {802EC45A-1E99-4B83-9920-87C98277BA9D}, DdiSubmitCommand
-       KMD,  5014,      419,     439908, {802EC45A-1E99-4B83-9920-87C98277BA9D}, DdiPreemptCommand
+       KMD,  5013,        8,        559, {802EC45A-1E99-4B83-9920-87C98277BA9D}, DdiSubmitCommand
+       KMD,  5014,      637,     654709, {802EC45A-1E99-4B83-9920-87C98277BA9D}, DdiPreemptCommand
        KMD,  5015,        0,          0, {802EC45A-1E99-4B83-9920-87C98277BA9D}, DdiQueryCurrentFence
-       KMD,  5016,     5392,     293004, {802EC45A-1E99-4B83-9920-87C98277BA9D}, DdiBuildPagingBuffer
+       KMD,  5016,     5842,     736149, {802EC45A-1E99-4B83-9920-87C98277BA9D}, DdiBuildPagingBuffer
        KMD,  5017,        0,          0, {802EC45A-1E99-4B83-9920-87C98277BA9D}, DdiSetPalette
-       KMD,  5018,       72,       9182, {802EC45A-1E99-4B83-9920-87C98277BA9D}, DdiSetPointerShape
-       KMD,  5019,     1423,     201176, {802EC45A-1E99-4B83-9920-87C98277BA9D}, DdiSetPointerPosition
+       KMD,  5018,      110,      20371, {802EC45A-1E99-4B83-9920-87C98277BA9D}, DdiSetPointerShape
+       KMD,  5019,     1780,     269421, {802EC45A-1E99-4B83-9920-87C98277BA9D}, DdiSetPointerPosition
        KMD,  5020,        0,          0, {802EC45A-1E99-4B83-9920-87C98277BA9D}, DdiResetFromTimeout
        KMD,  5021,        0,          0, {802EC45A-1E99-4B83-9920-87C98277BA9D}, DdiRestartFromTimeout
-       KMD,  5022,    25977,    1353875, {802EC45A-1E99-4B83-9920-87C98277BA9D}, DdiEscape
+       KMD,  5022,    53362,    2636556, {802EC45A-1E99-4B83-9920-87C98277BA9D}, DdiEscape
        KMD,  5023,        0,          0, {802EC45A-1E99-4B83-9920-87C98277BA9D}, DdiCollectDbgInfo
        KMD,  5024,        0,          0, {802EC45A-1E99-4B83-9920-87C98277BA9D}, DdiRecommendFunctionalVidPn
        KMD,  5025,        0,          0, {802EC45A-1E99-4B83-9920-87C98277BA9D}, DdiIsSupportedVidPn
        KMD,  5026,        0,          0, {802EC45A-1E99-4B83-9920-87C98277BA9D}, DdiEnumVidPnCofuncModality
-       KMD,  5027,       12,       4195, {802EC45A-1E99-4B83-9920-87C98277BA9D}, DdiDestroyDevice
-       KMD,  5028,     1500,      38643, {802EC45A-1E99-4B83-9920-87C98277BA9D}, DdiOpenAllocation
-       KMD,  5029,     1129,      18528, {802EC45A-1E99-4B83-9920-87C98277BA9D}, DdiCloseAllocation
+       KMD,  5027,        4,       1927, {802EC45A-1E99-4B83-9920-87C98277BA9D}, DdiDestroyDevice
+       KMD,  5028,     2099,      52844, {802EC45A-1E99-4B83-9920-87C98277BA9D}, DdiOpenAllocation
+       KMD,  5029,      838,      15210, {802EC45A-1E99-4B83-9920-87C98277BA9D}, DdiCloseAllocation
        KMD,  5030,        0,          0, {802EC45A-1E99-4B83-9920-87C98277BA9D}, DdiRender
-       KMD,  5031,     1444,      67157, {802EC45A-1E99-4B83-9920-87C98277BA9D}, DdiPresent
+       KMD,  5031,     2712,     100887, {802EC45A-1E99-4B83-9920-87C98277BA9D}, DdiPresent
        KMD,  5032,        0,          0, {802EC45A-1E99-4B83-9920-87C98277BA9D}, DdiCreateOverlay
        KMD,  5033,        0,          0, {802EC45A-1E99-4B83-9920-87C98277BA9D}, DdiUpdateOverlay
        KMD,  5034,        0,          0, {802EC45A-1E99-4B83-9920-87C98277BA9D}, DdiFlipOverlay
@@ -40,8 +40,8 @@
        KMD,  5038,        0,          0, {802EC45A-1E99-4B83-9920-87C98277BA9D}, DdiControlInterrupt
        KMD,  5039,        0,          0, {802EC45A-1E99-4B83-9920-87C98277BA9D}, DdiStopCapture
        KMD,  5040,        0,          0, {802EC45A-1E99-4B83-9920-87C98277BA9D}, DdiRecommendVidPnTopology
-       KMD,  5041,       27,     443612, {802EC45A-1E99-4B83-9920-87C98277BA9D}, DdiCreateContext
-       KMD,  5042,       21,     161229, {802EC45A-1E99-4B83-9920-87C98277BA9D}, DdiDestroyContext
+       KMD,  5041,       27,     473478, {802EC45A-1E99-4B83-9920-87C98277BA9D}, DdiCreateContext
+       KMD,  5042,        9,      68444, {802EC45A-1E99-4B83-9920-87C98277BA9D}, DdiDestroyContext
        KMD,  5044,        0,          0, {802EC45A-1E99-4B83-9920-87C98277BA9D}, DdiSetDisplayPrivateDriverFormat
        KMD,  5045,        0,          0, {802EC45A-1E99-4B83-9920-87C98277BA9D}, DdiRenderKm
        KMD,  5046,        0,          0, {802EC45A-1E99-4B83-9920-87C98277BA9D}, DdiAddTargetMode
@@ -52,19 +52,19 @@
        KMD,  5051,        0,          0, {802EC45A-1E99-4B83-9920-87C98277BA9D}, DdiResetEngine
        KMD,  5052,        0,          0, {802EC45A-1E99-4B83-9920-87C98277BA9D}, DdiCancelCommand
        KMD,  5053,        0,          0, {802EC45A-1E99-4B83-9920-87C98277BA9D}, DdiGetNodeMetadata
-       KMD,  5054,        2,        393, {802EC45A-1E99-4B83-9920-87C98277BA9D}, DdiControlInterrupt2
+       KMD,  5054,        2,        368, {802EC45A-1E99-4B83-9920-87C98277BA9D}, DdiControlInterrupt2
        KMD,  5055,        0,          0, {802EC45A-1E99-4B83-9920-87C98277BA9D}, DdiCheckMultiPlaneOverlaySupport
-       KMD,  5056,     4864,     532887, {802EC45A-1E99-4B83-9920-87C98277BA9D}, DdiCalibrateGpuClock
+       KMD,  5056,     6624,     726738, {802EC45A-1E99-4B83-9920-87C98277BA9D}, DdiCalibrateGpuClock
        KMD,  5057,        0,          0, {802EC45A-1E99-4B83-9920-87C98277BA9D}, DdiFormatHistoryBuffer
        KMD,  5058,        0,          0, {802EC45A-1E99-4B83-9920-87C98277BA9D}, DdiGetRootPageTableSize
-       KMD,  5059,       19,      11525, {802EC45A-1E99-4B83-9920-87C98277BA9D}, DdiSetRootPageTable
+       KMD,  5059,       20,      14312, {802EC45A-1E99-4B83-9920-87C98277BA9D}, DdiSetRootPageTable
        KMD,  5060,        0,          0, {802EC45A-1E99-4B83-9920-87C98277BA9D}, DdiInitPagingProcessVaSpace
-       KMD,  5061,        0,          0, {802EC45A-1E99-4B83-9920-87C98277BA9D}, DdiMapCpuHostAperture
-       KMD,  5062,        0,          0, {802EC45A-1E99-4B83-9920-87C98277BA9D}, DdiUnmapCpuHostAperture
-       KMD,  5063,     9070,    2508395, {802EC45A-1E99-4B83-9920-87C98277BA9D}, DdiSubmitCommandVirtual
-       KMD,  5064,        5,      14571, {802EC45A-1E99-4B83-9920-87C98277BA9D}, DdiCreateProcess
-       KMD,  5065,        2,       5708, {802EC45A-1E99-4B83-9920-87C98277BA9D}, DdiDestroyProcess
-       KMD,  5066,     1654,     624981, {802EC45A-1E99-4B83-9920-87C98277BA9D}, DdiRenderGdi
+       KMD,  5061,     1000,     541897, {802EC45A-1E99-4B83-9920-87C98277BA9D}, DdiMapCpuHostAperture
+       KMD,  5062,     1000,     311032, {802EC45A-1E99-4B83-9920-87C98277BA9D}, DdiUnmapCpuHostAperture
+       KMD,  5063,    22654,    5546334, {802EC45A-1E99-4B83-9920-87C98277BA9D}, DdiSubmitCommandVirtual
+       KMD,  5064,        5,      13221, {802EC45A-1E99-4B83-9920-87C98277BA9D}, DdiCreateProcess
+       KMD,  5065,        2,       5908, {802EC45A-1E99-4B83-9920-87C98277BA9D}, DdiDestroyProcess
+       KMD,  5066,     1857,     549426, {802EC45A-1E99-4B83-9920-87C98277BA9D}, DdiRenderGdi
        KMD, 10000,        0,          0, {802EC45A-1E99-4B83-9920-87C98277BA9D}, DdiDescribePageTable
        KMD, 10001,        0,          0, {802EC45A-1E99-4B83-9920-87C98277BA9D}, DdiUpdatePageTable
        KMD, 10002,        0,          0, {802EC45A-1E99-4B83-9920-87C98277BA9D}, DdiUpdatePageDirectory
@@ -88,59 +88,59 @@
  Dxgkernel,  1000,        0,          0, {802EC45A-1E99-4B83-9920-87C98277BA9D}, DpiAddDevice
  Dxgkernel,  1001,        0,          0, {802EC45A-1E99-4B83-9920-87C98277BA9D}, DpiDispatchClose
  Dxgkernel,  1002,        0,          0, {802EC45A-1E99-4B83-9920-87C98277BA9D}, DpiDispatchCreate
- Dxgkernel,  1003,        3,       1437, {802EC45A-1E99-4B83-9920-87C98277BA9D}, DpiDispatchInternalIoctl
+ Dxgkernel,  1003,        3,       2265, {802EC45A-1E99-4B83-9920-87C98277BA9D}, DpiDispatchInternalIoctl
  Dxgkernel,  1004,        0,          0, {802EC45A-1E99-4B83-9920-87C98277BA9D}, DpiDispatchIoctl
  Dxgkernel,  1005,        0,          0, {802EC45A-1E99-4B83-9920-87C98277BA9D}, DpiDispatchPnp
  Dxgkernel,  1006,        0,          0, {802EC45A-1E99-4B83-9920-87C98277BA9D}, DpiDispatchPower
  Dxgkernel,  1007,        0,          0, {802EC45A-1E99-4B83-9920-87C98277BA9D}, DpiDispatchSystemControl
  Dxgkernel,  1008,        0,          0, {802EC45A-1E99-4B83-9920-87C98277BA9D}, DpiDriverUnload
- Dxgkernel,  2000,        5,       1604, {802EC45A-1E99-4B83-9920-87C98277BA9D}, DxgkProcessCallout
- Dxgkernel,  2001,       21,        904, {802EC45A-1E99-4B83-9920-87C98277BA9D}, DxgkOpenAdapter
- Dxgkernel,  2002,      562,       9346, {802EC45A-1E99-4B83-9920-87C98277BA9D}, DxgkCloseAdapter
- Dxgkernel,  2003,     1446,     496769, {802EC45A-1E99-4B83-9920-87C98277BA9D}, DxgkCreateAllocation
- Dxgkernel,  2004,       34,       1269, {802EC45A-1E99-4B83-9920-87C98277BA9D}, DxgkQueryResourceInfo
- Dxgkernel,  2005,       34,      12895, {802EC45A-1E99-4B83-9920-87C98277BA9D}, DxgkOpenResource
- Dxgkernel,  2006,        3,        330, {802EC45A-1E99-4B83-9920-87C98277BA9D}, DxgkDestroyAllocation
- Dxgkernel,  2007,        4,         83, {802EC45A-1E99-4B83-9920-87C98277BA9D}, DxgkSetAllocationPriority
+ Dxgkernel,  2000,        6,       1731, {802EC45A-1E99-4B83-9920-87C98277BA9D}, DxgkProcessCallout
+ Dxgkernel,  2001,       11,        427, {802EC45A-1E99-4B83-9920-87C98277BA9D}, DxgkOpenAdapter
+ Dxgkernel,  2002,      965,      14044, {802EC45A-1E99-4B83-9920-87C98277BA9D}, DxgkCloseAdapter
+ Dxgkernel,  2003,     2019,     744618, {802EC45A-1E99-4B83-9920-87C98277BA9D}, DxgkCreateAllocation
+ Dxgkernel,  2004,       52,       2240, {802EC45A-1E99-4B83-9920-87C98277BA9D}, DxgkQueryResourceInfo
+ Dxgkernel,  2005,       52,      26657, {802EC45A-1E99-4B83-9920-87C98277BA9D}, DxgkOpenResource
+ Dxgkernel,  2006,        2,        264, {802EC45A-1E99-4B83-9920-87C98277BA9D}, DxgkDestroyAllocation
+ Dxgkernel,  2007,        4,         66, {802EC45A-1E99-4B83-9920-87C98277BA9D}, DxgkSetAllocationPriority
  Dxgkernel,  2008,        0,          0, {802EC45A-1E99-4B83-9920-87C98277BA9D}, DxgkQueryAllocationResidency
- Dxgkernel,  2009,       15,       9164, {802EC45A-1E99-4B83-9920-87C98277BA9D}, DxgkCreateDevice
- Dxgkernel,  2010,       12,       3698, {802EC45A-1E99-4B83-9920-87C98277BA9D}, DxgkDestroyDevice
- Dxgkernel,  2011,      910,      25590, {802EC45A-1E99-4B83-9920-87C98277BA9D}, DxgkLock
- Dxgkernel,  2012,       11,        445, {802EC45A-1E99-4B83-9920-87C98277BA9D}, DxgkUnlock
+ Dxgkernel,  2009,       11,       7077, {802EC45A-1E99-4B83-9920-87C98277BA9D}, DxgkCreateDevice
+ Dxgkernel,  2010,        4,        931, {802EC45A-1E99-4B83-9920-87C98277BA9D}, DxgkDestroyDevice
+ Dxgkernel,  2011,     1496,      41354, {802EC45A-1E99-4B83-9920-87C98277BA9D}, DxgkLock
+ Dxgkernel,  2012,       17,        539, {802EC45A-1E99-4B83-9920-87C98277BA9D}, DxgkUnlock
  Dxgkernel,  2013,        0,          0, {802EC45A-1E99-4B83-9920-87C98277BA9D}, DxgkRender
  Dxgkernel,  2014,        0,          0, {802EC45A-1E99-4B83-9920-87C98277BA9D}, DxgkGetRuntimeData
- Dxgkernel,  2015,      965,      51602, {802EC45A-1E99-4B83-9920-87C98277BA9D}, DxgkQueryAdapterInfo
- Dxgkernel,  2016,    25988,     695200, {802EC45A-1E99-4B83-9920-87C98277BA9D}, DxgkEscape
- Dxgkernel,  2017,        8,       1074, {802EC45A-1E99-4B83-9920-87C98277BA9D}, DxgkGetDisplayModeList
+ Dxgkernel,  2015,     1402,      64248, {802EC45A-1E99-4B83-9920-87C98277BA9D}, DxgkQueryAdapterInfo
+ Dxgkernel,  2016,    53370,    1446460, {802EC45A-1E99-4B83-9920-87C98277BA9D}, DxgkEscape
+ Dxgkernel,  2017,        8,        926, {802EC45A-1E99-4B83-9920-87C98277BA9D}, DxgkGetDisplayModeList
  Dxgkernel,  2018,        0,          0, {802EC45A-1E99-4B83-9920-87C98277BA9D}, DxgkSetDisplayMode
  Dxgkernel,  2019,        0,          0, {802EC45A-1E99-4B83-9920-87C98277BA9D}, DxgkGetMultisampleMethodList
- Dxgkernel,  2020,      386,     405980, {802EC45A-1E99-4B83-9920-87C98277BA9D}, DxgkPresent
+ Dxgkernel,  2020,     1593,     810965, {802EC45A-1E99-4B83-9920-87C98277BA9D}, DxgkPresent
  Dxgkernel,  2021,        0,          0, {802EC45A-1E99-4B83-9920-87C98277BA9D}, DxgkGetSharedPrimaryHandle
  Dxgkernel,  2022,        0,          0, {802EC45A-1E99-4B83-9920-87C98277BA9D}, DxgkCreateOverlay
  Dxgkernel,  2023,        0,          0, {802EC45A-1E99-4B83-9920-87C98277BA9D}, DxgkUpdateOverlay
  Dxgkernel,  2024,        0,          0, {802EC45A-1E99-4B83-9920-87C98277BA9D}, DxgkFlipOverlay
  Dxgkernel,  2025,        0,          0, {802EC45A-1E99-4B83-9920-87C98277BA9D}, DxgkDestroyOverlay
- Dxgkernel,  2026,    10435,     822274, {802EC45A-1E99-4B83-9920-87C98277BA9D}, DxgkWaitForVerticalBlankEvent
+ Dxgkernel,  2026,    13548,    1096449, {802EC45A-1E99-4B83-9920-87C98277BA9D}, DxgkWaitForVerticalBlankEvent
  Dxgkernel,  2027,        0,          0, {802EC45A-1E99-4B83-9920-87C98277BA9D}, DxgkSetVidPnSourceOwner
- Dxgkernel,  2028,    26438,     527783, {802EC45A-1E99-4B83-9920-87C98277BA9D}, DxgkGetDeviceState
+ Dxgkernel,  2028,    55162,    1172713, {802EC45A-1E99-4B83-9920-87C98277BA9D}, DxgkGetDeviceState
  Dxgkernel,  2029,        0,          0, {802EC45A-1E99-4B83-9920-87C98277BA9D}, DxgkSetContextSchedulingPriority
  Dxgkernel,  2030,        0,          0, {802EC45A-1E99-4B83-9920-87C98277BA9D}, DxgkGetContextSchedulingPriority
  Dxgkernel,  2031,        0,          0, {802EC45A-1E99-4B83-9920-87C98277BA9D}, DxgkSetProcessSchedulingPriorityClass
  Dxgkernel,  2032,        0,          0, {802EC45A-1E99-4B83-9920-87C98277BA9D}, DxgkGetProcessSchedulingPriorityClass
  Dxgkernel,  2033,        0,          0, {802EC45A-1E99-4B83-9920-87C98277BA9D}, DxgkReleaseProcessVidPnSourceOwners
  Dxgkernel,  2034,        0,          0, {802EC45A-1E99-4B83-9920-87C98277BA9D}, DxgkGetScanLine
- Dxgkernel,  2035,        3,         33, {802EC45A-1E99-4B83-9920-87C98277BA9D}, DxgkSetQueuedLimit
+ Dxgkernel,  2035,        3,         34, {802EC45A-1E99-4B83-9920-87C98277BA9D}, DxgkSetQueuedLimit
  Dxgkernel,  2036,        0,          0, {802EC45A-1E99-4B83-9920-87C98277BA9D}, DxgkPollDisplayChildren
  Dxgkernel,  2037,        0,          0, {802EC45A-1E99-4B83-9920-87C98277BA9D}, DxgkInvalidateActiveVidPn
  Dxgkernel,  2038,        0,          0, {802EC45A-1E99-4B83-9920-87C98277BA9D}, DxgkCheckOcclusion
- Dxgkernel,  2039,       27,      12082, {802EC45A-1E99-4B83-9920-87C98277BA9D}, DxgkCreateContext
- Dxgkernel,  2040,       21,       6037, {802EC45A-1E99-4B83-9920-87C98277BA9D}, DxgkDestroyContext
- Dxgkernel,  2041,      664,      17411, {802EC45A-1E99-4B83-9920-87C98277BA9D}, DxgkCreateSynchronizationObject
- Dxgkernel,  2042,      563,       8131, {802EC45A-1E99-4B83-9920-87C98277BA9D}, DxgkDestroySynchronizationObject
- Dxgkernel,  2043,     4309,     268493, {802EC45A-1E99-4B83-9920-87C98277BA9D}, DxgkWaitForSynchronizationObject
- Dxgkernel,  2044,     2160,     139669, {802EC45A-1E99-4B83-9920-87C98277BA9D}, DxgkSignalSynchronizationObject
- Dxgkernel,  2045,        4,        290, {802EC45A-1E99-4B83-9920-87C98277BA9D}, DxgkWaitForIdle
- Dxgkernel,  2046,     1577,      29765, {802EC45A-1E99-4B83-9920-87C98277BA9D}, DxgkCheckMonitorPowerState
+ Dxgkernel,  2039,       27,       9240, {802EC45A-1E99-4B83-9920-87C98277BA9D}, DxgkCreateContext
+ Dxgkernel,  2040,        9,       2742, {802EC45A-1E99-4B83-9920-87C98277BA9D}, DxgkDestroyContext
+ Dxgkernel,  2041,      674,      15895, {802EC45A-1E99-4B83-9920-87C98277BA9D}, DxgkCreateSynchronizationObject
+ Dxgkernel,  2042,      260,       4019, {802EC45A-1E99-4B83-9920-87C98277BA9D}, DxgkDestroySynchronizationObject
+ Dxgkernel,  2043,    21080,    1457036, {802EC45A-1E99-4B83-9920-87C98277BA9D}, DxgkWaitForSynchronizationObject
+ Dxgkernel,  2044,     7293,     486243, {802EC45A-1E99-4B83-9920-87C98277BA9D}, DxgkSignalSynchronizationObject
+ Dxgkernel,  2045,        4,        398, {802EC45A-1E99-4B83-9920-87C98277BA9D}, DxgkWaitForIdle
+ Dxgkernel,  2046,     2664,      52065, {802EC45A-1E99-4B83-9920-87C98277BA9D}, DxgkCheckMonitorPowerState
  Dxgkernel,  2047,        0,          0, {802EC45A-1E99-4B83-9920-87C98277BA9D}, DxgkCheckExclusiveOwnership
  Dxgkernel,  2048,        0,          0, {802EC45A-1E99-4B83-9920-87C98277BA9D}, DxgkSetDisplayPrivateDriverFormat
  Dxgkernel,  2049,        0,          0, {802EC45A-1E99-4B83-9920-87C98277BA9D}, DxgkQueryStatistics
@@ -150,10 +150,10 @@
  Dxgkernel,  2053,        0,          0, {802EC45A-1E99-4B83-9920-87C98277BA9D}, DxgkDestroyKeyedMutex
  Dxgkernel,  2054,        0,          0, {802EC45A-1E99-4B83-9920-87C98277BA9D}, DxgkAcquireKeyedMutex
  Dxgkernel,  2055,        0,          0, {802EC45A-1E99-4B83-9920-87C98277BA9D}, DxgkReleaseKeyedMutex
- Dxgkernel,  2056,        6,         72, {802EC45A-1E99-4B83-9920-87C98277BA9D}, DxgkConfigureSharedResource
+ Dxgkernel,  2056,        6,         63, {802EC45A-1E99-4B83-9920-87C98277BA9D}, DxgkConfigureSharedResource
  Dxgkernel,  2057,        0,          0, {802EC45A-1E99-4B83-9920-87C98277BA9D}, DxgkGetOverlayState
- Dxgkernel,  2058,     1577,      14173, {802EC45A-1E99-4B83-9920-87C98277BA9D}, DxgkCheckVidPnExclusiveOwnership
- Dxgkernel,  2060,     2021,      96675, {802EC45A-1E99-4B83-9920-87C98277BA9D}, DxgkGetPresentHistory
+ Dxgkernel,  2058,     2664,      23931, {802EC45A-1E99-4B83-9920-87C98277BA9D}, DxgkCheckVidPnExclusiveOwnership
+ Dxgkernel,  2060,     3500,     188082, {802EC45A-1E99-4B83-9920-87C98277BA9D}, DxgkGetPresentHistory
  Dxgkernel,  2061,        0,          0, {802EC45A-1E99-4B83-9920-87C98277BA9D}, DxgkCreateOutputDupl
  Dxgkernel,  2062,        0,          0, {802EC45A-1E99-4B83-9920-87C98277BA9D}, DxgkDestroyOutputDupl
  Dxgkernel,  2063,        0,          0, {802EC45A-1E99-4B83-9920-87C98277BA9D}, DxgkOutputDuplGetFrameInfo
@@ -163,43 +163,43 @@
  Dxgkernel,  2067,        0,          0, {802EC45A-1E99-4B83-9920-87C98277BA9D}, DxgkOpenKeyedMutex2
  Dxgkernel,  2068,        0,          0, {802EC45A-1E99-4B83-9920-87C98277BA9D}, DxgkAcquireKeyedMutex2
  Dxgkernel,  2069,        0,          0, {802EC45A-1E99-4B83-9920-87C98277BA9D}, DxgkReleaseKeyedMutex2
- Dxgkernel,  2070,        5,        287, {802EC45A-1E99-4B83-9920-87C98277BA9D}, DxgkOfferAllocations
+ Dxgkernel,  2070,        5,        248, {802EC45A-1E99-4B83-9920-87C98277BA9D}, DxgkOfferAllocations
  Dxgkernel,  2071,        0,          0, {802EC45A-1E99-4B83-9920-87C98277BA9D}, DxgkReclaimAllocations
  Dxgkernel,  2072,        0,          0, {802EC45A-1E99-4B83-9920-87C98277BA9D}, DxgkOutputDuplReleaseFrame
- Dxgkernel,  2073,        6,         84, {802EC45A-1E99-4B83-9920-87C98277BA9D}, DxgkQueryResourceInfoFromNtHandle
- Dxgkernel,  2074,        9,        323, {802EC45A-1E99-4B83-9920-87C98277BA9D}, DxgkShareObject
+ Dxgkernel,  2073,        6,         64, {802EC45A-1E99-4B83-9920-87C98277BA9D}, DxgkQueryResourceInfoFromNtHandle
+ Dxgkernel,  2074,        9,        273, {802EC45A-1E99-4B83-9920-87C98277BA9D}, DxgkShareObject
  Dxgkernel,  2075,        0,          0, {802EC45A-1E99-4B83-9920-87C98277BA9D}, DxgkOpenNtHandleFromName
- Dxgkernel,  2076,        6,       1641, {802EC45A-1E99-4B83-9920-87C98277BA9D}, DxgkOpenResourceFromNtHandle
+ Dxgkernel,  2076,        6,       1113, {802EC45A-1E99-4B83-9920-87C98277BA9D}, DxgkOpenResourceFromNtHandle
  Dxgkernel,  2077,        0,          0, {802EC45A-1E99-4B83-9920-87C98277BA9D}, DxgkSetVidPnSourceOwner1
- Dxgkernel,  2078,       98,      10910, {802EC45A-1E99-4B83-9920-87C98277BA9D}, DxgkEnumAdapters
- Dxgkernel,  2079,        2,        654, {802EC45A-1E99-4B83-9920-87C98277BA9D}, DxgkPinDirectFlipResources
- Dxgkernel,  2080,        2,        152, {802EC45A-1E99-4B83-9920-87C98277BA9D}, DxgkUnpinDirectFlipResources
+ Dxgkernel,  2078,      150,      15926, {802EC45A-1E99-4B83-9920-87C98277BA9D}, DxgkEnumAdapters
+ Dxgkernel,  2079,        1,        678, {802EC45A-1E99-4B83-9920-87C98277BA9D}, DxgkPinDirectFlipResources
+ Dxgkernel,  2080,        1,         77, {802EC45A-1E99-4B83-9920-87C98277BA9D}, DxgkUnpinDirectFlipResources
  Dxgkernel,  2081,        0,          0, {802EC45A-1E99-4B83-9920-87C98277BA9D}, DxgkGetPathsModality
- Dxgkernel,  2082,      426,      10690, {802EC45A-1E99-4B83-9920-87C98277BA9D}, DxgkOpenAdapterFromLuid
+ Dxgkernel,  2082,      768,      16651, {802EC45A-1E99-4B83-9920-87C98277BA9D}, DxgkOpenAdapterFromLuid
  Dxgkernel,  2083,        0,          0, {802EC45A-1E99-4B83-9920-87C98277BA9D}, DxgkWaitForVerticalBlankEvent2
- Dxgkernel,  2084,        3,         59, {802EC45A-1E99-4B83-9920-87C98277BA9D}, DxgkSetContextInProcessSchedulingPriority
+ Dxgkernel,  2084,        3,         41, {802EC45A-1E99-4B83-9920-87C98277BA9D}, DxgkSetContextInProcessSchedulingPriority
  Dxgkernel,  2085,        0,          0, {802EC45A-1E99-4B83-9920-87C98277BA9D}, DxgkGetContextInProcessSchedulingPriority
- Dxgkernel,  2086,        2,         56, {802EC45A-1E99-4B83-9920-87C98277BA9D}, DxgkOpenSyncObjectFromNtHandle
+ Dxgkernel,  2086,        2,         46, {802EC45A-1E99-4B83-9920-87C98277BA9D}, DxgkOpenSyncObjectFromNtHandle
  Dxgkernel,  2087,        0,          0, {802EC45A-1E99-4B83-9920-87C98277BA9D}, DxgkNotifyProcessFreezeCallout
  Dxgkernel,  2088,        0,          0, {802EC45A-1E99-4B83-9920-87C98277BA9D}, DxgkGetSharedResourceAdapterLuid
  Dxgkernel,  2089,        0,          0, {802EC45A-1E99-4B83-9920-87C98277BA9D}, DxgkSetStereoEnabled
- Dxgkernel,  2090,       42,        266, {802EC45A-1E99-4B83-9920-87C98277BA9D}, DxgkGetCachedHybridQueryValue
- Dxgkernel,  2091,        7,         93, {802EC45A-1E99-4B83-9920-87C98277BA9D}, DxgkCacheHybridQueryValue
+ Dxgkernel,  2090,       72,        378, {802EC45A-1E99-4B83-9920-87C98277BA9D}, DxgkGetCachedHybridQueryValue
+ Dxgkernel,  2091,        7,         73, {802EC45A-1E99-4B83-9920-87C98277BA9D}, DxgkCacheHybridQueryValue
  Dxgkernel,  2092,        0,          0, {802EC45A-1E99-4B83-9920-87C98277BA9D}, DxgkPresentMultiPlaneOverlay
- Dxgkernel,  2093,        2,        741, {802EC45A-1E99-4B83-9920-87C98277BA9D}, DxgkCheckMultiplaneOverlaySupport
- Dxgkernel,  2094,        4,        273, {802EC45A-1E99-4B83-9920-87C98277BA9D}, DxgkSetIndependentFlipMode
- Dxgkernel,  2095,        0,          0, {802EC45A-1E99-4B83-9920-87C98277BA9D}, DxgkConfirmToken
+ Dxgkernel,  2093,        2,       1143, {802EC45A-1E99-4B83-9920-87C98277BA9D}, DxgkCheckMultiplaneOverlaySupport
+ Dxgkernel,  2094,        2,        114, {802EC45A-1E99-4B83-9920-87C98277BA9D}, DxgkSetIndependentFlipMode
+ Dxgkernel,  2095,        1,          8, {802EC45A-1E99-4B83-9920-87C98277BA9D}, DxgkConfirmToken
  Dxgkernel,  2096,        0,          0, {802EC45A-1E99-4B83-9920-87C98277BA9D}, DxgkNotifyProcessThawCallout
  Dxgkernel,  2097,        0,          0, {802EC45A-1E99-4B83-9920-87C98277BA9D}, DxgkSetPresenterViewMode
- Dxgkernel,  2098,       15,        634, {802EC45A-1E99-4B83-9920-87C98277BA9D}, DxgkReserveGpuVirtualAddress
- Dxgkernel,  2099,       12,        839, {802EC45A-1E99-4B83-9920-87C98277BA9D}, DxgkFreeGpuVirtualAddress
- Dxgkernel,  2100,      564,      41381, {802EC45A-1E99-4B83-9920-87C98277BA9D}, DxgkMapGpuVirtualAddress
+ Dxgkernel,  2098,       15,        522, {802EC45A-1E99-4B83-9920-87C98277BA9D}, DxgkReserveGpuVirtualAddress
+ Dxgkernel,  2099,        3,        199, {802EC45A-1E99-4B83-9920-87C98277BA9D}, DxgkFreeGpuVirtualAddress
+ Dxgkernel,  2100,      569,      35453, {802EC45A-1E99-4B83-9920-87C98277BA9D}, DxgkMapGpuVirtualAddress
  Dxgkernel,  2101,        0,          0, {802EC45A-1E99-4B83-9920-87C98277BA9D}, DxgkCreateContextVirtual
- Dxgkernel,  2102,     6230,    1203367, {802EC45A-1E99-4B83-9920-87C98277BA9D}, DxgkSubmitCommand
- Dxgkernel,  2103,     5502,     183612, {802EC45A-1E99-4B83-9920-87C98277BA9D}, DxgkLock2
- Dxgkernel,  2104,     5332,     111978, {802EC45A-1E99-4B83-9920-87C98277BA9D}, DxgkUnlock2
- Dxgkernel,  2105,     1913,      95888, {802EC45A-1E99-4B83-9920-87C98277BA9D}, DxgkDestroyAllocation2
- Dxgkernel,  2106,       11,       1300, {802EC45A-1E99-4B83-9920-87C98277BA9D}, DxgkUpdateGpuVirtualAddress
+ Dxgkernel,  2102,    19800,    3667873, {802EC45A-1E99-4B83-9920-87C98277BA9D}, DxgkSubmitCommand
+ Dxgkernel,  2103,    26522,     791826, {802EC45A-1E99-4B83-9920-87C98277BA9D}, DxgkLock2
+ Dxgkernel,  2104,    26328,     553009, {802EC45A-1E99-4B83-9920-87C98277BA9D}, DxgkUnlock2
+ Dxgkernel,  2105,     1441,      58926, {802EC45A-1E99-4B83-9920-87C98277BA9D}, DxgkDestroyAllocation2
+ Dxgkernel,  2106,       10,       1292, {802EC45A-1E99-4B83-9920-87C98277BA9D}, DxgkUpdateGpuVirtualAddress
  Dxgkernel,  3000,        0,          0, {802EC45A-1E99-4B83-9920-87C98277BA9D}, DxgkCddCreate
  Dxgkernel,  3001,        0,          0, {802EC45A-1E99-4B83-9920-87C98277BA9D}, DxgkCddDestroy
  Dxgkernel,  3002,        0,          0, {802EC45A-1E99-4B83-9920-87C98277BA9D}, DxgkCddEnable
@@ -211,16 +211,16 @@
  Dxgkernel,  3008,        0,          0, {802EC45A-1E99-4B83-9920-87C98277BA9D}, DxgkCddPresent
  Dxgkernel,  3009,        0,          0, {802EC45A-1E99-4B83-9920-87C98277BA9D}, DxgkCddSetGammaRamp
  Dxgkernel,  3010,        0,          0, {802EC45A-1E99-4B83-9920-87C98277BA9D}, DxgkCddSetPalette
- Dxgkernel,  3011,     1351,     151167, {802EC45A-1E99-4B83-9920-87C98277BA9D}, DxgkCddSetPointerPosition
- Dxgkernel,  3012,       72,      36191, {802EC45A-1E99-4B83-9920-87C98277BA9D}, DxgkCddSetPointerShape
+ Dxgkernel,  3011,     1670,     194990, {802EC45A-1E99-4B83-9920-87C98277BA9D}, DxgkCddSetPointerPosition
+ Dxgkernel,  3012,      110,      57547, {802EC45A-1E99-4B83-9920-87C98277BA9D}, DxgkCddSetPointerShape
  Dxgkernel,  3013,        0,          0, {802EC45A-1E99-4B83-9920-87C98277BA9D}, DxgkCddTerminateThread
  Dxgkernel,  3014,        0,          0, {802EC45A-1E99-4B83-9920-87C98277BA9D}, DxgkCddSetOrigin
- Dxgkernel,  3015,     3132,     256282, {802EC45A-1E99-4B83-9920-87C98277BA9D}, DxgkCddWaitForVerticalBlankEvent
- Dxgkernel,  3016,      877,      29990, {802EC45A-1E99-4B83-9920-87C98277BA9D}, DxgkCddSyncGPUAccess
- Dxgkernel,  3017,       14,      10152, {802EC45A-1E99-4B83-9920-87C98277BA9D}, DxgkCddCreateAllocation
- Dxgkernel,  3018,       13,       4392, {802EC45A-1E99-4B83-9920-87C98277BA9D}, DxgkCddDestroyAllocation
+ Dxgkernel,  3015,     4237,     321243, {802EC45A-1E99-4B83-9920-87C98277BA9D}, DxgkCddWaitForVerticalBlankEvent
+ Dxgkernel,  3016,      779,      22231, {802EC45A-1E99-4B83-9920-87C98277BA9D}, DxgkCddSyncGPUAccess
+ Dxgkernel,  3017,       22,      11747, {802EC45A-1E99-4B83-9920-87C98277BA9D}, DxgkCddCreateAllocation
+ Dxgkernel,  3018,       20,       4673, {802EC45A-1E99-4B83-9920-87C98277BA9D}, DxgkCddDestroyAllocation
  Dxgkernel,  3019,        0,          0, {802EC45A-1E99-4B83-9920-87C98277BA9D}, DxgkCddBltToPrimary
- Dxgkernel,  3020,     1654,     338079, {802EC45A-1E99-4B83-9920-87C98277BA9D}, DxgkCddGdiCommand
+ Dxgkernel,  3020,     1857,     355815, {802EC45A-1E99-4B83-9920-87C98277BA9D}, DxgkCddGdiCommand
  Dxgkernel,  3021,        0,          0, {9792224B-86A9-4E2A-8ACA-2FB616FF6B3E}, DxgkCddDrvBitBlt
  Dxgkernel,  3022,        0,          0, {9792224B-86A9-4E2A-8ACA-2FB616FF6B3E}, DxgkCddDrvColorFill
  Dxgkernel,  3023,        0,          0, {9792224B-86A9-4E2A-8ACA-2FB616FF6B3E}, DxgkCddDrvStrokePath
@@ -236,7 +236,7 @@
  Dxgkernel,  3033,        0,          0, {9792224B-86A9-4E2A-8ACA-2FB616FF6B3E}, DxgkCddDrvTransparentBlt
  Dxgkernel,  3034,        0,          0, {802EC45A-1E99-4B83-9920-87C98277BA9D}, DxgkCddOpenResource
  Dxgkernel,  3035,        0,          0, {802EC45A-1E99-4B83-9920-87C98277BA9D}, DxgkCddQueryResourceInfo
- Dxgkernel,  3036,     1745,     138750, {802EC45A-1E99-4B83-9920-87C98277BA9D}, DxgkCddSubmitPresentHistory
+ Dxgkernel,  3036,     1899,     151920, {802EC45A-1E99-4B83-9920-87C98277BA9D}, DxgkCddSubmitPresentHistory
  Dxgkernel,  3037,        0,          0, {802EC45A-1E99-4B83-9920-87C98277BA9D}, DxgkCddCreateDeviceBitmap
  Dxgkernel,  3038,        0,          0, {802EC45A-1E99-4B83-9920-87C98277BA9D}, DxgkCddUpdateGdiMem
  Dxgkernel,  3039,        0,          0, {9792224B-86A9-4E2A-8ACA-2FB616FF6B3E}, DxgkCddAddCommand
@@ -272,9 +272,9 @@
  Dxgkernel,  4010,        0,          0, {802EC45A-1E99-4B83-9920-87C98277BA9D}, DpiDxgkDdiUnload
  Dxgkernel,  4011,        0,          0, {802EC45A-1E99-4B83-9920-87C98277BA9D}, DpiDxgkDdiControlEtwLogging
  Dxgkernel,  4012,        0,          0, {802EC45A-1E99-4B83-9920-87C98277BA9D}, DpiDxgkDdiQueryInterface
- Dxgkernel,  4013,     3335,     703680, {802EC45A-1E99-4B83-9920-87C98277BA9D}, DpiDpcForIsr
- Dxgkernel,  4014,     2517,     814214, {802EC45A-1E99-4B83-9920-87C98277BA9D}, DpiFdoMessageInterruptRoutine
- Dxgkernel,  4015,      878,      22737, {802EC45A-1E99-4B83-9920-87C98277BA9D}, VidSchDdiNotifyInterrupt
+ Dxgkernel,  4013,     5751,    1103458, {802EC45A-1E99-4B83-9920-87C98277BA9D}, DpiDpcForIsr
+ Dxgkernel,  4014,     4274,    1620936, {802EC45A-1E99-4B83-9920-87C98277BA9D}, DpiFdoMessageInterruptRoutine
+ Dxgkernel,  4015,     1454,      37124, {802EC45A-1E99-4B83-9920-87C98277BA9D}, VidSchDdiNotifyInterrupt
  Dxgkernel,  4016,        0,          0, {802EC45A-1E99-4B83-9920-87C98277BA9D}, VidSchiCallNotifyInterruptAtISR
  Dxgkernel,  4017,        0,          0, {802EC45A-1E99-4B83-9920-87C98277BA9D}, DpiDxgkDdiStopDeviceAndReleasePostDisplayOwnershi
  Dxgkernel,  4018,        0,          0, {802EC45A-1E99-4B83-9920-87C98277BA9D}, DpiDxgkDdiGetChildContainerId
@@ -282,7 +282,7 @@
  Dxgkernel,  4020,        0,          0, {802EC45A-1E99-4B83-9920-87C98277BA9D}, DpiFdoThermalActiveCooling
  Dxgkernel,  4021,        0,          0, {802EC45A-1E99-4B83-9920-87C98277BA9D}, DpiFdoThermalPassiveCooling
  Dxgkernel,  4022,        0,          0, {802EC45A-1E99-4B83-9920-87C98277BA9D}, DxgkCbIndicateChildStatus
- Dxgkernel,  5043,       38,       1965, {802EC45A-1E99-4B83-9920-87C98277BA9D}, DdiNotifyDpc
+ Dxgkernel,  5043,      170,       7133, {802EC45A-1E99-4B83-9920-87C98277BA9D}, DdiNotifyDpc
  Dxgkernel,  6000,        0,          0, {802EC45A-1E99-4B83-9920-87C98277BA9D}, DmmInterfaceAcquiredPreferredMonitorSourceMode
  Dxgkernel,  6001,        0,          0, {802EC45A-1E99-4B83-9920-87C98277BA9D}, DmmInterfaceReleaseMonitorSourceMode
  Dxgkernel,  6002,        0,          0, {802EC45A-1E99-4B83-9920-87C98277BA9D}, DmmInterfaceGetNumSourceModes
@@ -345,11 +345,11 @@
  Dxgkernel,  6059,        0,          0, {802EC45A-1E99-4B83-9920-87C98277BA9D}, DmmInterfaceGetPathImportance
  Dxgkernel,  6060,        0,          0, {802EC45A-1E99-4B83-9920-87C98277BA9D}, DmmInterfaceGetNumPaths
  Dxgkernel,  6061,        0,          0, {802EC45A-1E99-4B83-9920-87C98277BA9D}, DmmInterfaceEnumPaths
- Dxgkernel,  8000,     1150,     694247, {802EC45A-1E99-4B83-9920-87C98277BA9D}, ProbeAndLockPages
- Dxgkernel,  8001,      253,     121804, {802EC45A-1E99-4B83-9920-87C98277BA9D}, UnlockPages
+ Dxgkernel,  8000,     1743,     928355, {802EC45A-1E99-4B83-9920-87C98277BA9D}, ProbeAndLockPages
+ Dxgkernel,  8001,      224,      94733, {802EC45A-1E99-4B83-9920-87C98277BA9D}, UnlockPages
  Dxgkernel,  8002,        0,          0, {802EC45A-1E99-4B83-9920-87C98277BA9D}, MapViewOfAllocation
  Dxgkernel,  8003,        0,          0, {802EC45A-1E99-4B83-9920-87C98277BA9D}, UnmapViewOfAllocation
- Dxgkernel,  8004,      200,       4573, {802EC45A-1E99-4B83-9920-87C98277BA9D}, ProcessHeapAllocate
+ Dxgkernel,  8004,      208,       4570, {802EC45A-1E99-4B83-9920-87C98277BA9D}, ProcessHeapAllocate
  Dxgkernel,  8005,        0,          0, {802EC45A-1E99-4B83-9920-87C98277BA9D}, ProcessHeapRotate
  Dxgkernel,  8006,        0,          0, {802EC45A-1E99-4B83-9920-87C98277BA9D}, BootInt10ModeChange
  Dxgkernel,  8007,        0,          0, {802EC45A-1E99-4B83-9920-87C98277BA9D}, ResumeInt10ModeChange

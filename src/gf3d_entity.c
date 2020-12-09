@@ -37,6 +37,7 @@ Entity* addEntity(Vector4D pos, Vector4D rot, Vector4D scale, Vector4D color, Ve
 		printf("OUT OF SPACE! NO ENTITY COULD BE CREATED");
 	}
 	UniformBufferObject* ubo = gf3d_get_pointer_to_UBO();
+	ubo->totalObj += 1;
 	 entList[i].rSelf = &ubo->renderList[i];
 	entList[i].rSelf->position = pos;
 	entList[i].rSelf->rotation = rot;
@@ -255,6 +256,7 @@ Entity* addEmpty(Vector3D pos) {
 		printf("OUT OF SPACE! NO ENTITY COULD BE CREATED");
 	}
 	UniformBufferObject* ubo = gf3d_get_pointer_to_UBO();
+	ubo->totalObj += 1;
 	entList[i].rSelf = &ubo->renderList[i];
 	entList[i].rSelf->position = vector4d(pos.x, pos.y, pos.z,1);
 	entList[i].rSelf->rotation = vector4d(0,0,0,1);

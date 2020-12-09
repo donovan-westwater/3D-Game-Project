@@ -14,6 +14,7 @@ typedef struct
     Matrix4 view;
     Matrix4 proj;
     Vector2D resolution;
+    int totalObj;
     
 }UniformBufferObject;
 

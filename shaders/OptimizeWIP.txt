@@ -1,0 +1,268 @@
+#define STEPS 128
+#define STEP_SIZE 0.01
+#define MIN_DISTANCE 0.01
+//Was 0.1
+//This entire scene exists in "model space" without any transformations
+struct EntityRender_S { //Stores the infomation needed by the shader
+    vec4 position;
+    vec4 rotation;
+    vec4 scale;
+    vec4 color;
+    int id;
+    int type;
+}EntityRender;
+
+EntityRender_S renderList[50];
+
+
+
+
+//last owrking rad = 0.2
+float radius = 0.5;//2; //5
+
+vec3 lightVector = vec3(0,-1,0); //vec3(0,0,1);
+vec3 cameraVector = vec3(0,0,1);
+vec3 vDirection = vec3(0,0,0);
+int currentEnt = -1;
+int currAdd = -1;
+//***Transformations***
+//Copied from Marble Marcher!
+void rotX(inout vec4 z, float s, float c) {
+	z.yz = vec2(c*z.y + s*z.z, c*z.z - s*z.y);
+}
+void rotY(inout vec4 z, float s, float c) {
+	z.xz = vec2(c*z.x - s*z.z, c*z.z + s*z.x);
+}
+void rotZ(inout vec4 z, float s, float c) {
+	z.xy = vec2(c*z.x + s*z.y, c*z.y - s*z.x);
+}
+void rotX(inout vec4 z, float a) {
+	rotX(z, sin(a), cos(a));
+}
+void rotY(inout vec4 z, float a) {
+	rotY(z, sin(a), cos(a));
+}
+void rotZ(inout vec4 z, float a) {
+	rotZ(z, sin(a), cos(a));
+}
+
+
+//***SDFs for various primatives
+float sphereSDF(vec3 p) {
+    return length(p) - radius;
+}
+float boxSDF(vec3 p,vec3 b){
+    vec3 q = abs(p) - b;
+    return length(max(q,0.0)) + min(max(q.x,max(q.y,q.z)),0.0);
+}
+float specialSDF(vec3 p) {
+    float s = sphereSDF(p);
+    float b = boxSDF(p,vec3(0.25,0.25,0.25));
+    return max(s,-b);
+}
+
+//***Scene SDF***
+float sceneSDF(vec3 p){
+    vec4 pD = vec4(p,1);
+    vec3 scale;
+    float d = 99999.;
+    int flag = 1;
+    if(distance(renderList[0].position,renderList[1].position) > renderList[0].scale.x*radius) flag = 0;
+    float prevD = d;
+    //Build up scene
+    for(int i = 0;i<50;i++){
+        if(renderList[i].id < 1) continue;
+        pD = vec4(p,1);
+        //Transforms
+        pD.xyz -= renderList[i].position.xyz;
+        rotX(pD,radians(renderList[i].rotation.x));
+        rotY(pD,radians(renderList[i].rotation.y));
+        rotZ(pD,radians(renderList[i].rotation.z));
+        scale = renderList[i].scale.xyz;
+        if(renderList[i].type == 1) d = min(boxSDF(pD.xyz/scale,vec3(0.25,0.25,0.25)*scale)*min(scale.x,min(scale.y,scale.z)),d);
+        if(renderList[i].type == 0) d = min(sphereSDF(pD.xyz/scale)*min(scale.x,min(scale.y,scale.z)),d);             if(renderList[i].type == 3) d = min(specialSDF(pD.xyz/scale)*min(scale.x,min(scale.y,scale.z)),d);
+        //else d = min(boxSDF(pD.xyz/scale,0.25*scale)*min(scale.x,min(scale.y,scale.z)),d);
+        /*
+        switch(i){
+            case 0: //Sphere
+                d = min(sphereSDF(pD.xyz/scale)*min(scale.x,min(scale.y,scale.z)),d);
+                break;
+            case 1: //Box
+                break;
+            case 2: //Other
+                break;
+        }
+        */
+        if(abs(d - prevD) > 0.0001) currentEnt = i;
+        prevD = d;
+    }
+    for(int i = 0;i<50;i++){
+        if(renderList[i].id < 1) continue;
+        pD = vec4(p,1);
+        //Transforms
+        pD.xyz -= renderList[i].position.xyz;
+        rotZ(pD,radians(renderList[i].rotation.z));
+        scale = renderList[i].scale.xyz;
+        if(renderList[i].type == 2) d = max(-specialSDF(pD.xyz/scale)*min(scale.x,min(scale.y,scale.z)),d);
+    	 if(abs(d - prevD) > 0.0001) currentEnt = i;
+        prevD = d;
+    }
+    //d = min(d,sphereDistance(p));
+    return d;
+}
+//***Lighting***
+float lSceneSDF(vec3 p){
+    //If type is not sub, then act normal, but if sub, build entire scene before sub
+    vec4 pD = vec4(p,1);
+    vec3 scale;
+    float d = 99999.;
+    int flag = 1;
+    if(distance(renderList[0].position,renderList[1].position) > renderList[0].scale.x*radius) flag = 0;
+    //float prevD = d;
+    //Build up scene
+	int i = currentEnt;
+  
+    pD = vec4(p,1);
+    //Transforms
+    pD.xyz -= renderList[i].position.xyz;
+    rotX(pD,radians(renderList[i].rotation.x));
+    rotY(pD,radians(renderList[i].rotation.y));
+    rotZ(pD,radians(renderList[i].rotation.z));
+    scale = renderList[i].scale.xyz;
+    if(renderList[i].type == 1) d = min(boxSDF(pD.xyz/scale,vec3(0.25,0.25,0.25)*scale)*min(scale.x,min(scale.y,scale.z)),d);
+    if(renderList[i].type == 0) d = min(sphereSDF(pD.xyz/scale)*min(scale.x,min(scale.y,scale.z)),d);             if(renderList[i].type == 3) d = min(specialSDF(pD.xyz/scale)*min(scale.x,min(scale.y,scale.z)),d);
+    //else d = min(boxSDF(pD.xyz/scale,0.25*scale)*min(scale.x,min(scale.y,scale.z)),d);
+    /*
+    switch(i){
+    case 0: //Sphere
+    d = min(sphereSDF(pD.xyz/scale)*min(scale.x,min(scale.y,scale.z)),d);
+    break;
+    case 1: //Box
+    break;
+    case 2: //Other
+    break;
+    }
+    */
+    //if(abs(d - prevD) > 0.0001) currentEnt = i;
+    //prevD = d;
+    if(renderList[i].type == 2){
+        for(int i = 0;i<50;i++){
+        if(renderList[i].id < 1) continue;
+        pD = vec4(p,1);
+        //Transforms
+        pD.xyz -= renderList[i].position.xyz;
+        rotX(pD,radians(renderList[i].rotation.x));
+        rotY(pD,radians(renderList[i].rotation.y));
+        rotZ(pD,radians(renderList[i].rotation.z));
+        scale = renderList[i].scale.xyz;
+        if(renderList[i].type == 1) d = min(boxSDF(pD.xyz/scale,vec3(0.25,0.25,0.25)*scale)*min(scale.x,min(scale.y,scale.z)),d);
+        if(renderList[i].type == 0) d = min(sphereSDF(pD.xyz/scale)*min(scale.x,min(scale.y,scale.z)),d);  
+        
+    	}
+    }
+    pD = vec4(p,1);
+    //Transforms
+    pD.xyz -= renderList[i].position.xyz;
+    rotX(pD,radians(renderList[i].rotation.x));
+    rotY(pD,radians(renderList[i].rotation.y));
+    rotZ(pD,radians(renderList[i].rotation.z));
+    scale = renderList[i].scale.xyz;
+    if(renderList[i].type == 2) d = max(-specialSDF(pD.xyz/scale)*min(scale.x,min(scale.y,scale.z)),d);
+    //if(abs(d - prevD) > 0.0001) currentEnt = i;
+    //prevD = d;
+    
+    //d = min(d,sphereDistance(p));
+    return d;
+}
+ vec3 estimateNormal(vec3 p, float dx) {
+    //float d = sceneSDF(p);
+    //vec2 e = vec2(0.01,0);
+    // vec3 n = d- vec3(sceneSDF(p-e.xyy),
+    //                  sceneSDF(p-e.yxy),
+    //                  sceneSDF(p-e.yyx));
+    // return normalize(n);
+     const vec2 k = vec2(1,-1);
+	 return normalize(k.xyy*lSceneSDF(p + k.xyy*dx) +
+					 k.yxy*lSceneSDF(p + k.yxy*dx) +
+					 k.yyx*lSceneSDF(p + k.yyx*dx) +
+					 k.xxx*lSceneSDF(p + k.xxx*dx));
+}
+float getLight(vec3 p){
+    float s = 1.;
+    vec3 n = estimateNormal(p,0.0001);
+    vec3 l = normalize(lightVector-p);
+    s = s*dot(n,l);
+    
+ 	return s;
+}
+
+vec4 raymarch(vec4 position, vec4 direction) {
+    float d = 0.;
+    for (int i = 0; i < STEPS; i++) {
+        vec3 tmp = position.xyz;
+        float distance = sceneSDF(tmp);//sphereDistance(tmp);
+        d += distance;
+        if (distance < MIN_DISTANCE){
+            vec4 retColor = vec4(0.5,0.5,0,1);
+            if(currentEnt > -1) retColor = renderList[currentEnt].color;
+            //currentEnt = -1;
+            //retColor.w = 1;
+            return vec4(-estimateNormal(tmp,0.0001),1);//renderSurface(tmp);
+        }
+        currentEnt = -1;
+        position += direction * distance;//STEP_SIZE;
+        
+        if(d > 1000.) break;
+    }
+    return vec4(1,1,1,1); //was originally 1
+}
+ 
+ //Currently UBO doesnt work, leading to crashes in the main game
+void mainImage( out vec4 fragColor, in vec2 fragCoord )
+{
+    for(int i = 0; i < 50;i++){
+     	renderList[i].color = vec4(1);   
+    }
+   renderList[0].position = vec4(0,0,2,1);
+   renderList[0].rotation = vec4(0,0,0,1);
+   renderList[0].scale = vec4(1,1,2,1);
+   renderList[0].color = vec4(0,1,0,1);
+   renderList[0].id = 1;
+    renderList[0].type = 2;
+    
+   renderList[1].position = vec4(0,0,2,1);
+   renderList[1].rotation = vec4(0,0,0,1);
+   renderList[1].scale = vec4(2,3,1,1);
+   renderList[1].color = vec4(0.25,0.25,.6,1);
+   renderList[1].id = 2;
+    renderList[1].type = 1;
+    
+     renderList[2].position = vec4(2,0,2,1);
+   renderList[2].rotation = vec4(0,0,0,1);
+   renderList[2].scale = vec4(1,3,1,1);
+   renderList[2].color = vec4(0,1,1,1);
+   renderList[2].id = 3;
+    renderList[2].type = 1;
+   
+    
+    renderList[3].position = vec4(0,-1,0,1);
+   renderList[3].rotation = vec4(0,0,0,1);
+   renderList[3].scale = vec4(10,1,10,1);
+   renderList[3].color = vec4(0,1,1,1);
+   renderList[3].id = 4;
+    renderList[3].type = 1;
+	   
+
+	renderList[0].position.x += 2.*sin(iTime/2.);
+    //New code below
+    vec2 uv = (fragCoord.xy - 0.5*iResolution.xy)/iResolution.y;
+    //vec3 col = vec3(0,10.0*uv.x,-10.0*uv.y);
+    //outColor = vec4(col,1);
+    //UBO is still being worked on;
+    cameraVector = vec3(0,0,-1);
+    vec4 modSpace = vec4(uv.x,uv.y,1,0);
+    vec4 viewDirection = normalize(modSpace);//normalize(inPos-cameraVector);
+    vDirection = viewDirection.xyz;
+    fragColor = raymarch(vec4(cameraVector.xyz,1),viewDirection);//raymarch(cameraVector,viewDirection);
+    //fragColor = estimateNormal(
+}

@@ -50,10 +50,10 @@ int main(int argc,char *argv[])
     
     init_logger("gf3d.log");    
     slog("gf3d begin");
-    gf3d_vgraphics_init(
+    gf3d_vgraphics_init( //1200 700 (Old resolution: WARNING WILL MAKE THE GAME RUN MUCH SLOWER)
         "gf3d",                 //program name
-        1200,                   //screen width
-        700,                    //screen height
+        800,                   //screen width
+        600,                    //screen height
         vector4d(0.51,0.75,1,1),//background color
         0,                      //fullscreen
         validate                //validation
@@ -88,13 +88,13 @@ int main(int argc,char *argv[])
     
     initEntList();
     phyEngine_init();
-    playerManInit();
+    //playerManInit();
     //addEntity(vector4d(0, 1, -5, 1), vector4d(0, 0, 0, 1), vector4d(1, 1, 1, 1), vector4d(0, 1, 0, 1),vector3d(-1, 0 , 0), 0,0);
-    addEntity(vector4d(-1, 2, 1, 1), vector4d(35, 0, 0, 1), vector4d(1, 1, 1, 1), vector4d(0, 1, 0, 1), vector3d(0, -0.1, 0), 1,0);
-    addEntity(vector4d(-1, 1, 1, 1), vector4d(0, 0, 0, 1), vector4d(1, 1, 1, 1), vector4d(0, 1, 0, 1), vector3d(0, 0, 0), 1, 0);
+    //addEntity(vector4d(-1, 2, 1, 1), vector4d(35, 0, 0, 1), vector4d(1, 1, 1, 1), vector4d(0, 1, 0, 1), vector3d(0, -0.1, 0), 1,0);
+    //addEntity(vector4d(-1, 1, 1, 1), vector4d(0, 0, 0, 1), vector4d(1, 1, 1, 1), vector4d(0, 1, 0, 1), vector3d(0, 0, 0), 1, 0);
     Entity *ground = addEntity(vector4d(0, -0.25, 0, 1), vector4d(0, 0, 0, 1), vector4d(50, 1, 50, 1), vector4d(0, 0, 0.5, 1), vector3d(0, 0, 0), 1,0);
-    ground->pSelf->mass = 0;
-    ground->pSelf->friction = 0;
+    //ground->pSelf->mass = 0;
+    //ground->pSelf->friction = 0;
     addWalls();
      //move to player init
     
@@ -109,11 +109,14 @@ int main(int argc,char *argv[])
     double last = time(NULL);
     float fps = 0;
     float totalF = 0;
+    float updateF = 0;
     float totalTime = 0;
+    float updateTime = 0;
     //NEW CODE OVER
     while(!done)
     {
         totalF++;
+        updateF++;
         SDL_PumpEvents();   // update SDL's internal event structures
         keys = SDL_GetKeyboardState(NULL); // get the keyboard state for this frame
         //update game things here
@@ -155,8 +158,15 @@ int main(int argc,char *argv[])
         double current = time(NULL);
         double delta = current - last;
         totalTime += delta;
-        fps = totalF / totalTime;
-        if ((int)totalTime % 200000000) printf("CURRENT FPS: %f\n", fps);
+        updateTime += delta;
+        //fps = totalF / totalTime;
+        //if ((int)totalTime % 200000000) printf("CURRENT FPS: %f\n", fps);
+        if (updateTime > 2) {
+            fps = updateF / updateTime;
+            updateF = 0;
+            updateTime = 0;
+            printf("CURRENT FPS: %f\n", fps);
+        }
         //Level update section
         //EntityThink
         //pre player sync
@@ -170,13 +180,13 @@ int main(int argc,char *argv[])
         // configure render command for graphics command pool
         // for each mesh, get a command and configure it from the pool
         bufferFrame = gf3d_vgraphics_render_begin();
-        gf3d_pipeline_reset_frame(gf3d_vgraphics_get_graphics_pipeline(),bufferFrame);
+        //gf3d_pipeline_reset_frame(gf3d_vgraphics_get_graphics_pipeline(),bufferFrame);
         gf3d_pipeline_reset_frame(fullscreenpipe, bufferFrame);
-            commandBuffer = gf3d_command_rendering_begin(bufferFrame);
+            //commandBuffer = gf3d_command_rendering_begin(bufferFrame);
                 //new draw code start
                 //gf3d_pipeline_reset_frame(fullscreenpipe, bufferFrame);
-            gf3d_model_draw(model2, bufferFrame, commandBuffer, modelMat2);
-            gf3d_command_rendering_end(commandBuffer);
+            //gf3d_model_draw(model2, bufferFrame, commandBuffer, modelMat2);
+            //gf3d_command_rendering_end(commandBuffer);
 
             //Will replace the draw from the previous command. need to figure out how to combine the two
             fullscreenCmd = gf3d_command_rendering_fullscreen_begin(bufferFrame, fullscreenpipe);
