@@ -26,7 +26,6 @@ typedef struct
     void (*onPress)(void *data);        /**<callback for press event*/
     void (*onHold)(void *data);         /**<callback for hold event*/
     void (*onRelease)(void *data);      /**<callback for release event*/
-    void (*onDelete)(void *data);       /**<callback for when input is deleted*/
     void *data;                         /**<pointer to be passed to callbacks*/
 }Input;
 
@@ -82,7 +81,6 @@ Uint8 gfc_input_key_down(const char *key);
  * @param onPress the function to call when the input is pressed
  * @param onHold the function to call when the input is held
  * @param onRelease the function to call when the input is released
- * @param onDelete the function to call when the input is deleted from memory to clean up
  * @param data pointer to any custom data you want associated with the input
  */
 void gfc_input_set_callbacks(
@@ -90,7 +88,6 @@ void gfc_input_set_callbacks(
     void (*onPress)(void *data),
     void (*onHold)(void *data),
     void (*onRelease)(void *data),
-    void (*onDelete)(void *data),
     void *data
 );
 

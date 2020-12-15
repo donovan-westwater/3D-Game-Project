@@ -14,10 +14,6 @@ Input *gfc_input_get_by_name(const char *name);
 void gfc_input_delete(Input *in)
 {
     if (!in)return;
-    if (in->onDelete != NULL)
-    {
-        in->onDelete(in->data);
-    }
     gfc_list_delete(in->keyCodes);// data in the list is just integers
     free(in);
 }
@@ -41,7 +37,6 @@ void gfc_input_set_callbacks(
     void (*onPress)(void *data),
     void (*onHold)(void *data),
     void (*onRelease)(void *data),
-    void (*onDelete)(void *data),
     void *data
 )
 {
@@ -52,14 +47,12 @@ void gfc_input_set_callbacks(
     in->onPress = onPress;
     in->onHold = onHold;
     in->onRelease = onRelease;
-    in->onDelete = onDelete;
     in->data = data;
 }
 
 void gfc_input_close()
 {
     gfc_input_commands_purge();
-    gfc_list_delete(gfc_input_list);
     gfc_input_list = NULL;
     if (gfc_input_old_keys)
     {
@@ -71,6 +64,7 @@ void gfc_input_commands_purge()
 {
     Uint32 c,i;
     void *data;
+    if (!gfc_input_list)return;
     c = gfc_list_get_count(gfc_input_list);
     for (i = 0;i < c;i++)
     {
@@ -79,7 +73,6 @@ void gfc_input_commands_purge()
         gfc_input_delete((Input*)data);
     }
     gfc_list_delete(gfc_input_list);
-    gfc_input_list = gfc_list_new();
 }
 
 void gfc_input_update_command(Input *command)
@@ -480,7 +473,7 @@ void gfc_input_parse_command_json(SJson *command)
             gfc_list_append(in->keyCodes,(void *)kc);
         }
     }
-    gfc_list_append(gfc_input_list,(void *)in);
+    gfc_input_list = gfc_list_append(gfc_input_list,(void *)in);
 }
 
 void gfc_input_commands_load(char *configFile)

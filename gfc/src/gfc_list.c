@@ -169,6 +169,28 @@ int gfc_list_delete_last(List *list)
     return gfc_list_delete_nth(list,list->count-1);
 }
 
+int gfc_list_get_item_index(List *list,void *data)
+{
+    int i;
+    if (!list)
+    {
+        slog("no list provided");
+        return -1;
+    }
+    if (!data)return 0;
+    for (i = 0; i < list->count;i++)
+    {
+        if (list->elements[i].data == data)
+        {
+            // found it
+            return i;
+        }
+    }
+    slog("data not found");
+    return -1;
+    
+}
+
 int gfc_list_delete_data(List *list,void *data)
 {
     int i;

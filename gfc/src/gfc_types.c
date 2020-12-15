@@ -5,6 +5,17 @@
 
 #include "simple_logger.h"
 
+
+SDL_Rect gfc_sdl_rect(Sint32 x,Sint32 y,Uint32 w, Uint32 h)
+{
+    SDL_Rect r;
+    r.x = x;
+    r.y = y;
+    r.w = w;
+    r.h = h;
+    return r;
+}
+
 void *gfc_allocate_array(size_t typeSize,size_t count)
 {
     void *array;

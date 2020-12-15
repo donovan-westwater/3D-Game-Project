@@ -41,6 +41,7 @@ typedef char TextWord[16];
 #define gfc_word_cmp(a,b) (strncmp(a,b,GFCWORDLEN))
 #define gfc_word_cpy(dst,src) (strncpy(dst,src,GFCWORDLEN))
 #define gfc_word_clear(a)  (memset(a,0,sizeof(char)*GFCWORDLEN))
+#define gfc_word_sprintf(a,...) snprintf(a,GFCWORDLEN,__VA_ARGS__)
 /**
  * @brief 128 character buffer used for statements
  */
@@ -49,6 +50,7 @@ typedef char TextLine[128];
 #define gfc_line_cmp(a,b) (strncmp(a,b,GFCLINELEN))
 #define gfc_line_cpy(dst,src) (strncpy(dst,src,GFCLINELEN))
 #define gfc_line_clear(a)  (memset(a,0,sizeof(char)*GFCLINELEN))
+#define gfc_line_sprintf(a,...) snprintf(a,GFCLINELEN,__VA_ARGS__)
 /**
  * @brief 512 character buffer used for text blocks
  */
@@ -57,6 +59,7 @@ typedef char TextBlock[512];
 #define gfc_block_cmp(a,b) (strncmp(a,b,GFCTEXTLEN))
 #define gfc_block_cpy(dst,src) (strncpy(dst,src,GFCTEXTLEN))
 #define gfc_block_clear(a)  (memset(a,0,sizeof(char)*GFCTEXTLEN))
+#define gfc_block_sprintf(a,...) snprintf(a,GFCTEXTLEN,__VA_ARGS__)
 
 
 #endif

@@ -55,6 +55,8 @@ typedef short unsigned int Bool;
 
 #define gfc_rect_set(r,a,b,c,d) (r.x=(a), r.y=(b), r.w=(c), r.h=(d))
 
+SDL_Rect gfc_sdl_rect(Sint32 x,Sint32 y,Uint32 w, Uint32 h);
+
 /**
  * @brief helper function to allocate and initialize arrays.  The array returned needs to be free'd
  * @param typeSize the size of the type for the array
@@ -63,8 +65,10 @@ typedef short unsigned int Bool;
  */
 void *gfc_allocate_array(size_t typeSize,size_t count);
 
+#if defined(WIN32)
 #ifndef snprintf
 #define snprintf _snprintf
+#endif
 #endif
 
 #endif

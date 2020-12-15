@@ -239,10 +239,12 @@ Entity* addCollctible(Vector3D pos) {
 }
 Entity* addEmpty(Vector3D pos) {
 	if (hole != NULL) {
-		hole->rSelf->position.x = pos.x;
-		hole->rSelf->position.y = pos.y;
-		hole->rSelf->position.z = pos.z;
-		return hole;
+		hole->rSelf->position.x = 999999;
+		hole->rSelf->position.y = 999999;
+		hole->rSelf->position.z = 999999;
+		hole->inuse = false;
+		hole->timer = 0;
+		hole->id = -1;
 		//hole->id = -1;
 		//hole->rSelf->id = -1;
 		//hole->inuse = 0;
@@ -279,9 +281,19 @@ void empty_update(Entity* self) {
 	if (self->timer >= 1) {
 		self->inuse = 0;
 		self->rSelf->id = -1;
+		self->timer = 0;
 		return;
 	}
 	UniformBufferObject ubo = gf3d_vgraphics_get_uniform_buffer_object();
+	PlayerManger* m = get_PlayerManager();
+	Vector3D selfPos = vector3d(self->rSelf->position.x, self->rSelf->position.y, self->rSelf->position.z);
+	float r = max(max(self->rSelf->scale.x, self->rSelf->scale.y),self->rSelf->scale.z);
+	if (vector3d_distance_between_less_than(vector3d(ubo.view[3][0], ubo.view[3][1], ubo.view[3][2]), selfPos, r)) {
+		m->isCollide = false;
+	}
+	else {
+		m->isCollide = true;
+	}
 	Uint8* key;
 	key = SDL_GetKeyboardState(NULL);
 	Vector4D dir = vector4d(0, 0, 0, 1);

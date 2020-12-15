@@ -25,6 +25,7 @@
 #include "gf3d_texture.h"
 #include "gf3d_entity.h"
 #include "gf3d_player.h"
+#include "gf3d_sprite.h"
 
 typedef struct
 {
@@ -62,6 +63,7 @@ typedef struct
     VkSemaphore                 renderFinishedSemaphore;
         
     Pipeline                   *pipe;
+    Pipeline* overlay_pipe;   /**<for rendering 2d*/
     
     Command                 *   graphicsCommandPool; 
     UniformBufferObject         ubo;
@@ -156,6 +158,7 @@ void gf3d_vgraphics_init(
     
     gf3d_pipeline_init(4);// how many different rendering pipelines we need
     gf3d_vgraphics.pipe = gf3d_pipeline_basic_model_create(device,"shaders/vert.spv","shaders/frag.spv",gf3d_vgraphics_get_view_extent(),1024);
+    gf3d_vgraphics.overlay_pipe = gf3d_pipeline_basic_sprite_create(device, "shaders/sprite_vert.spv", "shaders/sprite_frag.spv", gf3d_vgraphics_get_view_extent(), 1024);
     gf3d_model_manager_init(1024,gf3d_swapchain_get_swap_image_count(),device);
 
     gf3d_command_system_init(8,device);
@@ -691,6 +694,12 @@ void gf3d_vgraphics_rotate_camera(float degrees)
         vector3d(0,1,0));
 
 }
+
+Pipeline* gf3d_vgraphics_get_graphics_overlay_pipeline()
+{
+    return gf3d_vgraphics.overlay_pipe;
+}
+
 /*WORK IN PROGRESS*/
 void gf3d_vgraphics_mouse_look() {
     int mx = 0;

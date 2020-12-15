@@ -3,6 +3,7 @@
 #include "gf3d_raycast.h"
 typedef struct PlayerManger_S {
 	int count;
+	int isCollide;
 	Entity* puzzle1;
 	Entity* puzzle2;
 	Entity* puzzle3;

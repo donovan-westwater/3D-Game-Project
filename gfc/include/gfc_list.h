@@ -89,6 +89,14 @@ int gfc_list_delete_last(List *list);
 int gfc_list_delete_data(List *list,void *data);
 
 /**
+ * @brief search the list for the given item
+ * @param list the list to search
+ * @param data the data to search for
+ * @return -1 on not found or error, the index otherwise
+ */
+int gfc_list_get_item_index(List *list,void *data);
+
+/**
  * @brief get the number of tracked elements in the list
  * @param list the list the check
  * @return the count in the list.  Will be zero if list was NULL

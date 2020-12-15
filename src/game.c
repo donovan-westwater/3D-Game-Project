@@ -137,8 +137,8 @@ int main(int argc,char *argv[])
             RaycastResult result;
             get_RaycastAhead(&result);
             if (result.hit) {
-                Vector3D in;
-                vector3d_add(in, result.point, -2.5 * result.normal);
+                Vector3D in = result.point;
+                //vector3d_add(in, result.point, -2.5 * result.normal);
                addEmpty(in);
                
             }

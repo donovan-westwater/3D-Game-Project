@@ -214,6 +214,22 @@ void gfc_matrix_view(
     
 }
 
+void gfc_matrix_scale(
+    Matrix4 out,
+    Vector3D scale,
+    Matrix4 in)
+{
+    Matrix4 temp;
+    gfc_matrix_identity(temp);
+    out[0][0] = scale.x;
+    out[1][1] = scale.y;
+    out[2][2] = scale.z;
+    gfc_matrix_multiply(
+        out,
+        in,
+        temp);
+}
+
 void gfc_matrix_make_translation(
     Matrix4 out,
     Vector3D move

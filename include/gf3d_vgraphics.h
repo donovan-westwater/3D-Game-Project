@@ -80,6 +80,7 @@ UniformBufferObject gf3d_vgraphics_get_uniform_buffer_object();
 UniformBufferObject* gf3d_get_pointer_to_UBO();
 
 Pipeline *gf3d_vgraphics_get_graphics_pipeline();
+Pipeline* gf3d_vgraphics_get_graphics_overlay_pipeline();
 
 Command *gf3d_vgraphics_get_graphics_command_pool();
 

@@ -583,4 +583,14 @@ void vector3d_cross_product(Vector3D *out, Vector3D v1, Vector3D v2)
   out->z = v1.x*v2.y - v1.y*v2.x;
 }
 
+void vector2d_move_towards(Vector2D *out, Vector2D point, Vector2D destination, float distance)
+{
+    Vector2D dir;
+    if (!out)return;
+    vector2d_sub(dir,destination,point);
+    vector2d_set_magnitude(&dir,distance);
+    out->x = point.x + dir.x;
+    out->y = point.y + dir.y;
+}
+
 /*eol@eof*/

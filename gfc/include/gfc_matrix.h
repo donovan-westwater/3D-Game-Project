@@ -18,6 +18,9 @@ typedef struct
     
 }UniformBufferObject;
 
+
+
+
 /**
  * @brief copy the contents of one matrix into another
  * @param d the destination matrix
@@ -109,6 +112,18 @@ void gfc_matrix_multiply_vector4d(
     Matrix4    mat,
     Vector4D   vec
 );
+
+/**
+ * @brief multiply a matrix by a scaling matrix
+ * @param out the resulting scaled matrix
+ * @param scale the amount to scale the matrix by
+ * @param in the matrix to scale
+ */
+void gfc_matrix_scale(
+    Matrix4 out,
+    Vector3D scale,
+    Matrix4 in);
+
 
 /**
  * @brief multiply a matrix by the rotation matrix

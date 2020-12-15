@@ -338,4 +338,14 @@ void vector3d_rotate_about_x(Vector3D *vect, float angle);
 void vector3d_rotate_about_y(Vector3D *vect, float angle);
 void vector3d_rotate_about_z(Vector3D *vect, float angle);
 
+/**
+ * @brief move a point towards another point a set distance
+ * @note this is a common quality of life function
+ * @param out the output vector, if it is NULL, this is a no-op
+ * @param point the point to modify
+ * @param destination the point to move towards
+ * @param distance the amount to move the point
+ */
+void vector2d_move_towards(Vector2D *out, Vector2D point, Vector2D destination, float distance);
+
 #endif

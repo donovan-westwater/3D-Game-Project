@@ -69,6 +69,7 @@ Pipeline* gf3d_pipeline_fullscreen_create(VkDevice device, char* vertFile, char*
  * @returns NULL on error (see logs) or a pointer to a pipeline
  */
 Pipeline *gf3d_pipeline_basic_model_create(VkDevice device,char *vertFile,char *fragFile,VkExtent2D extent,Uint32 descriptorCount);
+Pipeline* gf3d_pipeline_basic_sprite_create(VkDevice device, char* vertFile, char* fragFile, VkExtent2D extent, Uint32 descriptorCount);
 
 /**
  * @brief get a descriptor set to be used for the pipeline.  Provide the swap chain rendering frame.
