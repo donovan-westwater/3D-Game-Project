@@ -12,6 +12,7 @@
 #include "gf3d_texture.h"
 #include "gf3d_physics.h"
 #include "gf3d_player.h"
+#include "gf3d_sprite.h"
 #include <time.h> 
 
 #define FPS 30
@@ -47,7 +48,7 @@ int main(int argc,char *argv[])
             validate = 0;
         }
     }
-    
+    //800 600 Main screen size
     init_logger("gf3d.log");    
     slog("gf3d begin");
     gf3d_vgraphics_init( //1200 700 (Old resolution: WARNING WILL MAKE THE GAME RUN MUCH SLOWER)
@@ -67,11 +68,11 @@ int main(int argc,char *argv[])
     gfc_matrix_identity(modelMat2);
     gfc_matrix_make_translation(
             modelMat2,
-            vector3d(10,0,0)
+            vector3d(0,1,0)
         );
     //NEW CODE BELOW 
     gf3d_camera_set_position(vector3d(0, 0, 1));
-    gf3d_vgraphics_set_camera(vector3d(0, 1, -1));
+    gf3d_vgraphics_set_camera(vector3d(0, 1, 1));
     Model *model3 = gf3d_model_load("cube");
     Matrix4 modelMat3;
     gfc_matrix_identity(modelMat3);
@@ -103,6 +104,13 @@ int main(int argc,char *argv[])
     gf3d_swapchain_setup_frame_buffers(fullscreenpipe);
     gf3d_fullscreen_create_uniform_buffer();
     VkCommandBuffer fullscreenCmd;
+
+    //UI START
+    Sprite *hud = gf3d_sprite_load("images/hud.png", -1, -1, 0);
+
+
+
+    //UI END
     //bufferFrame = gf3d_vgraphics_render_begin();
     //fullscreenCmd = gf3d_command_rendering_fullscreen_begin(bufferFrame, fullscreenpipe); //Already binds pipeline, no need to do it again.
     
@@ -182,20 +190,31 @@ int main(int argc,char *argv[])
         bufferFrame = gf3d_vgraphics_render_begin();
         //gf3d_pipeline_reset_frame(gf3d_vgraphics_get_graphics_pipeline(),bufferFrame);
         gf3d_pipeline_reset_frame(fullscreenpipe, bufferFrame);
-            //commandBuffer = gf3d_command_rendering_begin(bufferFrame);
+        gf3d_pipeline_reset_frame(gf3d_vgraphics_get_graphics_overlay_pipeline(), bufferFrame);
+            commandBuffer = gf3d_command_rendering_begin(bufferFrame);
                 //new draw code start
                 //gf3d_pipeline_reset_frame(fullscreenpipe, bufferFrame);
-            //gf3d_model_draw(model2, bufferFrame, commandBuffer, modelMat2);
-            //gf3d_command_rendering_end(commandBuffer);
-
-            //Will replace the draw from the previous command. need to figure out how to combine the two
-            fullscreenCmd = gf3d_command_rendering_fullscreen_begin(bufferFrame, fullscreenpipe);
-
-                //vkCmdBindPipeline(fullscreenCmd, VK_PIPELINE_BIND_POINT_GRAPHICS, fullscreenpipe);
-                //vkCmdDraw(fullscreenCmd, 3, 1, 0, 0);
-                gf3d_vgraphics_draw_fullscreen(bufferFrame, fullscreenCmd, fullscreenpipe);
-                gf3d_command_rendering_end(fullscreenCmd);
+            gf3d_model_draw(model2, bufferFrame, commandBuffer, modelMat2);
+            gf3d_command_rendering_end(commandBuffer);
+             
+            //Main graphics rendering
+        /*
+           
+                fullscreenCmd = gf3d_command_rendering_fullscreen_begin(bufferFrame, fullscreenpipe);
                 
+                    gf3d_vgraphics_draw_fullscreen(bufferFrame, fullscreenCmd, fullscreenpipe);
+
+                gf3d_command_rendering_end(fullscreenCmd);
+          */
+          //Main Grpahics rending end
+
+               commandBuffer = gf3d_command_rendering_fullscreen_begin(bufferFrame, gf3d_vgraphics_get_graphics_overlay_pipeline());
+
+                    //gf3d_sprite_draw(hud, vector2d(0, 0), vector2d(1, 1), 0, bufferFrame, commandBuffer);
+                    gf3d_sprite_draw(hud, vector2d(50, 0), vector2d(1, 1), 0, bufferFrame, commandBuffer);
+
+                gf3d_command_rendering_end(commandBuffer);
+           
                 //new draw code end
                 //gf3d_model_draw(model,bufferFrame,commandBuffer,modelMat);
                 //gf3d_model_draw(model2,bufferFrame,commandBuffer,modelMat2);
