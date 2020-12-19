@@ -13,6 +13,7 @@
 #include "gf3d_physics.h"
 #include "gf3d_player.h"
 #include "gf3d_sprite.h"
+#include "gfc_audio.h"
 #include <time.h> 
 
 #define FPS 30
@@ -113,6 +114,11 @@ int main(int argc,char *argv[])
 
 
     //UI END
+    //Sound Start
+    gfc_audio_init(10, 1, 1, 10, true, true);
+    Sound *s = gfc_sound_load("sounds/Homestuck - The Felt - 05 Clockwork Reversal.wav", .1, 1);
+    gfc_sound_play(s, 99, 0.1, -1, -1);
+    //Sound End
     //bufferFrame = gf3d_vgraphics_render_begin();
     //fullscreenCmd = gf3d_command_rendering_fullscreen_begin(bufferFrame, fullscreenpipe); //Already binds pipeline, no need to do it again.
     int spriteMode = true;
