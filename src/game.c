@@ -94,6 +94,7 @@ int main(int argc,char *argv[])
     //addEntity(vector4d(-1, 2, 1, 1), vector4d(35, 0, 0, 1), vector4d(1, 1, 1, 1), vector4d(0, 1, 0, 1), vector3d(0, -0.1, 0), 1,0);
     //addEntity(vector4d(-1, 1, 1, 1), vector4d(0, 0, 0, 1), vector4d(1, 1, 1, 1), vector4d(0, 1, 0, 1), vector3d(0, 0, 0), 1, 0);
     Entity *ground = addEntity(vector4d(0, -0.25, 0, 1), vector4d(0, 0, 0, 1), vector4d(50, 1, 50, 1), vector4d(0, 0, 0.5, 1), vector3d(0, 0, 0), 1,0);
+    
     //ground->pSelf->mass = 0;
     //ground->pSelf->friction = 0;
     addWalls();
@@ -107,13 +108,14 @@ int main(int argc,char *argv[])
 
     //UI START
     Sprite *hud = gf3d_sprite_load("images/hud.png", -1, -1, 0);
+    Sprite* bg = gf3d_sprite_load("images/Main_Screen.png", -1, -1, 0);
 
 
 
     //UI END
     //bufferFrame = gf3d_vgraphics_render_begin();
     //fullscreenCmd = gf3d_command_rendering_fullscreen_begin(bufferFrame, fullscreenpipe); //Already binds pipeline, no need to do it again.
-    
+    int spriteMode = true;
     double last = time(NULL);
     float fps = 0;
     float totalF = 0;
@@ -123,67 +125,76 @@ int main(int argc,char *argv[])
     //NEW CODE OVER
     while(!done)
     {
+        
         totalF++;
         updateF++;
         SDL_PumpEvents();   // update SDL's internal event structures
         keys = SDL_GetKeyboardState(NULL); // get the keyboard state for this frame
-        //update game things here
+        if (keys[SDL_SCANCODE_RETURN]) spriteMode = false;
+        if (spriteMode) {
+            double currentS = time(NULL);
+            double deltaS = currentS - last;
+            totalTime += deltaS;
+            last = currentS;
+        }
+        if (!spriteMode) {
+            //update game things here
         
-        //gf3d_vgraphics_rotate_camera(0.01);
-        //gf3d_vgraphics_mouse_look();
-        float speed = 1;
-        if (keys[SDL_SCANCODE_LSHIFT]) speed = 5;
-        if(keys[SDL_SCANCODE_D]) gf3d_vgraphics_rotate_camera(0.01*speed);
-        else if(keys[SDL_SCANCODE_A]) gf3d_vgraphics_rotate_camera(-0.01*speed);
-        if (keys[SDL_SCANCODE_S]) {
-            gf3d_vgraphics_move_camera(-1,0.01*speed);
-        }
-        else if (keys[SDL_SCANCODE_W]) {
-            gf3d_vgraphics_move_camera(1,0.01*speed);
-        }
-        if (keys[SDL_SCANCODE_SPACE]) {
-            RaycastResult result;
-            get_RaycastAhead(&result);
-            if (result.hit) {
-                Vector3D in = result.point;
-                //vector3d_add(in, result.point, -2.5 * result.normal);
-               addEmpty(in);
-               
+            //gf3d_vgraphics_rotate_camera(0.01);
+            //gf3d_vgraphics_mouse_look();
+            float speed = 1;
+            if (keys[SDL_SCANCODE_LSHIFT]) speed = 5;
+            if(keys[SDL_SCANCODE_D]) gf3d_vgraphics_rotate_camera(0.01*speed);
+            else if(keys[SDL_SCANCODE_A]) gf3d_vgraphics_rotate_camera(-0.01*speed);
+            if (keys[SDL_SCANCODE_S]) {
+                gf3d_vgraphics_move_camera(-1,0.01*speed);
             }
-        }
+            else if (keys[SDL_SCANCODE_W]) {
+                gf3d_vgraphics_move_camera(1,0.01*speed);
+            }
+            if (keys[SDL_SCANCODE_SPACE]) {
+                RaycastResult result;
+                get_RaycastAhead(&result);
+                if (result.hit) {
+                    Vector3D in = result.point;
+                    //vector3d_add(in, result.point, -2.5 * result.normal);
+                   addEmpty(in);
+               
+                }
+            }
         
-        gfc_matrix_rotate(
-            modelMat,
-            modelMat,
-            0.002,
-            vector3d(1,0,0));
-        gfc_matrix_rotate(
-            modelMat2,
-            modelMat2,
-            0.002,
-            vector3d(0,0,1));
+            gfc_matrix_rotate(
+                modelMat,
+                modelMat,
+                0.002,
+                vector3d(1,0,0));
+            gfc_matrix_rotate(
+                modelMat2,
+                modelMat2,
+                0.002,
+                vector3d(0,0,1));
 
-        double current = time(NULL);
-        double delta = current - last;
-        totalTime += delta;
-        updateTime += delta;
-        //fps = totalF / totalTime;
-        //if ((int)totalTime % 200000000) printf("CURRENT FPS: %f\n", fps);
-        if (updateTime > 2) {
-            fps = updateF / updateTime;
-            updateF = 0;
-            updateTime = 0;
-            printf("CURRENT FPS: %f\n", fps);
+            double current = time(NULL);
+            double delta = current - last;
+            totalTime += delta;
+            updateTime += delta;
+            //fps = totalF / totalTime;
+            //if ((int)totalTime % 200000000) printf("CURRENT FPS: %f\n", fps);
+            if (updateTime > 2) {
+                fps = updateF / updateTime;
+                updateF = 0;
+                updateTime = 0;
+                printf("CURRENT FPS: %f\n", fps);
+            }
+            //Level update section
+            //EntityThink
+            //pre player sync
+            //physicsUpdate(0.05);//PhyUpdate 
+            playerUpdate();
+            //post player sync
+            updateEntAll();
+            last = current;
         }
-        //Level update section
-        //EntityThink
-        //pre player sync
-        //physicsUpdate(0.05);//PhyUpdate 
-        playerUpdate();
-        //post player sync
-        updateEntAll();
-        last = current;
-
         //Level Draw
         // configure render command for graphics command pool
         // for each mesh, get a command and configure it from the pool
@@ -191,30 +202,30 @@ int main(int argc,char *argv[])
         //gf3d_pipeline_reset_frame(gf3d_vgraphics_get_graphics_pipeline(),bufferFrame);
         gf3d_pipeline_reset_frame(fullscreenpipe, bufferFrame);
         gf3d_pipeline_reset_frame(gf3d_vgraphics_get_graphics_overlay_pipeline(), bufferFrame);
-            commandBuffer = gf3d_command_rendering_begin(bufferFrame);
+            //commandBuffer = gf3d_command_rendering_begin(bufferFrame);
                 //new draw code start
                 //gf3d_pipeline_reset_frame(fullscreenpipe, bufferFrame);
-            gf3d_model_draw(model2, bufferFrame, commandBuffer, modelMat2);
-            gf3d_command_rendering_end(commandBuffer);
+           // gf3d_model_draw(model2, bufferFrame, commandBuffer, modelMat2);
+           // gf3d_command_rendering_end(commandBuffer);
              
             //Main graphics rendering
-        /*
+        
            
                 fullscreenCmd = gf3d_command_rendering_fullscreen_begin(bufferFrame, fullscreenpipe);
                 
                     gf3d_vgraphics_draw_fullscreen(bufferFrame, fullscreenCmd, fullscreenpipe);
 
                 gf3d_command_rendering_end(fullscreenCmd);
-          */
+          
           //Main Grpahics rending end
+                if(spriteMode){
+                    commandBuffer = gf3d_command_rendering_fullscreen_begin(bufferFrame, gf3d_vgraphics_get_graphics_overlay_pipeline());
 
-               commandBuffer = gf3d_command_rendering_fullscreen_begin(bufferFrame, gf3d_vgraphics_get_graphics_overlay_pipeline());
+                    gf3d_sprite_draw(bg, vector2d(0, 0), vector2d(1, 1), 0, bufferFrame, commandBuffer);
+                    //gf3d_sprite_draw(hud, vector2d(50, 0), vector2d(1, 1), 0, bufferFrame, commandBuffer);
 
-                    //gf3d_sprite_draw(hud, vector2d(0, 0), vector2d(1, 1), 0, bufferFrame, commandBuffer);
-                    gf3d_sprite_draw(hud, vector2d(50, 0), vector2d(1, 1), 0, bufferFrame, commandBuffer);
-
-                gf3d_command_rendering_end(commandBuffer);
-           
+                    gf3d_command_rendering_end(commandBuffer);
+                }
                 //new draw code end
                 //gf3d_model_draw(model,bufferFrame,commandBuffer,modelMat);
                 //gf3d_model_draw(model2,bufferFrame,commandBuffer,modelMat2);

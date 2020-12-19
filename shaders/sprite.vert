@@ -15,8 +15,8 @@ layout(location = 0) in vec2 inPosition;
 layout(location = 1) in vec2 inTexCoord;
 layout(location = 0) out vec2 fragTexCoord;
 vec2 vertices[] = vec2[](
-    vec2(-1, -1), vec2(-1 + 0.5, -1),
-    vec2(-1, -1 + 0.5), vec2(-1 + 0.5, -1 + 0.5)
+    vec2(-1, -1), vec2(-1 + 2.0, -1),
+    vec2(-1, -1 + 2.0), vec2(-1 + 2.0, -1 + 2.0)
     );
     /*
     vec2 vertices[] = vec2[](
