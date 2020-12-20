@@ -14,6 +14,7 @@
 #include "gf3d_player.h"
 #include "gf3d_sprite.h"
 #include "gfc_audio.h"
+#include "gf3d_editor.h"
 #include <time.h> 
 
 #define FPS 30
@@ -119,15 +120,25 @@ int main(int argc,char *argv[])
     Sound *s = gfc_sound_load("sounds/Homestuck - The Felt - 05 Clockwork Reversal.wav", .1, 1);
     gfc_sound_play(s, 99, 0.1, -1, -1);
     //Sound End
+
+    //Editor Start
+    editorInit();
+
+    //Editor End
+
     //bufferFrame = gf3d_vgraphics_render_begin();
     //fullscreenCmd = gf3d_command_rendering_fullscreen_begin(bufferFrame, fullscreenpipe); //Already binds pipeline, no need to do it again.
     int spriteMode = true;
+    int editMode = false;
+    int editInit = false;
     double last = time(NULL);
     float fps = 0;
     float totalF = 0;
     float updateF = 0;
     float totalTime = 0;
     float updateTime = 0;
+
+    float angle = 0;
     //NEW CODE OVER
     while(!done)
     {
@@ -137,13 +148,35 @@ int main(int argc,char *argv[])
         SDL_PumpEvents();   // update SDL's internal event structures
         keys = SDL_GetKeyboardState(NULL); // get the keyboard state for this frame
         if (keys[SDL_SCANCODE_RETURN]) spriteMode = false;
+        if (keys[SDL_SCANCODE_E] && spriteMode) {
+            spriteMode = false;
+            editMode = true;
+        }
         if (spriteMode) {
             double currentS = time(NULL);
             double deltaS = currentS - last;
             totalTime += deltaS;
             last = currentS;
         }
-        if (!spriteMode) {
+        if (editMode) {
+            if (!editInit) {
+                tabSelect(1);
+                //Move camera into place
+                gf3d_vgraphics_set_camera(vector3d(14, 19, 0));
+                //gf3d_vgraphics_rotate_camera(180);
+                angle = -90;
+                angle /= 57.2957795;
+                gf3d_vgraphics_rotate_camera(angle);
+                angle = 45;
+                angle /= 57.2957795;
+                gf3d_vgraphics_rotate_camera_axis(angle,vector3d(1,0,0));
+                editInit = true;
+            }
+            //angle += 0.01;
+            //gf3d_vgraphics_rotate_camera_axis(0.01, vector3d(1, 0, 0));
+            editorUpdate();
+        }
+        if (!spriteMode && !editMode) {
             //update game things here
         
             //gf3d_vgraphics_rotate_camera(0.01);
@@ -232,6 +265,9 @@ int main(int argc,char *argv[])
 
                     gf3d_command_rendering_end(commandBuffer);
                 }
+                
+                
+                
                 //new draw code end
                 //gf3d_model_draw(model,bufferFrame,commandBuffer,modelMat);
                 //gf3d_model_draw(model2,bufferFrame,commandBuffer,modelMat2);

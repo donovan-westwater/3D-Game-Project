@@ -46,6 +46,8 @@ void gf3d_vgraphics_move_camera(float dir,float speed);
 
 void gf3d_vgraphics_rotate_camera(float degrees);
 
+void gf3d_vgraphics_rotate_camera_axis(float degrees,Vector3D axis);
+
 void gf3d_vgraphics_mouse_look();
 
 /**

@@ -4,6 +4,7 @@
 #include "gf3d_entity.h"
 #include "gf3d_physics.h"
 #include "gf3d_player.h"
+#include "gf3d_vgraphics.h"
 
 #define StepNum 5
 
@@ -81,6 +82,20 @@ Entity* addEntity(Vector4D pos, Vector4D rot, Vector4D scale, Vector4D color, Ve
 	
 	return &entList[i];
 	
+}
+
+void deleteEntity(Entity* e) {
+	UniformBufferObject* u = gf3d_get_pointer_to_UBO();
+	u->totalObj--;
+	e->inuse = 0;
+	SDL_memset(e->pSelf, 0, sizeof(Rigidbody));
+	e->pSelf->eSelf = e;
+	e->rSelf->id = -1;
+	e->rSelf->color = vector4d(0, 0, 0, 0);
+	e->rSelf->position = vector4d(0, 0, 0, 0);
+	e->rSelf->rotation = vector4d(0, 0, 0, 0);
+	e->rSelf->type = 0;
+	e->rSelf->scale = vector4d(0, 0, 0, 0);
 }
 
 void entity_touch(Entity* self, Entity* other) {

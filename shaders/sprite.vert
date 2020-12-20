@@ -26,7 +26,7 @@ vec2 vertices[] = vec2[](
     */
 void main()
 {
-    gl_Position = ubo.model*vec4(vertices[gl_VertexIndex], 1.0, 1.0);
+    gl_Position = ubo.model*vec4(vertices[gl_VertexIndex], 0.0, 1.0);
     //gl_Position = ubo.model * vec4(inPosition,0.0, 1.0);
     fragTexCoord = inTexCoord + ubo.frame_offset;
 }

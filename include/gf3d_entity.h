@@ -73,7 +73,7 @@ typedef struct Rigidbody_S {
 
  Entity* addEntity(Vector4D pos, Vector4D rot, Vector4D scale, Vector4D color, Vector3D velo,int type,int isObs);
 
- void destroy(Entity* self);
+ void deleteEntity(Entity* e);
  
  void entity_touch(Entity* self, Entity* other);
 
