@@ -125,6 +125,29 @@ float stwistSDF(vec3 p, vec3 b,int frame){
     vec3  q = vec3(m*p.xz,p.y);
     return  beveledSDF(q,b,frame);
 }
+float sdOctahedron( vec3 p, float s)
+{
+  p = abs(p);
+  float m = p.x+p.y+p.z-s;
+  vec3 q;
+       if( 3.0*p.x < m ) q = p.xyz;
+  else if( 3.0*p.y < m ) q = p.yzx;
+  else if( 3.0*p.z < m ) q = p.zxy;
+  else return m*0.57735027;
+    
+  float k = clamp(0.5*(q.z-q.y+s),0.0,s); 
+  return length(vec3(q.x,q.y-s+k,q.z-k)); 
+}
+float warpSDF(vec3 p,int frame){
+    float d1 = sdOctahedron(p,0.35);
+ float mag = sin(radians(float(4*frame))) - 2.;
+ vec3 n = normalize(p);
+ 
+ float d2 = sin(mag*0.25*n.x)*sin(mag*0.25*n.y)*sin(mag*0.25*n.z);
+ return d1+d2;
+
+}
+
 float sphereDistance(vec3 p) {
     return distance(p, centre) - radius;
 }
@@ -151,6 +174,7 @@ float sceneSDF(vec3 p){
         if(ubo.renderList[i].type == 5) d = min(beveledSDF(pD.xyz/scale,vec3(0.25,0.25,0.25)*scale,ubo.renderList[i].frame)*min(scale.x,min(scale.y,scale.z)),d);
         if(ubo.renderList[i].type == 6) d = min(twistSDF(pD.xyz/scale,vec3(0.25,0.25,0.25)*scale,ubo.renderList[i].frame)*min(scale.x,min(scale.y,scale.z)),d);
         if(ubo.renderList[i].type == 7) d = min(stwistSDF(pD.xyz/scale,vec3(0.25,0.25,0.25)*scale,ubo.renderList[i].frame)*min(scale.x,min(scale.y,scale.z)),d);
+         if(ubo.renderList[i].type == 8) d = min(warpSDF(pD.xyz/scale,ubo.renderList[i].frame)*min(scale.x,min(scale.y,scale.z)),d);
 
         pD = vec4(p,1);
         if(abs(d - prevD) > 0.0001){
@@ -243,7 +267,7 @@ float lSceneSDF(vec3 p){
         if(ubo.renderList[i].type == 5) d = min(beveledSDF(pD.xyz/scale,vec3(0.25,0.25,0.25)*scale,ubo.renderList[i].frame)*min(scale.x,min(scale.y,scale.z)),d);
         if(ubo.renderList[i].type == 6) d = min(twistSDF(pD.xyz/scale,vec3(0.25,0.25,0.25)*scale,ubo.renderList[i].frame)*min(scale.x,min(scale.y,scale.z)),d);
         if(ubo.renderList[i].type == 7) d = min(stwistSDF(pD.xyz/scale,vec3(0.25,0.25,0.25)*scale,ubo.renderList[i].frame)*min(scale.x,min(scale.y,scale.z)),d);
-
+        if(ubo.renderList[i].type == 8) d = min(warpSDF(pD.xyz/scale,ubo.renderList[i].frame)*min(scale.x,min(scale.y,scale.z)),d);
        
        d = min(d,planeSDF(p,vec3(0,1,0),0));
     }

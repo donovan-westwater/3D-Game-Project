@@ -7,9 +7,9 @@ void playerManInit() {
 	playerM.count = 0;
 	playerM.isCollide = true;
 	playerM.hasLost = false;
-	//playerM.puzzle1 = addCollctible(vector3d(0, 1, 8));
-	//playerM.puzzle2 = addCollctible(vector3d(2, 1, 2));
-	//playerM.puzzle3 = addCollctible(vector3d(4, 1, 8));
+	playerM.puzzle1 = addCollctible(vector3d(0, 1, 8));
+	playerM.puzzle2 = addCollctible(vector3d(2, 1, 2));
+	playerM.puzzle3 = addCollctible(vector3d(4, 1, 8));
 	//Initialize collectibes here
 }
 
@@ -35,7 +35,7 @@ int get_RaycastAhead(RaycastResult* outResult) {
 	float min = 99999;
 	for (int i = 0; i < entSize; i++) {
 		if (entList[i].inuse == 0) continue;
-		if (entList[i].noCollide || !playerM.isCollide) continue;
+		if (entList[i].noCollide || !playerM.isCollide ||entList[i].eType != Wall) continue;
 		if (raycastGeneral(&entList[i], &ahead, &test)) {
 			if (test.hit && test.t < min) {
 				*outResult = test;

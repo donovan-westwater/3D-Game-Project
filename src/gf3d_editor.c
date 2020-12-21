@@ -1,4 +1,5 @@
 #include "gf3d_editor.h"
+#include "gf3d_player.h"
 #include "gf3d_vgraphics.h"
 #include "simple_json.h"
 
@@ -6,6 +7,7 @@ EditorManger static editor = { 0 };
 static int spaceDown = false;
 static int backDown = false;
 static int tabDown = false;
+static int saveLoadDown = false;
 void editorInit() {
 	Entity* list = getEntList();
 	editor.curID = 0;
@@ -88,7 +90,7 @@ void editorUpdate() {
 			n = addEntity(vector4d(0, 2, 0, 1), vector4d(0, 0, 0, 1), vector4d(1, 1, 1, 1), vector4d(0, 0.5, 0.5, 1), vector3d(0, 0, 0), 1, 0,1);
 		}
 		else {
-			n = addEntity(editor.selEnt->rSelf->position, editor.selEnt->rSelf->rotation, editor.selEnt->rSelf->scale, editor.selEnt->rSelf->position, vector3d(0, 0, 0), 1, 0,1);
+			n = addEntity(editor.selEnt->rSelf->position, editor.selEnt->rSelf->rotation, editor.selEnt->rSelf->scale, editor.selEnt->rSelf->color, vector3d(0, 0, 0), 1, 0,1);
 			editor.selEnt->rSelf->color = editor.entColor;
 		}
 		editor.curID = n->rSelf->id;
@@ -113,7 +115,42 @@ void editorUpdate() {
 		tabDown = true;
 		tabSelect(1);
 	}
-	else if (!keys[SDL_SCANCODE_TAB] && tabDown) tabDown = false;
+	else if (keys[SDL_SCANCODE_LEFTBRACKET] && !tabDown) {
+
+		tabDown = true;
+		editor.selEnt->eType--;
+		editor.selEnt->rSelf->type--;
+		if (editor.selEnt->rSelf->type == 3 || editor.selEnt->rSelf->type == 2) editor.selEnt->rSelf->type = 1;
+		if (editor.selEnt->eType < 1) editor.selEnt->eType = 1;
+		if (editor.selEnt->rSelf->type < 1) editor.selEnt->rSelf->type = 1;
+	}
+	else if (keys[SDL_SCANCODE_RIGHTBRACKET] && !tabDown) {
+
+		editor.selEnt->eType++;
+		editor.selEnt->rSelf->type++;
+		if (editor.selEnt->rSelf->type > 8) editor.selEnt->rSelf->type = 8;
+		if (editor.selEnt->rSelf->type == 3 || editor.selEnt->rSelf->type == 2) editor.selEnt->rSelf->type = 4;
+		if (editor.selEnt->eType > Herd) editor.selEnt->eType = Herd;
+		tabDown = true;
+	}
+	else if (!keys[SDL_SCANCODE_TAB] && !keys[SDL_SCANCODE_LEFTBRACKET] && !keys[SDL_SCANCODE_RIGHTBRACKET] && tabDown) tabDown = false;
+
+	if (keys[SDL_SCANCODE_COMMA] && !saveLoadDown) {
+		clearEntList();
+		playerManInit();
+		loadLevel();
+		saveLoadDown = true;
+	}
+	else if (keys[SDL_SCANCODE_PERIOD] && !saveLoadDown)
+	{
+		editor.selEnt->rSelf->color = editor.entColor;
+		saveLevel();
+		editor.selEnt->rSelf->color = editor.selColor;
+		saveLoadDown = true;
+	}
+	else if (!keys[SDL_SCANCODE_MINUS]&& !keys[SDLK_PLUS] && saveLoadDown) saveLoadDown = false;
+
+	
 
 }
 
@@ -264,6 +301,9 @@ void loadLevel() {
 				break;
 			case Blind:
 				addBlind(vector3d(pos.x, pos.y, pos.z));
+				break;
+			case Herd:
+				addHerd(vector3d(pos.x, pos.y, pos.z));
 				break;
 			}
 		}

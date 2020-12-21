@@ -92,18 +92,20 @@ int main(int argc,char *argv[])
     initEntList();
     phyEngine_init();
     playerManInit();
+    loadLevel();
     //addEntity(vector4d(0, 1, -5, 1), vector4d(0, 0, 0, 1), vector4d(1, 1, 1, 1), vector4d(0, 1, 0, 1),vector3d(-1, 0 , 0), 0,0);
     //addEntity(vector4d(-1, 2, 1, 1), vector4d(35, 0, 0, 1), vector4d(1, 1, 1, 1), vector4d(0, 1, 0, 1), vector3d(0, -0.1, 0), 1,0);
     //addEntity(vector4d(-1, 1, 1, 1), vector4d(0, 0, 0, 1), vector4d(1, 1, 1, 1), vector4d(0, 1, 0, 1), vector3d(0, 0, 0), 1, 0);
-    Entity *ground = addEntity(vector4d(0, -0.25, 0, 1), vector4d(0, 0, 0, 1), vector4d(50, 1, 50, 1), vector4d(0, 0, 0.5, 1), vector3d(0, 0, 0), 1,0,1);
+    //Entity *ground = addEntity(vector4d(0, -0.25, 0, 1), vector4d(0, 0, 0, 1), vector4d(50, 1, 50, 1), vector4d(0, 0, 0.5, 1), vector3d(0, 0, 0), 1,0,1);
     
-    //addBlind(vector3d(0, 1, -6)); WORKS
+    //addBlind(vector3d(0, 1, -4)); 
     //addChaser(vector3d(1, 1, -6));
     //addPatrol(vector3d(4, 1, -6),vector3d(0,0,-1));
-    addHoleInspector(vector3d(3, 1, -6));
+    //(vector3d(3, 1, -6));
+    //addHerd(vector3d(-3, 1, -6));
     //ground->pSelf->mass = 0;
     //ground->pSelf->friction = 0;
-    addWalls();
+    //addWalls();
      //move to player init
     
     VkDevice device = gf3d_vgraphics_get_default_logical_device();

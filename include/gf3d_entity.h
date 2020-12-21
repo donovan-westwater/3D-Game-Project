@@ -88,7 +88,8 @@ typedef struct Rigidbody_S {
      Chaser,
      Patroller,
      Blind,
-     Inspector
+     Inspector,
+     Herd
 
  };
  void initEntList();
@@ -141,6 +142,8 @@ typedef struct Rigidbody_S {
 
  //Whenever the player makes a hole within its range, it will seek out the hole and chase the player if they are too close
  void addHoleInspector(Vector3D pos);
+
+ void addHerd(Vector3D pos);
 
  void enemy_update(Entity* self);
 

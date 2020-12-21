@@ -99,7 +99,7 @@ void deleteEntity(Entity* e) {
 	UniformBufferObject* u = gf3d_get_pointer_to_UBO();
 	u->totalObj--;
 	e->inuse = 0;
-	SDL_memset(e->pSelf, 0, sizeof(Rigidbody));
+	if(e->pSelf != NULL) SDL_memset(e->pSelf, 0, sizeof(Rigidbody));
 	e->pSelf->eSelf = e;
 	e->rSelf->id = -1;
 	e->rSelf->color = vector4d(0, 0, 0, 0);
@@ -425,6 +425,12 @@ void addHoleInspector(Vector3D pos) {
 	e->state = Normal;
 }
 
+void addHerd(Vector3D pos) {
+	Entity* e = addEntity(vector4d(pos.x, pos.y, pos.z, 1), vector4d(0, 0, 0, 1), vector4d(1, 1, 1, 1), vector4d(0.35, 0.55, 0.45, 1), vector3d(0, 0, 0), 8, 0, Herd);
+	e->update = enemy_update;
+	e->state = Normal;
+}
+
 int lineOfSight(Entity *self,Vector3D targetPos) {
 	RaycastResult result;
 	resetRayResult(&result);
@@ -469,7 +475,7 @@ void enemy_update(Entity* self) {
 		
 		Vector3D distFromSeen;
 		Vector3D velo;
-		int canChase = false;
+		int canChase;
 		float delta;
 		switch (self->eType)
 		{
@@ -486,13 +492,23 @@ void enemy_update(Entity* self) {
 			canChase = false;
 			playerPos = vector3d(gf3d_get_pointer_to_UBO()->view[3][0], gf3d_get_pointer_to_UBO()->view[3][1], gf3d_get_pointer_to_UBO()->view[3][2]);
 			vector3d_sub(distFromSeen,playerPos,lastSeen);
-			if (vector3d_magnitude(distFromSeen) > 0.01) canChase = true;
+			if (vector3d_magnitude(distFromSeen) > 0.01) {
+				canChase = true;
+			}
 			break;
 		case Inspector:
 			if(hole != NULL) vector3d_sub(velo, hole->rSelf->position, self->rSelf->position);
 			if (hole != NULL && hole->inuse == true && vector3d_magnitude(velo) > 0.05) {
 				vector3d_normalize(&velo);
 				vector3d_scale(velo, velo, 0.05);
+				self->velocity = velo;
+			}
+			break;
+		case Herd:
+			if (hole != NULL) vector3d_sub(velo, hole->rSelf->position, self->rSelf->position);
+			if (hole != NULL && hole->inuse == true && vector3d_magnitude(velo) > 0.05) {
+				vector3d_normalize(&velo);
+				vector3d_scale(velo, velo, -0.05);
 				self->velocity = velo;
 			}
 			break;
@@ -508,6 +524,7 @@ void enemy_update(Entity* self) {
 	else if (self->state == Chase) {
 		self->noCollide = false;
 		if (vector3d_magnitude(playerDir) > 5 || !lineOfSight(self, playerPos)) self->state = Return;
+		if (vector3d_magnitude(playerDir) > 5 || !lineOfSight(self, playerPos) && self->eType == Herd) self->state = Normal;
 		if (vector3d_magnitude(playerDir) < 0.05) get_PlayerManager()->hasLost = true;
 		if (self->eType == Blind) {
 			Vector3D playerPos = vector3d(gf3d_get_pointer_to_UBO()->view[3][0], gf3d_get_pointer_to_UBO()->view[3][1], gf3d_get_pointer_to_UBO()->view[3][2]);
@@ -552,7 +569,7 @@ void enemy_update(Entity* self) {
 		
 	}
 	
-	lastSeen = vector3d(gf3d_get_pointer_to_UBO()->view[3][0], gf3d_get_pointer_to_UBO()->view[3][1], gf3d_get_pointer_to_UBO()->view[3][2]);
+	if(self->eType == Blind) lastSeen = vector3d(gf3d_get_pointer_to_UBO()->view[3][0], gf3d_get_pointer_to_UBO()->view[3][1], gf3d_get_pointer_to_UBO()->view[3][2]);
 	update(self);
 	self->rSelf->frame++;
 }
