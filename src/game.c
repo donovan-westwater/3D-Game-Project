@@ -95,11 +95,11 @@ int main(int argc,char *argv[])
     //addEntity(vector4d(0, 1, -5, 1), vector4d(0, 0, 0, 1), vector4d(1, 1, 1, 1), vector4d(0, 1, 0, 1),vector3d(-1, 0 , 0), 0,0);
     //addEntity(vector4d(-1, 2, 1, 1), vector4d(35, 0, 0, 1), vector4d(1, 1, 1, 1), vector4d(0, 1, 0, 1), vector3d(0, -0.1, 0), 1,0);
     //addEntity(vector4d(-1, 1, 1, 1), vector4d(0, 0, 0, 1), vector4d(1, 1, 1, 1), vector4d(0, 1, 0, 1), vector3d(0, 0, 0), 1, 0);
-    Entity *ground = addEntity(vector4d(0, -0.25, 0, 1), vector4d(0, 0, 0, 1), vector4d(50, 1, 50, 1), vector4d(0, 0, 0.5, 1), vector3d(0, 0, 0), 1,0);
+    //Entity *ground = addEntity(vector4d(0, -0.25, 0, 1), vector4d(0, 0, 0, 1), vector4d(50, 1, 50, 1), vector4d(0, 0, 0.5, 1), vector3d(0, 0, 0), 1,0);
     
     //ground->pSelf->mass = 0;
     //ground->pSelf->friction = 0;
-    addWalls();
+    //addWalls();
      //move to player init
     
     VkDevice device = gf3d_vgraphics_get_default_logical_device();
@@ -123,7 +123,7 @@ int main(int argc,char *argv[])
 
     //Editor Start
     editorInit();
-
+    loadLevel();
     //Editor End
 
     //bufferFrame = gf3d_vgraphics_render_begin();
@@ -170,6 +170,7 @@ int main(int argc,char *argv[])
                 angle = 45;
                 angle /= 57.2957795;
                 gf3d_vgraphics_rotate_camera_axis(angle,vector3d(1,0,0));
+                saveLevel();
                 editInit = true;
             }
             //angle += 0.01;
@@ -255,15 +256,17 @@ int main(int argc,char *argv[])
                     gf3d_vgraphics_draw_fullscreen(bufferFrame, fullscreenCmd, fullscreenpipe);
 
                 gf3d_command_rendering_end(fullscreenCmd);
+
+
           
           //Main Grpahics rending end
                 if(spriteMode){
-                    commandBuffer = gf3d_command_rendering_fullscreen_begin(bufferFrame, gf3d_vgraphics_get_graphics_overlay_pipeline());
+                    fullscreenCmd = gf3d_command_rendering_fullscreen_begin(bufferFrame, gf3d_vgraphics_get_graphics_overlay_pipeline());
 
-                    gf3d_sprite_draw(bg, vector2d(0, 0), vector2d(1, 1), 0, bufferFrame, commandBuffer);
+                    gf3d_sprite_draw(bg, vector2d(0, 0), vector2d(1, 1), 0, bufferFrame, fullscreenCmd);
                     //gf3d_sprite_draw(hud, vector2d(50, 0), vector2d(1, 1), 0, bufferFrame, commandBuffer);
 
-                    gf3d_command_rendering_end(commandBuffer);
+                    gf3d_command_rendering_end(fullscreenCmd);
                 }
                 
                 
