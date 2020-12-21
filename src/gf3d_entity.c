@@ -460,12 +460,13 @@ void enemy_update(Entity* self) {
 	playerDir.x = gf3d_get_pointer_to_UBO()->view[3][0] - self->rSelf->position.x;
 	playerDir.y = 0;// gf3d_get_pointer_to_UBO()->view[3][1] - self->rSelf->position.y;
 	playerDir.z = gf3d_get_pointer_to_UBO()->view[3][2] - self->rSelf->position.z;
-	
+	Vector3D playerPos = vector3d(gf3d_get_pointer_to_UBO()->view[3][0], gf3d_get_pointer_to_UBO()->view[3][1], gf3d_get_pointer_to_UBO()->view[3][2]);
+
 	if(self->state == Normal){
 		self->noCollide = false;
 		self->timer = 0;
 		
-		Vector3D playerPos = vector3d(gf3d_get_pointer_to_UBO()->view[3][0], gf3d_get_pointer_to_UBO()->view[3][1], gf3d_get_pointer_to_UBO()->view[3][2]);
+		
 		Vector3D distFromSeen;
 		Vector3D velo;
 		int canChase = false;
@@ -506,8 +507,8 @@ void enemy_update(Entity* self) {
 	}
 	else if (self->state == Chase) {
 		self->noCollide = false;
-		if (vector3d_magnitude(playerDir) > 5) self->state = Return;
-		if (vector3d_magnitude(playerDir) < 0.01) get_PlayerManager()->hasLost = true;
+		if (vector3d_magnitude(playerDir) > 5 || !lineOfSight(self, playerPos)) self->state = Return;
+		if (vector3d_magnitude(playerDir) < 0.05) get_PlayerManager()->hasLost = true;
 		if (self->eType == Blind) {
 			Vector3D playerPos = vector3d(gf3d_get_pointer_to_UBO()->view[3][0], gf3d_get_pointer_to_UBO()->view[3][1], gf3d_get_pointer_to_UBO()->view[3][2]);
 			Vector3D distFromSeen;
@@ -539,8 +540,8 @@ void enemy_update(Entity* self) {
 			
 		}
 		if (vector3d_magnitude(velo) < 0.01) self->state = Normal;
-		if (vector3d_magnitude(playerDir) < 10 && self->eType != Blind) self->state = Chase;
-		else if (vector3d_magnitude(playerDir) < 10) {
+		if (vector3d_magnitude(playerDir) < 3 && lineOfSight(self, playerPos) && self->eType != Blind) self->state = Chase;
+		else if (vector3d_magnitude(playerDir) < 6) {
 			Vector3D playerPos = vector3d(gf3d_get_pointer_to_UBO()->view[3][0], gf3d_get_pointer_to_UBO()->view[3][1], gf3d_get_pointer_to_UBO()->view[3][2]);
 			Vector3D distFromSeen;
 			vector3d_sub(distFromSeen, playerPos, lastSeen);

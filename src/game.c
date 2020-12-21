@@ -98,9 +98,9 @@ int main(int argc,char *argv[])
     Entity *ground = addEntity(vector4d(0, -0.25, 0, 1), vector4d(0, 0, 0, 1), vector4d(50, 1, 50, 1), vector4d(0, 0, 0.5, 1), vector3d(0, 0, 0), 1,0,1);
     
     //addBlind(vector3d(0, 1, -6)); WORKS
-    addChaser(vector3d(1, 1, -6));
-    //addPatrol(vector3d(2, 1, -6),vector3d(0,0,-1));
-    //addHoleInspector(vector3d(3, 1, -6));
+    //addChaser(vector3d(1, 1, -6));
+    //addPatrol(vector3d(4, 1, -6),vector3d(0,0,-1));
+    addHoleInspector(vector3d(3, 1, -6));
     //ground->pSelf->mass = 0;
     //ground->pSelf->friction = 0;
     addWalls();
