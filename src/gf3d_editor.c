@@ -85,10 +85,10 @@ void editorUpdate() {
 		spaceDown = true;
 		Entity* n;
 		if (editor.selEnt == NULL) {
-			n = addEntity(vector4d(0, 2, 0, 1), vector4d(0, 0, 0, 1), vector4d(1, 1, 1, 1), vector4d(0, 0.5, 0.5, 1), vector3d(0, 0, 0), 1, 0);
+			n = addEntity(vector4d(0, 2, 0, 1), vector4d(0, 0, 0, 1), vector4d(1, 1, 1, 1), vector4d(0, 0.5, 0.5, 1), vector3d(0, 0, 0), 1, 0,1);
 		}
 		else {
-			n = addEntity(editor.selEnt->rSelf->position, editor.selEnt->rSelf->rotation, editor.selEnt->rSelf->scale, editor.selEnt->rSelf->position, vector3d(0, 0, 0), 1, 0);
+			n = addEntity(editor.selEnt->rSelf->position, editor.selEnt->rSelf->rotation, editor.selEnt->rSelf->scale, editor.selEnt->rSelf->position, vector3d(0, 0, 0), 1, 0,1);
 			editor.selEnt->rSelf->color = editor.entColor;
 		}
 		editor.curID = n->rSelf->id;
@@ -146,7 +146,7 @@ void saveLevel() {
 	Entity* entList = getEntList();
 	SJson* e;
 	for (int i = 0; i < entSize; i++) {
-		if (entList[i].inuse == 0) {
+		if (entList[i].inuse == 0 || entList[i].eType == Collectible) {
 			continue;
 		}
 		e = sj_object_new();
@@ -181,6 +181,7 @@ void saveLevel() {
 		sj_object_insert(e, "color", v4);
 
 		sj_object_insert(e, "type", sj_new_int(entList[i].rSelf->type));
+		sj_object_insert(e, "eType", sj_new_int(entList[i].eType));
 		sj_array_append(eJList, e);
 
 	}
@@ -242,7 +243,29 @@ void loadLevel() {
 		val = sj_object_get_value(e, "type");
 		sj_get_integer_value(val, &type);
 
+		int eType;
+		val = sj_object_get_value(e, "eType");
+		sj_get_integer_value(val, &eType);
+
 		//Create ent
-		newEnt = addEntity(pos, rot, scale, color, vector3d(0, 0, 0), type, 0);
+		if (type == 0) newEnt = addCollctible(vector3d(pos.x, pos.y, pos.z));
+		else if(type == 1) newEnt = addEntity(pos, rot, scale, color, vector3d(0, 0, 0), type, 0,1);
+		else {
+			//newEnt = addEntity(pos, rot, scale, color, vector3d(0, 0, 0), type, 0, eType);
+			switch (eType) {
+			case Chaser:
+				addChaser(vector3d(pos.x,pos.y,pos.z));
+				break;
+			case Patroller:
+				addPatrol(vector3d(pos.x, pos.y, pos.z),vector3d(0,0,-1));
+				break;
+			case Inspector:
+				addHoleInspector(vector3d(pos.x, pos.y, pos.z));
+				break;
+			case Blind:
+				addBlind(vector3d(pos.x, pos.y, pos.z));
+				break;
+			}
+		}
 	}
 }

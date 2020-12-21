@@ -4,6 +4,7 @@
 typedef struct PlayerManger_S {
 	int count;
 	int isCollide;
+	int hasLost;
 	Entity* puzzle1;
 	Entity* puzzle2;
 	Entity* puzzle3;

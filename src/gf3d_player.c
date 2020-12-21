@@ -6,9 +6,10 @@ static PlayerManger playerM = { 0 };
 void playerManInit() {
 	playerM.count = 0;
 	playerM.isCollide = true;
-	playerM.puzzle1 = addCollctible(vector3d(0, 1, 8));
-	playerM.puzzle2 = addCollctible(vector3d(2, 1, 2));
-	playerM.puzzle3 = addCollctible(vector3d(4, 1, 8));
+	playerM.hasLost = false;
+	//playerM.puzzle1 = addCollctible(vector3d(0, 1, 8));
+	//playerM.puzzle2 = addCollctible(vector3d(2, 1, 2));
+	//playerM.puzzle3 = addCollctible(vector3d(4, 1, 8));
 	//Initialize collectibes here
 }
 

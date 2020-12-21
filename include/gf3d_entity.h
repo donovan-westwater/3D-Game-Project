@@ -10,6 +10,7 @@ typedef struct EntityRender_S { //Stores the infomation needed by the shader
     Vector4D color;
     __declspec(align(16)) int id;
     int type;
+    int frame;
 }EntityRender; 
 
 struct Entity_S;
@@ -54,6 +55,12 @@ typedef struct Rigidbody_S {
      int id;
      int inuse;
      //int type; //sphere by default;
+     //Enemy Vars
+     int eType;
+     int state;
+     Vector3D spawnP;
+     Vector3D patrolDir;
+
      EntityRender *rSelf; //Pass this to the uniform to draw changes!
      Rigidbody* pSelf;
      Obstacle* obsSelf;
@@ -69,9 +76,26 @@ typedef struct Rigidbody_S {
      void(*think)(struct Entity_S* self);
 }Entity;
 
+ enum Enemy_States {
+     Normal,
+     Chase,
+     Return
+ };
+ enum Entity_Type {
+     Collectible,
+     Wall,
+     Hole,
+     Chaser,
+     Patroller,
+     Blind,
+     Inspector
+
+ };
  void initEntList();
 
- Entity* addEntity(Vector4D pos, Vector4D rot, Vector4D scale, Vector4D color, Vector3D velo,int type,int isObs);
+ void clearEntList();
+
+ Entity* addEntity(Vector4D pos, Vector4D rot, Vector4D scale, Vector4D color, Vector3D velo,int type,int isObs, int eType);
 
  void deleteEntity(Entity* e);
  
@@ -100,5 +124,27 @@ typedef struct Rigidbody_S {
  void addWalls();
 
  void coll_update(Entity* self);
+
+ //Enenmy Creation
+
+ //Chases the player if in line of sight and in range
+ //if out of range it returns to its spawn
+ void addChaser(Vector3D pos);
+
+ //Patrols back and forth
+ void addPatrol(Vector3D pos,Vector3D dir);
+
+ //if the player is moving and in range, it will chase. Otherwise it stands still.
+ void addBlind(Vector3D pos);
+
+ void addCoward(Vector3D pos);
+
+ //Whenever the player makes a hole within its range, it will seek out the hole and chase the player if they are too close
+ void addHoleInspector(Vector3D pos);
+
+ void enemy_update(Entity* self);
+
+
+
 
 #endif

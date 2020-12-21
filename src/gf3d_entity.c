@@ -11,9 +11,11 @@
 static Entity entList[entSize] = { -1 };
 static Entity* hole = NULL;
 static float count = 0;
+
+static Vector3D lastSeen;
 //initilizes the list from the UBO and entity list
 void initEntList() {
-
+	lastSeen = vector3d(999, 999, 999);
 	for (int i = 0; i < entSize; i++) {
 		entList[i].id = i;
 		entList[i].update = update;
@@ -23,13 +25,18 @@ void initEntList() {
 
 
 }
+void clearEntList() {
+	for (int i = 0; i < entSize; i++) {
+		if (entList[i].inuse) deleteEntity(&entList[i]);
 
+	}
+}
 Entity* getEntList() {
 	return &entList;
 
 }
 
-Entity* addEntity(Vector4D pos, Vector4D rot, Vector4D scale, Vector4D color, Vector3D velo, int type,int isObs) {
+Entity* addEntity(Vector4D pos, Vector4D rot, Vector4D scale, Vector4D color, Vector3D velo, int type,int isObs,int eType) {
 	int i;
 	for (i = 0; i < entSize; i++) {
 		if (entList[i].inuse < 1) break;
@@ -45,6 +52,7 @@ Entity* addEntity(Vector4D pos, Vector4D rot, Vector4D scale, Vector4D color, Ve
 	entList[i].rSelf->scale = scale;
 	entList[i].rSelf->color = color;
 	entList[i].rSelf->id = i;
+	entList[i].rSelf->frame = 0;
 	if (isObs) {
 		entList[i].isObs = isObs;
 		Obstacle o = { 0 };
@@ -79,6 +87,9 @@ Entity* addEntity(Vector4D pos, Vector4D rot, Vector4D scale, Vector4D color, Ve
     entList[i].inuse = 1;
 	entList[i].velocity = velo;
 	entList[i].rSelf->type = type;
+	entList[i].eType = eType;
+	entList[i].state = -1;
+	entList[i].spawnP = vector3d(pos.x, pos.y, pos.z);
 	
 	return &entList[i];
 	
@@ -96,6 +107,8 @@ void deleteEntity(Entity* e) {
 	e->rSelf->rotation = vector4d(0, 0, 0, 0);
 	e->rSelf->type = 0;
 	e->rSelf->scale = vector4d(0, 0, 0, 0);
+	e->eType = 0;
+	e->spawnP = vector3d(0, 0, 0);
 }
 
 void entity_touch(Entity* self, Entity* other) {
@@ -247,7 +260,7 @@ void rigidbody_update(Rigidbody* self, float time) {
 //Collectibles
 //Collectible add function goes here
 Entity* addCollctible(Vector3D pos) {
-	Entity* c = addEntity(vector4d(pos.x, pos.y, pos.z, 1), vector4d(0, 0, 0, 1), vector4d(0.25, 0.25, 0.25, 1), vector4d(0.25, 0, 0.25, 1), vector3d(0, 0, 0), 0, 0);
+	Entity* c = addEntity(vector4d(pos.x, pos.y, pos.z, 1), vector4d(0, 0, 0, 1), vector4d(0.25, 0.25, 0.25, 1), vector4d(0.25, 0, 0.25, 1), vector3d(0, 0, 0), 0, 0,0);
 	c->pSelf->mass = 0;
 	c->update = coll_update;
 
@@ -286,6 +299,7 @@ Entity* addEmpty(Vector3D pos) {
 	entList[i].velocity = vector3d(0,0,0);
 	entList[i].rSelf->type = 3;
 	entList[i].noCollide = true;
+	entList[i].eType = Hole;
 	hole = &entList[i];
 	return &entList[i];
 }
@@ -358,30 +372,186 @@ void coll_update(Entity* self) {
 }
 
 void addWalls() {
-	Entity* wall = addEntity(vector4d(12.5, 5/2, 0, 1), vector4d(0, 0, 0, 1), vector4d(1, 10, 50, 1), vector4d(0, 0.5, 0.5, 1), vector3d(0, 0, 0), 1, 0);
+	Entity* wall = addEntity(vector4d(12.5, 5/2, 0, 1), vector4d(0, 0, 0, 1), vector4d(1, 10, 50, 1), vector4d(0, 0.5, 0.5, 1), vector3d(0, 0, 0), 1, 0,1);
 	wall->pSelf->mass = 0;
 	wall->pSelf->friction = 0;
 
-	wall = addEntity(vector4d(-12.5, 5/2, 0, 1), vector4d(0, 0, 0, 1), vector4d(1, 10, 50, 1), vector4d(0, 0.5, 0.5, 1), vector3d(0, 0, 0), 1, 0);
+	wall = addEntity(vector4d(-12.5, 5/2, 0, 1), vector4d(0, 0, 0, 1), vector4d(1, 10, 50, 1), vector4d(0, 0.5, 0.5, 1), vector3d(0, 0, 0), 1, 0,1);
 	wall->pSelf->mass = 0;
 	wall->pSelf->friction = 0;
 
-	wall = addEntity(vector4d(0, 5/2, 12.5, 1), vector4d(0, 0, 0, 1), vector4d(50, 10, 1, 1), vector4d(0, 0.5, 0.5, 1), vector3d(0, 0, 0), 1, 0);
+	wall = addEntity(vector4d(0, 5/2, 12.5, 1), vector4d(0, 0, 0, 1), vector4d(50, 10, 1, 1), vector4d(0, 0.5, 0.5, 1), vector3d(0, 0, 0), 1, 0,1);
 	wall->pSelf->mass = 0;
 	wall->pSelf->friction = 0;
 
-	wall = addEntity(vector4d(0, 5/2, -12.5, 1), vector4d(0, 0, 0, 1), vector4d(50, 10, 1, 1), vector4d(0, 0.5, 0.5, 1), vector3d(0, 0, 0), 1, 0);
+	wall = addEntity(vector4d(0, 5/2, -12.5, 1), vector4d(0, 0, 0, 1), vector4d(50, 10, 1, 1), vector4d(0, 0.5, 0.5, 1), vector3d(0, 0, 0), 1, 0,1);
 	wall->pSelf->mass = 0;
 	wall->pSelf->friction = 0;
 
-	wall = addEntity(vector4d(2, 5 / 2, 6, 1), vector4d(0, 0, 0, 1), vector4d(1, 10, 15, 1), vector4d(0, 0.5, 0.5, 1), vector3d(0, 0, 0), 1, 0);
+	wall = addEntity(vector4d(2, 5 / 2, 6, 1), vector4d(0, 0, 0, 1), vector4d(1, 10, 15, 1), vector4d(0, 0.5, 0.5, 1), vector3d(0, 0, 0), 1, 0,1);
 	wall->pSelf->mass = 0;
 	wall->pSelf->friction = 0;
 
 
-	wall = addEntity(vector4d(0, 5 / 2, 6, 1), vector4d(0, 0, 0, 1), vector4d(50, 10, 1, 1), vector4d(0, 0.5, 0.5, 1), vector3d(0, 0, 0), 1, 0);
+	wall = addEntity(vector4d(0, 5 / 2, 6, 1), vector4d(0, 0, 0, 1), vector4d(50, 10, 1, 1), vector4d(0, 0.5, 0.5, 1), vector3d(0, 0, 0), 1, 0,1);
 	wall->pSelf->mass = 0;
 	wall->pSelf->friction = 0;
 }
 
 
+//Enemy Functions
+void addChaser(Vector3D pos) {
+	Entity* e = addEntity(vector4d(pos.x, pos.y, pos.z, 1), vector4d(0, 0, 0, 1), vector4d(1, 1, 1, 1), vector4d(0.5, 0.5, 0.25, 1), vector3d(0, 0, 0), 4, 0, Chaser);
+	e->update = enemy_update;
+	e->state = Normal;
+}
+
+void addPatrol(Vector3D pos, Vector3D dir) {
+	Entity* e = addEntity(vector4d(pos.x, pos.y, pos.z, 1), vector4d(0, 0, 0, 1), vector4d(1, 1, 1, 1), vector4d(0.5, 0.25, 0.5, 1), vector3d(0, 0, 0), 5, 0, Patroller);
+	e->update = enemy_update;
+	e->state = Normal;
+	e->patrolDir = dir;
+}
+
+void addBlind(Vector3D pos) {
+	Entity* e = addEntity(vector4d(pos.x, pos.y, pos.z, 1), vector4d(0, 0, 0, 1), vector4d(1, 1, 1, 1), vector4d(0.5, 0.25, 0.25, 1), vector3d(0, 0, 0), 6, 0, Blind);
+	e->update = enemy_update;
+	e->state = Normal;
+}
+
+void addHoleInspector(Vector3D pos) {
+	Entity* e = addEntity(vector4d(pos.x, pos.y, pos.z, 1), vector4d(0, 0, 0, 1), vector4d(1, 1, 1, 1), vector4d(0.25, 0.25, 0.25, 1), vector3d(0, 0, 0), 7, 0, Inspector);
+	e->update = enemy_update;
+	e->state = Normal;
+}
+
+int lineOfSight(Entity *self,Vector3D targetPos) {
+	RaycastResult result;
+	resetRayResult(&result);
+	RaycastResult test;
+	Ray ahead;
+	Vector3D forward;
+	Vector3D playDist;
+	vector3d_sub(forward, targetPos, self->rSelf->position);
+	playDist = forward;
+	vector3d_normalize(&forward);
+	ahead.direction = vector3d(forward.x, forward.y, forward.z);
+	ahead.origin = vector3d(self->rSelf->position.x, self->rSelf->position.y, self->rSelf->position.z);
+	float min = 99999;
+	for (int i = 0; i < entSize; i++) {
+		if (entList[i].inuse == 0) continue;
+		if (self->id == entList[i].id) continue;
+		if (raycastGeneral(&entList[i], &ahead, &test)) {
+			if (test.hit && test.t < min) {
+				result = test;
+				min = test.t;
+			}
+		}
+	}
+	Vector3D distFromSelf;
+	vector3d_sub(distFromSelf, result.point, self->rSelf->position);
+	//if dist to the wall that is hit is less than the dist to the player, then there is no line of sight present
+	if (vector3d_magnitude(playDist) > vector3d_magnitude(distFromSelf)) return false;
+	else return true;
+}
+
+void enemy_update(Entity* self) {
+	Vector3D playerDir;
+	playerDir.x = gf3d_get_pointer_to_UBO()->view[3][0] - self->rSelf->position.x;
+	playerDir.y = 0;// gf3d_get_pointer_to_UBO()->view[3][1] - self->rSelf->position.y;
+	playerDir.z = gf3d_get_pointer_to_UBO()->view[3][2] - self->rSelf->position.z;
+	
+	if(self->state == Normal){
+		self->noCollide = false;
+		self->timer = 0;
+		
+		Vector3D playerPos = vector3d(gf3d_get_pointer_to_UBO()->view[3][0], gf3d_get_pointer_to_UBO()->view[3][1], gf3d_get_pointer_to_UBO()->view[3][2]);
+		Vector3D distFromSeen;
+		Vector3D velo;
+		int canChase = false;
+		float delta;
+		switch (self->eType)
+		{
+		case Patroller:
+			vector3d_sub(velo, self->spawnP, self->rSelf->position);
+			velo.y = 0;
+			if (vector3d_magnitude(velo) > 5 || vector3d_magnitude(velo) < 0.01) vector3d_scale(self->patrolDir, self->patrolDir, -1);
+			velo = self->patrolDir;
+			vector3d_normalize(&velo);
+			vector3d_scale(velo, velo, 0.05);
+			self->velocity = velo;
+			break;
+		case Blind:
+			canChase = false;
+			playerPos = vector3d(gf3d_get_pointer_to_UBO()->view[3][0], gf3d_get_pointer_to_UBO()->view[3][1], gf3d_get_pointer_to_UBO()->view[3][2]);
+			vector3d_sub(distFromSeen,playerPos,lastSeen);
+			if (vector3d_magnitude(distFromSeen) > 0.01) canChase = true;
+			break;
+		case Inspector:
+			if(hole != NULL) vector3d_sub(velo, hole->rSelf->position, self->rSelf->position);
+			if (hole != NULL && hole->inuse == true && vector3d_magnitude(velo) > 0.05) {
+				vector3d_normalize(&velo);
+				vector3d_scale(velo, velo, 0.05);
+				self->velocity = velo;
+			}
+			break;
+
+		}
+		if (vector3d_magnitude(playerDir) < 6 && self->eType == Blind) {
+			if(canChase) self->state = Chase;
+		}
+		else if (vector3d_magnitude(playerDir) < 3 && lineOfSight(self,playerPos) && self->eType != Blind) {
+			self->state = Chase;
+		}
+	}
+	else if (self->state == Chase) {
+		self->noCollide = false;
+		if (vector3d_magnitude(playerDir) > 5) self->state = Return;
+		if (vector3d_magnitude(playerDir) < 0.01) get_PlayerManager()->hasLost = true;
+		if (self->eType == Blind) {
+			Vector3D playerPos = vector3d(gf3d_get_pointer_to_UBO()->view[3][0], gf3d_get_pointer_to_UBO()->view[3][1], gf3d_get_pointer_to_UBO()->view[3][2]);
+			Vector3D distFromSeen;
+			vector3d_sub(distFromSeen, playerPos, lastSeen);
+			if (vector3d_magnitude(distFromSeen) < 0.01) {
+				self->state = Return;
+				self->velocity = vector3d(0, 0, 0);
+			}
+		}
+		Vector3D velo = playerDir;
+		vector3d_normalize(&velo);
+		vector3d_scale(velo, velo, 0.05);
+		self->velocity = velo;
+		
+	}
+	else if (self->state == Return) {
+		
+		Vector3D velo;
+		vector3d_sub(velo, self->spawnP, self->rSelf->position);
+		velo.y = 0;
+		//self->noCollide = true;
+		vector3d_normalize(&velo);
+		vector3d_scale(velo, velo, 0.05);
+		self->velocity = velo;
+		if(self->eType == Chaser || self->eType == Inspector && self->timer < 1){
+			self->timer += 0.001;
+			self->velocity = vector3d(0, 0, 0);
+			//self->rSelf->position.z += 0.1;
+			
+		}
+		if (vector3d_magnitude(velo) < 0.01) self->state = Normal;
+		if (vector3d_magnitude(playerDir) < 10 && self->eType != Blind) self->state = Chase;
+		else if (vector3d_magnitude(playerDir) < 10) {
+			Vector3D playerPos = vector3d(gf3d_get_pointer_to_UBO()->view[3][0], gf3d_get_pointer_to_UBO()->view[3][1], gf3d_get_pointer_to_UBO()->view[3][2]);
+			Vector3D distFromSeen;
+			vector3d_sub(distFromSeen, playerPos, lastSeen);
+			if (vector3d_magnitude(distFromSeen) > 0.01) {
+				self->state = Chase;
+			}
+		}
+		
+	}
+	
+	lastSeen = vector3d(gf3d_get_pointer_to_UBO()->view[3][0], gf3d_get_pointer_to_UBO()->view[3][1], gf3d_get_pointer_to_UBO()->view[3][2]);
+	update(self);
+	self->rSelf->frame++;
+}

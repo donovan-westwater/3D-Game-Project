@@ -91,15 +91,19 @@ int main(int argc,char *argv[])
     
     initEntList();
     phyEngine_init();
-    //playerManInit();
+    playerManInit();
     //addEntity(vector4d(0, 1, -5, 1), vector4d(0, 0, 0, 1), vector4d(1, 1, 1, 1), vector4d(0, 1, 0, 1),vector3d(-1, 0 , 0), 0,0);
     //addEntity(vector4d(-1, 2, 1, 1), vector4d(35, 0, 0, 1), vector4d(1, 1, 1, 1), vector4d(0, 1, 0, 1), vector3d(0, -0.1, 0), 1,0);
     //addEntity(vector4d(-1, 1, 1, 1), vector4d(0, 0, 0, 1), vector4d(1, 1, 1, 1), vector4d(0, 1, 0, 1), vector3d(0, 0, 0), 1, 0);
-    //Entity *ground = addEntity(vector4d(0, -0.25, 0, 1), vector4d(0, 0, 0, 1), vector4d(50, 1, 50, 1), vector4d(0, 0, 0.5, 1), vector3d(0, 0, 0), 1,0);
+    Entity *ground = addEntity(vector4d(0, -0.25, 0, 1), vector4d(0, 0, 0, 1), vector4d(50, 1, 50, 1), vector4d(0, 0, 0.5, 1), vector3d(0, 0, 0), 1,0,1);
     
+    //addBlind(vector3d(0, 1, -6)); WORKS
+    addChaser(vector3d(1, 1, -6));
+    //addPatrol(vector3d(2, 1, -6),vector3d(0,0,-1));
+    //addHoleInspector(vector3d(3, 1, -6));
     //ground->pSelf->mass = 0;
     //ground->pSelf->friction = 0;
-    //addWalls();
+    addWalls();
      //move to player init
     
     VkDevice device = gf3d_vgraphics_get_default_logical_device();
@@ -123,7 +127,7 @@ int main(int argc,char *argv[])
 
     //Editor Start
     editorInit();
-    loadLevel();
+    //loadLevel();
     //Editor End
 
     //bufferFrame = gf3d_vgraphics_render_begin();
@@ -131,6 +135,7 @@ int main(int argc,char *argv[])
     int spriteMode = true;
     int editMode = false;
     int editInit = false;
+    int playInit = true;
     double last = time(NULL);
     float fps = 0;
     float totalF = 0;
@@ -170,7 +175,7 @@ int main(int argc,char *argv[])
                 angle = 45;
                 angle /= 57.2957795;
                 gf3d_vgraphics_rotate_camera_axis(angle,vector3d(1,0,0));
-                saveLevel();
+                //saveLevel();
                 editInit = true;
             }
             //angle += 0.01;
@@ -179,7 +184,20 @@ int main(int argc,char *argv[])
         }
         if (!spriteMode && !editMode) {
             //update game things here
-        
+            if (get_PlayerManager()->hasLost) {
+                spriteMode = true;
+                gfc_matrix_identity(gf3d_get_pointer_to_UBO()->view);
+                gf3d_vgraphics_set_camera(vector3d(0, 1, 1));
+                get_PlayerManager()->hasLost = false;
+                playInit = false;
+                continue;
+            }
+            if (!playInit) {
+                clearEntList();
+                loadLevel();
+                playerManInit();
+                playInit = true;
+            }
             //gf3d_vgraphics_rotate_camera(0.01);
             //gf3d_vgraphics_mouse_look();
             float speed = 1;
@@ -257,7 +275,7 @@ int main(int argc,char *argv[])
 
                 gf3d_command_rendering_end(fullscreenCmd);
 
-
+                
           
           //Main Grpahics rending end
                 if(spriteMode){

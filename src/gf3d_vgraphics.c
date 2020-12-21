@@ -169,6 +169,7 @@ void gf3d_vgraphics_init(
     gf3d_swapchain_create_depth_image();
     gf3d_swapchain_setup_frame_buffers(gf3d_vgraphics.pipe);
     
+    
     gf3d_vgraphics_semaphores_create();
     
 }

@@ -13,6 +13,7 @@ struct EntityRender_S { //Stores the infomation needed by the shader
     vec4 color;
     int id;
     int type;
+    int frame;
 }EntityRender;
 
 layout(binding = 0) uniform UniformBufferObject {
@@ -79,6 +80,51 @@ float planeSDF( vec3 p, vec3 n, float h )
   // n must be normalized
   return dot(p,n) + h;
 }
+float distortSDF(vec3 p,vec3 b,int frame){
+ float d1 = boxSDF(p,b);
+ float mag = sin(radians(float(2*frame))) - 2.;
+ vec3 n = normalize(p);
+ 
+ float d2 = sin(mag*0.25*n.x)*sin(mag*0.25*n.y)*sin(mag*0.25*n.z);
+ return d1+d2;
+}
+
+float beveledSDF(vec3 p,vec3 b,int frame){
+ float k = 2.*(sin(radians(float(2*frame))) - 2.);
+ float c = cos(k*p.x);
+ float s = sin(k*p.x);
+ mat2  m = mat2(c,-s,s,c);
+ vec3  q = vec3(m*p.xy,p.z);
+ float box = boxSDF(q,b);
+ vec3 scale = vec3(0.75);
+ float sphere = sphereSDF(q.xyz/scale)*min(scale.x,min(scale.y,scale.z));
+ float d1 = max(box,sphere);
+ 
+ //float mag = sin(radians(float(2*iFrame))) - 2.;
+ //vec3 n = normalize(p);
+ 
+ //float d2 = sin(mag*0.25*n.x)*sin(mag*0.25*n.y)*sin(mag*0.25*n.z);
+ return d1;//+d2;
+}
+float twistSDF(vec3 p,vec3 b,int frame){
+    const float k = 10.0; // or some other amount
+    float si = sin(radians(float(frame)))*2. - 1.;
+    float c = cos(si*k*p.y);
+    float s = sin(si*k*p.y);
+    mat2  m = mat2(c,-s,s,c);
+    vec3  q = vec3(m*p.xz,p.y);
+    return  boxSDF(q,b);
+}
+
+float stwistSDF(vec3 p, vec3 b,int frame){
+    const float k = 5.0; // or some other amount
+    float si = sin(radians(float(frame)))*2. - 1.;
+    float s = sin(si*k*p.y);
+    float c = cos(si*k*p.y);
+    mat2  m = mat2(c,-s,s,c);
+    vec3  q = vec3(m*p.xz,p.y);
+    return  beveledSDF(q,b,frame);
+}
 float sphereDistance(vec3 p) {
     return distance(p, centre) - radius;
 }
@@ -101,6 +147,11 @@ float sceneSDF(vec3 p){
         scale = ubo.renderList[i].scale.xyz;
         if(ubo.renderList[i].type == 1) d = min(boxSDF(pD.xyz/scale,vec3(0.25,0.25,0.25))*min(scale.x,min(scale.y,scale.z)),d);
         if(ubo.renderList[i].type == 0) d = min(sphereSDF(pD.xyz/scale)*min(scale.x,min(scale.y,scale.z)),d);
+        if(ubo.renderList[i].type == 4) d = min(distortSDF(pD.xyz/scale,vec3(0.25,0.25,0.25)*scale,ubo.renderList[i].frame)*min(scale.x,min(scale.y,scale.z)),d);
+        if(ubo.renderList[i].type == 5) d = min(beveledSDF(pD.xyz/scale,vec3(0.25,0.25,0.25)*scale,ubo.renderList[i].frame)*min(scale.x,min(scale.y,scale.z)),d);
+        if(ubo.renderList[i].type == 6) d = min(twistSDF(pD.xyz/scale,vec3(0.25,0.25,0.25)*scale,ubo.renderList[i].frame)*min(scale.x,min(scale.y,scale.z)),d);
+        if(ubo.renderList[i].type == 7) d = min(stwistSDF(pD.xyz/scale,vec3(0.25,0.25,0.25)*scale,ubo.renderList[i].frame)*min(scale.x,min(scale.y,scale.z)),d);
+
         pD = vec4(p,1);
         if(abs(d - prevD) > 0.0001){
             currentEnt = i;
@@ -129,7 +180,7 @@ float sceneSDF(vec3 p){
         scale = ubo.renderList[i].scale.xyz;
         if(ubo.renderList[i].type == 2) d = max(-boxSDF(pD.xyz/scale,vec3(0.25,0.25,0.25))*min(scale.x,min(scale.y,scale.z)),d);
         if(ubo.renderList[i].type == 3) d = max(-sphereSDF(pD.xyz/scale)*min(scale.x,min(scale.y,scale.z)),d);
-        if(ubo.renderList[i].type == 4) d = max(-sphereSDF(pD.xyz/scale)*min(scale.x,min(scale.y,scale.z)),d);
+        
         if(abs(d - prevD) > 0.0001) currentEnt = i;
         prevD = d;
 
@@ -151,7 +202,7 @@ float lSceneSDF(vec3 p){
     //float prevD = d;
     //Build up scene
 	int i = currentEnt;
-  	if(ubo.renderList[i].type > 1){
+  	if(ubo.renderList[i].type == 2 || ubo.renderList[i].type == 3){
        	int j = currAdd;
         
         pD = vec4(p,1);
@@ -175,7 +226,7 @@ float lSceneSDF(vec3 p){
         scale = ubo.renderList[i].scale.xyz;
         if(ubo.renderList[i].type == 2) d = max(-boxSDF(pD.xyz/scale,vec3(0.25,0.25,0.25))*min(scale.x,min(scale.y,scale.z)),d);
         if(ubo.renderList[i].type == 3) d = max(-sphereSDF(pD.xyz/scale)*min(scale.x,min(scale.y,scale.z)),d);
-        if(ubo.renderList[i].type == 4) d = max(-sphereSDF(pD.xyz/scale)*min(scale.x,min(scale.y,scale.z)),d);
+        
         
 
     }else{
@@ -188,6 +239,11 @@ float lSceneSDF(vec3 p){
         scale = ubo.renderList[i].scale.xyz;
         if(ubo.renderList[i].type == 1) d = min(boxSDF(pD.xyz/scale,vec3(0.25,0.25,0.25))*min(scale.x,min(scale.y,scale.z)),d);
         if(ubo.renderList[i].type == 0) d = min(sphereSDF(pD.xyz/scale)*min(scale.x,min(scale.y,scale.z)),d);
+        if(ubo.renderList[i].type == 4) d = min(distortSDF(pD.xyz/scale,vec3(0.25,0.25,0.25)*scale,ubo.renderList[i].frame)*min(scale.x,min(scale.y,scale.z)),d);
+        if(ubo.renderList[i].type == 5) d = min(beveledSDF(pD.xyz/scale,vec3(0.25,0.25,0.25)*scale,ubo.renderList[i].frame)*min(scale.x,min(scale.y,scale.z)),d);
+        if(ubo.renderList[i].type == 6) d = min(twistSDF(pD.xyz/scale,vec3(0.25,0.25,0.25)*scale,ubo.renderList[i].frame)*min(scale.x,min(scale.y,scale.z)),d);
+        if(ubo.renderList[i].type == 7) d = min(stwistSDF(pD.xyz/scale,vec3(0.25,0.25,0.25)*scale,ubo.renderList[i].frame)*min(scale.x,min(scale.y,scale.z)),d);
+
        
        d = min(d,planeSDF(p,vec3(0,1,0),0));
     }
