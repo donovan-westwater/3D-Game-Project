@@ -261,7 +261,7 @@ void rigidbody_update(Rigidbody* self, float time) {
 //Collectible add function goes here
 Entity* addCollctible(Vector3D pos) {
 	Entity* c = addEntity(vector4d(pos.x, pos.y, pos.z, 1), vector4d(0, 0, 0, 1), vector4d(0.25, 0.25, 0.25, 1), vector4d(0.25, 0, 0.25, 1), vector3d(0, 0, 0), 0, 0,0);
-	c->pSelf->mass = 0;
+	if(c->pSelf != NULL) c->pSelf->mass = 0;
 	c->update = coll_update;
 
 }
