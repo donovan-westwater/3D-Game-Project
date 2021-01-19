@@ -148,6 +148,8 @@ typedef struct Rigidbody_S {
  void enemy_update(Entity* self);
 
 
+ int lineOfSight(Entity* self, Vector3D targetPos);
+
 
 
 #endif

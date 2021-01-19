@@ -47,8 +47,42 @@ int get_RaycastAhead(RaycastResult* outResult) {
 	//return the result with lowest t
 	return outResult->hit;
 }
+//New Idea: Raycast in a fan in front of the player for walls
+//REDO THIS FUNCTION (SEE ABOVE)
+int lineOfplayer() {
+	Entity* entList = getEntList();
+	UniformBufferObject* ubo = gf3d_get_pointer_to_UBO();
+	RaycastResult result;
+	resetRayResult(&result);
+	RaycastResult test;
+	Ray ahead;
+	Vector3D playerPos = vector3d(ubo->view[3][0], ubo->view[3][1], ubo->view[3][2]);
+	Vector3D dir;
+	Vector3D entPos;
+	Vector3D playDist;
+	float min = 99999;
+	for (int i = 0; i < entSize; i++) {
+		if (entList[i].inuse == 0 || entList[i].rSelf->type == 2|| entList[i].rSelf->type == 3) continue;
+		entPos = vector3d(entList[i].rSelf->position.x, entList[i].rSelf->position.y, entList[i].rSelf->position.z);
+		vector3d_sub(dir, entPos, playerPos);
+		playDist = dir;
+		vector3d_normalize(&dir);
+		ahead.direction = vector3d(dir.x, dir.y, dir.z);
+		ahead.origin = vector3d(ubo->view[3][0], ubo->view[3][1], ubo->view[3][2]);
+		if (raycastGeneral(&entList[i], &ahead, &test)) {
+			result = test;
+		}
+		else result.point = vector3d(99999, 999999, 999999);
+		Vector3D distFromSelf;
+		vector3d_sub(distFromSelf, result.point, entPos);
+		//if dist to the wall that is hit is less than the dist to the player, then there is no line of sight present
+		if (vector3d_magnitude(playDist) < vector3d_magnitude(distFromSelf)) entList[i].rSelf->id = -1;
+		else entList[i].rSelf->id = entList[i].rSelf->id;
+	}
 
+}
 
 void playerUpdate(){
+	//lineOfplayer();
 	if (playerM.count > 2) printf("I solved all the puzzles!\n");
 }

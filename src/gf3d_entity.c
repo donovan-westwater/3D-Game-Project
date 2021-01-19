@@ -60,6 +60,7 @@ Entity* addEntity(Vector4D pos, Vector4D rot, Vector4D scale, Vector4D color, Ve
 		entList[i].obsSelf = addObstacle(o);
 		//Fucntion pointers here!
 	}
+	/* //Turned off for now, but when physics gets implemented, remember to change memeory to delete these parts too!
 	else {
 		entList[i].isObs = isObs;
 		Rigidbody o = { 0 };
@@ -83,6 +84,7 @@ Entity* addEntity(Vector4D pos, Vector4D rot, Vector4D scale, Vector4D color, Ve
 		entList[i].pSelf = addRigidbody(o);
 		//Fucntion pointers here!
 	}
+	*/
 	entList[i].timer = 0;
     entList[i].inuse = 1;
 	entList[i].velocity = velo;
@@ -100,7 +102,7 @@ void deleteEntity(Entity* e) {
 	u->totalObj--;
 	e->inuse = 0;
 	if(e->pSelf != NULL) SDL_memset(e->pSelf, 0, sizeof(Rigidbody));
-	e->pSelf->eSelf = e;
+	if(e->pSelf != NULL) e->pSelf->eSelf = e;
 	e->rSelf->id = -1;
 	e->rSelf->color = vector4d(0, 0, 0, 0);
 	e->rSelf->position = vector4d(0, 0, 0, 0);
@@ -123,8 +125,12 @@ void updateEntAll() {
 }
 
 void update(Entity* self) {
-	if (self->rSelf->position.y < -1) printf("Went throught floor!\n");
 	
+	if (self->rSelf->position.y < -1) printf("Went throught floor!\n");
+	//Vector3D playerPos = vector3d(gf3d_get_pointer_to_UBO()->view[3][0], gf3d_get_pointer_to_UBO()->view[3][1], gf3d_get_pointer_to_UBO()->view[3][2]);
+
+	//if (!lineOfSight(self, playerPos)) self->rSelf->id = -1;
+	//else self->rSelf->id = self->id;
 	RaycastResult result;
 	resetRayResult(&result);
 	RaycastResult test;
